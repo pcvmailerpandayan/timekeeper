@@ -30,6 +30,7 @@
 </head>
 <body class="text-slate-800 font-sans antialiased p-2 md:p-6">
 
+  <!-- ================= AUTHENTICATION PORTAL ================= -->
   <div id="authContainer" class="max-w-md mx-auto mt-12 bg-white rounded-2xl shadow-2xl overflow-hidden p-8 border border-slate-200">
     <div class="text-center mb-8">
       <div class="w-20 h-20 bg-red-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg mb-4">
@@ -39,6 +40,7 @@
       <p class="text-sm text-slate-500 mt-1">Fieldwork Attendance Management System</p>
     </div>
 
+    <!-- LOGIN FORM -->
     <div id="loginFormSection" class="space-y-4">
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Employee ID</label>
@@ -57,21 +59,19 @@
           </button>
         </div>
       </div>
-      
-      <div class="flex items-center">
-        <input type="checkbox" id="loginRememberMe" class="h-4 w-4 text-red-600 focus:ring-red-500 border-slate-300 rounded cursor-pointer">
-        <label for="loginRememberMe" class="ml-2 block text-xs font-semibold text-slate-600 cursor-pointer select-none">Tandaan Ako sa Device na Ito (Remember Me)</label>
-      </div>
 
       <button type="button" id="btnLogin" onclick="handleLogin()" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition shadow-lg shadow-red-600/20 active:scale-[0.98]">
         <i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In
       </button>
+      
+      <!-- FIXED: IBINALIK ANG BALANSENG NAVIGATION LINKS COUPLING -->
       <div class="flex justify-between text-xs font-medium text-slate-600 pt-2">
         <button type="button" onclick="switchAuth('forgot')" class="hover:text-red-600 transition bg-transparent border-0 p-0 cursor-pointer outline-none">Nakalimutan ang Password?</button>
         <button type="button" onclick="switchAuth('register')" class="hover:text-red-600 transition bg-transparent border-0 p-0 cursor-pointer outline-none">Gumawa ng Account</button>
       </div>
     </div>
 
+    <!-- REGISTRATION FORM -->
     <div id="registerFormSection" class="space-y-4 hidden">
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Employee ID</label>
@@ -102,8 +102,9 @@
       </div>
     </div>
 
+    <!-- FIXED: IBINALIK ANG FORGOT PASSWORD ADVISORY BOX CONTAINER SYSTEM -->
     <div id="forgotFormSection" class="space-y-4 hidden">
-      <p class="text-sm text-slate-600 text-center">Mangyaring makipag-ugnayan sa inyong <strong>TTP Administrator</strong> o <strong>HR Department</strong> para sa pag-reset ng inyong password upang mapanatili ang seguridad ng account.</p>
+      <p class="text-sm text-slate-600 text-center">Mangyaring makipag-ugnayan sa inyong <strong>TTP Administrator (Emp # 114030062)</strong> o <strong>HR Department</strong> para sa pag-reset ng inyong password upang mapanatili ang seguridad ng account.</p>
       <div class="text-center pt-2">
         <button type="button" onclick="switchAuth('login')" class="text-xs font-medium text-red-600 hover:underline bg-transparent border-0 cursor-pointer outline-none">Bumalik sa Log In</button>
       </div>
@@ -111,8 +112,10 @@
   </div>
 
 
+  <!-- ================= MAIN DASHBOARD PORTAL ================= -->
   <div id="dashboardContainer" class="max-w-[1600px] mx-auto space-y-6 hidden">
     
+    <!-- TOP NAVIGATION BAR -->
     <div class="bg-slate-900 text-white p-4 rounded-2xl flex justify-between items-center shadow-xl gap-4 relative">
       <div class="flex items-center space-x-3">
         <button type="button" onclick="toggleMobileMenu(true)" class="lg:hidden text-white text-xl p-2 bg-slate-800 rounded-xl hover:bg-slate-700 transition">
@@ -127,6 +130,14 @@
         </div>
       </div>
       
+      <!-- DESKTOP PANES SELECTOR NAVIGATION SYSTEM -->
+      <div class="hidden lg:flex items-center space-x-1 bg-slate-800 p-1 rounded-xl text-xs border border-slate-700 font-bold">
+        <button type="button" onclick="switchActiveViewPane('punch')" id="dtBtn-punch" class="px-4 py-2 rounded-lg text-slate-300 transition">Punch Console</button>
+        <button type="button" onclick="switchActiveViewPane('monitor')" id="dtBtn-monitor" class="px-4 py-2 rounded-lg text-slate-300 transition">Sub-Department Feed</button>
+        <button type="button" onclick="switchActiveViewPane('history')" id="dtBtn-history" class="px-4 py-2 rounded-lg text-slate-300 transition">Logs & Allowance History</button>
+        <button type="button" onclick="switchActiveViewPane('admin')" id="dtBtn-admin" class="px-4 py-2 rounded-lg text-purple-400 hover:text-purple-300 transition hidden">Admin Panel</button>
+      </div>
+      
       <div class="flex items-center space-x-4">
         <div class="text-right block">
           <div class="text-xs sm:text-sm font-bold tracking-wide text-red-500" id="liveClock">00:00:00 PM</div>
@@ -138,6 +149,7 @@
       </div>
     </div>
 
+    <!-- MOBILE SIDEBAR DRAWER MENU -->
     <div id="mobileSidebarOverlay" onclick="toggleMobileMenu(false)" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden lg:hidden"></div>
     <div id="mobileSidebarMenu" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 p-6 shadow-2xl transform -translate-x-full transition duration-300 ease-in-out lg:hidden flex flex-col justify-between">
       <div class="space-y-6">
@@ -146,16 +158,16 @@
           <button type="button" onclick="toggleMobileMenu(false)" class="text-slate-400 text-xl"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <nav class="space-y-2">
-          <button type="button" onclick="switchMobilePane('punch')" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl bg-red-50 text-red-600 transition text-left">
+          <button type="button" onclick="switchActiveViewPane('punch')" id="mbBtn-punch" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-slate-600 hover:bg-slate-50 transition text-left">
             <i class="fa-solid fa-fingerprint w-6"></i> <span>Punch Console</span>
           </button>
-          <button type="button" onclick="switchMobilePane('monitor')" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-slate-600 hover:bg-slate-50 transition text-left">
+          <button type="button" onclick="switchActiveViewPane('monitor')" id="mbBtn-monitor" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-slate-600 hover:bg-slate-50 transition text-left">
             <i class="fa-solid fa-users w-6"></i> <span>Sub-Department Feed</span>
           </button>
-          <button type="button" onclick="switchMobilePane('history')" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-slate-600 hover:bg-slate-50 transition text-left">
+          <button type="button" onclick="switchActiveViewPane('history')" id="mbBtn-history" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-slate-600 hover:bg-slate-50 transition text-left">
             <i class="fa-solid fa-clock-rotate-left w-6"></i> <span>Logs & Missing Tracker</span>
           </button>
-          <button type="button" id="mobileAdminMenuBtn" onclick="switchMobilePane('admin')" class="w-full items-center space-x-3 p-3 font-bold rounded-xl text-purple-600 hover:bg-purple-50 transition text-left hidden">
+          <button type="button" id="mobileAdminMenuBtn" onclick="switchActiveViewPane('admin')" class="w-full items-center space-x-3 p-3 font-bold rounded-xl text-purple-600 hover:bg-purple-50 transition text-left hidden">
             <i class="fa-solid fa-user-shield w-6"></i> <span>Admin Control Portal</span>
           </button>
         </nav>
@@ -165,9 +177,11 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- MAIN INTERACTIVE WRAPPER BLOCK DISPLAY HOOK -->
+    <div class="w-full">
       
-      <div id="punchPane" class="block lg:col-span-5 space-y-6">
+      <!-- PANE 1: PUNCH CONSOLE -->
+      <div id="punchPane" class="hidden max-w-2xl mx-auto space-y-6">
         <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 space-y-5">
           <h3 class="text-base font-bold text-slate-900 flex items-center border-b pb-3 border-slate-100">
             <i class="fa-solid fa-fingerprint text-red-600 mr-2"></i> Attendance Punch Console
@@ -243,19 +257,82 @@
         </div>
       </div>
 
-      <div id="monitorPane" class="hidden lg:flex lg:col-span-7 flex-col bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 max-h-[690px]">
+      <!-- PANE 2: DEPARTMENT FEED MONITOR -->
+      <div id="monitorPane" class="hidden max-w-4xl mx-auto flex-col bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 min-h-[500px]">
         <h3 class="text-base font-bold text-slate-900 flex items-center border-b pb-3 border-slate-100 mb-4">
-          <i class="fa-solid fa-users text-blue-600 mr-2"></i> Sub-Department Monitor (Real-time)
+          <i class="fa-solid fa-users text-blue-600 mr-2"></i> Sub-Department Monitor (Real-time Feed)
         </h3>
-        <div id="departmentFeed" class="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
+        <div id="departmentFeed" class="space-y-3 pr-1 custom-scrollbar">
           <div class="text-center py-12 text-slate-400 text-sm">
             <i class="fa-solid fa-circle-notch animate-spin text-2xl text-slate-300 mb-2 block"></i>
-            Kumukuha ng datos mula sa ka-departamento...
+            Kumukuha ng datos...
           </div>
         </div>
       </div>
 
-      <div id="adminPane" class="hidden lg:hidden lg:col-span-12 flex-col bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 space-y-6">
+      <!-- PANE 3: HISTORY & MISSING TRACKER -->
+      <div id="historyPane" class="hidden bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 border-slate-100">
+          <h3 class="text-base font-bold text-slate-900 flex items-center">
+            <i class="fa-solid fa-chart-user text-emerald-600 mr-2"></i> Personal Logs History & Allowances
+          </h3>
+          
+          <div class="flex flex-wrap items-center gap-2 text-xs w-full sm:w-auto">
+            <div class="flex items-center space-x-1">
+              <span class="text-slate-500 font-medium">Mula:</span>
+              <input type="date" id="filterFrom" class="px-2 py-1.5 border border-slate-300 rounded-lg outline-none focus:border-red-500">
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="text-slate-500 font-medium">Hanggang:</span>
+              <input type="date" id="filterTo" class="px-2 py-1.5 border border-slate-300 rounded-lg outline-none focus:border-red-500">
+            </div>
+            <button type="button" id="btnFilterHistory" onclick="executeHistoryAndMissingPipeline()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition ml-auto sm:ml-0">
+              I-Filter History
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-between border-b border-slate-200 gap-2">
+          <div class="flex text-xs font-bold">
+            <button type="button" id="tabBtnActualLogs" onclick="toggleHistoryViewTabs('actual')" class="px-4 py-2 text-red-600 border-b-2 border-red-600">
+              <i class="fa-solid fa-list-check mr-1.5"></i>Mga Nakatalang Log / Allowances
+            </button>
+            <button type="button" id="tabBtnMissingLogs" onclick="toggleHistoryViewTabs('missing')" class="px-4 py-2 text-slate-400 hover:text-slate-600 transition">
+              <i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Mga Nawawalang Log (Missing)
+            </button>
+          </div>
+          
+          <div id="missingLayoutToolbar" class="items-center space-x-1 bg-slate-100 p-1 rounded-xl mb-1 self-end hidden">
+            <button type="button" onclick="setMissingLayoutMode('list')" id="btnLayoutList" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">List View</button>
+            <button type="button" onclick="setMissingLayoutMode('small')" id="btnLayoutSmall" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">Small Icons</button>
+            <button type="button" onclick="setMissingLayoutMode('large')" id="btnLayoutLarge" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-white shadow-sm text-slate-900">Large Cards</button>
+          </div>
+        </div>
+
+        <div id="subViewActualLogs" class="block overflow-x-auto rounded-xl border border-slate-200">
+          <table class="w-full text-left border-collapse min-w-[900px]">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200">
+                <th class="p-3">Petsa</th>
+                <th class="p-3">Oras</th>
+                <th class="p-3">Uri ng Log</th>
+                <th class="p-3">Branch/Lokasyon</th>
+                <th class="p-3 w-32">Meal Allowance</th>
+                <th class="p-3 w-32">Transpo Allowance</th>
+                <th class="p-3 w-72">Meal/Transpo Details Breakdown</th>
+              </tr>
+            </thead>
+            <tbody id="summaryTableBody" class="text-xs divide-y divide-slate-100 text-slate-700"></tbody>
+          </table>
+        </div>
+
+        <div id="subViewMissingLogs" class="hidden">
+          <div id="missingLogsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+      </div>
+
+      <!-- PANE 4: EXCLUSIVE ADMIN CONTROL DASHBOARD -->
+      <div id="adminPane" class="hidden bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 space-y-6">
         <div class="border-b pb-3 border-slate-100 flex items-center space-x-2">
           <i class="fa-solid fa-user-shield text-purple-700 text-xl"></i>
           <h3 class="text-base font-black text-slate-900 tracking-tight">Admin Control Portal Dashboard</h3>
@@ -286,74 +363,9 @@
       </div>
 
     </div>
-
-    <div id="historyPane" class="hidden lg:block bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 space-y-4">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 border-slate-100">
-        <h3 class="text-base font-bold text-slate-900 flex items-center">
-          <i class="fa-solid fa-chart-user text-emerald-600 mr-2"></i> Personal Logs History & Allowances
-        </h3>
-        
-        <div class="flex flex-wrap items-center gap-2 text-xs w-full sm:w-auto">
-          <div class="flex items-center space-x-1">
-            <span class="text-slate-500 font-medium">Mula:</span>
-            <input type="date" id="filterFrom" class="px-2 py-1.5 border border-slate-300 rounded-lg outline-none focus:border-red-500">
-          </div>
-          <div class="flex items-center space-x-1">
-            <span class="text-slate-500 font-medium">Hanggang:</span>
-            <input type="date" id="filterTo" class="px-2 py-1.5 border border-slate-300 rounded-lg outline-none focus:border-red-500">
-          </div>
-          <button type="button" id="btnFilterHistory" onclick="executeHistoryAndMissingPipeline()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition ml-auto sm:ml-0">
-            I-Filter History
-          </button>
-        </div>
-      </div>
-
-      <div class="flex flex-col sm:flex-row justify-between border-b border-slate-200 gap-2">
-        <div class="flex text-xs font-bold">
-          <button type="button" id="tabBtnActualLogs" onclick="toggleHistoryViewTabs('actual')" class="px-4 py-2 text-red-600 border-b-2 border-red-600">
-            <i class="fa-solid fa-list-check mr-1.5"></i>Mga Nakatalang Log / Allowances
-          </button>
-          <button type="button" id="tabBtnMissingLogs" onclick="toggleHistoryViewTabs('missing')" class="px-4 py-2 text-slate-400 hover:text-slate-600 transition">
-            <i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Mga Nawawalang Log (Missing)
-          </button>
-        </div>
-        
-        <div id="missingLayoutToolbar" class="items-center space-x-1 bg-slate-100 p-1 rounded-xl mb-1 self-end hidden">
-          <button type="button" onclick="setMissingLayoutMode('list')" id="btnLayoutList" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">List View</button>
-          <button type="button" onclick="setMissingLayoutMode('small')" id="btnLayoutSmall" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">Small Icons</button>
-          <button type="button" onclick="setMissingLayoutMode('large')" id="btnLayoutLarge" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-white shadow-sm text-slate-900">Large Cards</button>
-        </div>
-      </div>
-
-      <div id="subViewActualLogs" class="block overflow-x-auto rounded-xl border border-slate-200">
-        <table class="w-full text-left border-collapse min-w-[900px]">
-          <thead>
-            <tr class="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200">
-              <th class="p-3">Petsa</th>
-              <th class="p-3">Oras</th>
-              <th class="p-3">Uri ng Log</th>
-              <th class="p-3">Branch/Lokasyon</th>
-              <th class="p-3 w-32">Meal Allowance</th>
-              <th class="p-3 w-32">Transpo Allowance</th>
-              <th class="p-3 w-72">Meal/Transpo Details Breakdown</th>
-            </tr>
-          </thead>
-          <tbody id="summaryTableBody" class="text-xs divide-y divide-slate-100 text-slate-700">
-            <tr>
-              <td colspan="7" class="p-6 text-center text-slate-400">Mangyaring mag-log in upang makita ang iyong kasaysayan.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div id="subViewMissingLogs" class="hidden">
-        <div id="missingLogsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-      </div>
-
-    </div>
-
   </div>
 
+  <!-- ================= JAVASCRIPT CORNERSTONE ENGINE ================= -->
   <script>
     const WEB_APP_API_URL = "https://script.google.com/macros/s/AKfycbzB3pv_R7RjDbYmMuf4d7egGMYQSf07Xjjj7Ix2q2yCGGafJJ3xoKM-4UBEC6TsWs0A/exec";
 
@@ -362,7 +374,7 @@
     let capturedPhotoBase64 = "";
     let currentLat = "";
     let currentLng = "";
-    let currentMobileView = "punch"; 
+    let activeViewPaneMode = "punch"; 
     let gpsIntervalReference = null;
     let missingLayoutMode = "large"; 
     let fetchedMissingLogsArrayCache = [];
@@ -376,10 +388,6 @@
         body: JSON.stringify(payload)
       })
       .then(function(response) {
-        var contentType = response.headers.get("content-type") || "";
-        if (!contentType.includes("application/json") && !contentType.includes("text/plain")) {
-          throw new Error("AUTH_REDIRECT");
-        }
         return response.json();
       })
       .then(function(data) { if (successCallback) successCallback(data); })
@@ -398,6 +406,10 @@
       var savedUser = localStorage.getItem("pandayan_remembered_user");
       if (savedUser) {
         currentUser = JSON.parse(savedUser);
+        
+        var savedPane = localStorage.getItem("pandayan_active_pane");
+        if (savedPane) { activeViewPaneMode = savedPane; }
+        
         bootDashboardPortal();
       }
     });
@@ -456,6 +468,7 @@
       }, 1000);
     }
 
+    // FIXED: IBINALIK ANG FORGOT PASSWORD VIEW MAP ROUTING COMMAND
     function switchAuth(view) {
       document.getElementById('loginFormSection').classList.add('hidden');
       document.getElementById('registerFormSection').classList.add('hidden');
@@ -468,7 +481,6 @@
     function handleLogin() {
       var empId = document.getElementById('loginEmpId').value.trim();
       var pass = document.getElementById('loginPassword').value.trim();
-      var rememberMe = document.getElementById('loginRememberMe').checked;
       
       if (!empId || !pass) { 
         Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Punan ang ID at Password box.', confirmButtonColor: '#dc2626' });
@@ -480,9 +492,7 @@
         toggleButtonState('btnLogin', false, '<i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In');
         if (res.success) {
           currentUser = res;
-          if (rememberMe) {
-            localStorage.setItem("pandayan_remembered_user", JSON.stringify(currentUser));
-          }
+          localStorage.setItem("pandayan_remembered_user", JSON.stringify(currentUser));
           Swal.fire({ icon: 'success', title: 'Mabuhay!', text: 'Matagumpay na naka-log in.', timer: 1500, showConfirmButton: false });
           bootDashboardPortal();
         } else {
@@ -522,16 +532,22 @@
       document.getElementById('userDisplayName').textContent = currentUser.name;
       document.getElementById('userDisplayDept').textContent = "Idineploy sa: " + currentUser.department;
       
-      if (currentUser.role === "ADMIN") {
+      var isAdmin = (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin");
+      if (isAdmin) {
         document.getElementById('mobileAdminMenuBtn').classList.remove('hidden');
+        document.getElementById('dtBtn-admin').classList.remove('hidden');
         loadAdminApprovalQueue();
+      } else {
+        document.getElementById('mobileAdminMenuBtn').classList.add('hidden');
+        document.getElementById('dtBtn-admin').classList.add('hidden');
+        if (activeViewPaneMode === "admin") { activeViewPaneMode = "punch"; }
       }
 
       initEnforcedGeolocatorTelemetry();
       loadBranchDataset();
       loadDepartmentMonitorFeed();
       executeHistoryAndMissingPipeline();
-      refreshResponsiveViewports();
+      switchActiveViewPane(activeViewPaneMode);
     }
 
     function toggleMobileMenu(open) {
@@ -546,27 +562,42 @@
       }
     }
 
-    function switchMobilePane(targetPane) {
-      currentMobileView = targetPane;
+    function switchActiveViewPane(targetPane) {
+      activeViewPaneMode = targetPane;
+      localStorage.setItem("pandayan_active_pane", targetPane); 
       toggleMobileMenu(false);
-      refreshResponsiveViewports();
-    }
-
-    function refreshResponsiveViewports() {
-      if (window.innerWidth >= 1024) {
-        document.getElementById('punchPane').style.display = 'block';
-        document.getElementById('monitorPane').style.display = 'flex';
-        document.getElementById('historyPane').style.display = 'block';
-        document.getElementById('adminPane').style.display = (currentUser && currentUser.role === "ADMIN") ? 'flex' : 'none';
-        return;
+      
+      var panes = ['punch', 'monitor', 'history', 'admin'];
+      panes.forEach(function(p) {
+        var el = document.getElementById(p + 'Pane');
+        if (el) el.style.display = 'none';
+        
+        var dtBtn = document.getElementById('dtBtn-' + p);
+        if (dtBtn) dtBtn.className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 transition";
+        
+        var mbBtn = document.getElementById('mbBtn-' + p);
+        if (mbBtn) mbBtn.className = "w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-slate-600 hover:bg-slate-50 transition text-left";
+      });
+      
+      var activePaneEl = document.getElementById(targetPane + 'Pane');
+      if (activePaneEl) {
+        activePaneEl.style.display = (targetPane === 'monitor' || targetPane === 'admin') ? 'flex' : 'block';
       }
-      document.getElementById('punchPane').style.display = (currentMobileView === 'punch') ? 'block' : 'none';
-      document.getElementById('monitorPane').style.display = (currentMobileView === 'monitor') ? 'flex' : 'none';
-      document.getElementById('historyPane').style.display = (currentMobileView === 'history') ? 'block' : 'none';
-      document.getElementById('adminPane').style.display = (currentMobileView === 'admin') ? 'flex' : 'none';
+      
+      var activeDtBtn = document.getElementById('dtBtn-' + targetPane);
+      if (activeDtBtn) {
+        activeDtBtn.className = targetPane === 'admin' ? 
+          "px-4 py-2 rounded-lg bg-purple-600 text-white shadow-md font-bold transition" : 
+          "px-4 py-2 rounded-lg bg-red-600 text-white shadow-md font-bold transition";
+      }
+      
+      var activeMbBtn = document.getElementById('mbBtn-' + targetPane);
+      if (activeMbBtn) {
+        activeMbBtn.className = targetPane === 'admin' ?
+          "w-full flex items-center space-x-3 p-3 font-bold rounded-xl bg-purple-50 text-purple-600 transition text-left" :
+          "w-full flex items-center space-x-3 p-3 font-bold rounded-xl bg-red-50 text-red-600 transition text-left";
+      }
     }
-
-    window.addEventListener('resize', refreshResponsiveViewports);
 
     function triggerNativeMobileCamera() {
       document.getElementById('nativeCameraInput').click();
@@ -759,7 +790,7 @@
     }
 
     function loadDepartmentMonitorFeed() {
-      executeServerRequest({ action: "getDepartmentLogs", department: currentUser.department }, function(logs) {
+      executeServerRequest({ action: "getDepartmentLogs", employeeId: currentUser.employeeId, department: currentUser.department }, function(logs) {
         var container = document.getElementById('departmentFeed');
         if (logs.length === 0) {
           container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Wala pang nakatalang log ang iyong departamento ngayong araw.</div>';
@@ -768,14 +799,13 @@
         container.innerHTML = "";
         logs.forEach(function(l) {
           var badgeColor = l.logType === "IN" ? "bg-emerald-600" : (l.logType === "OUT" ? "bg-rose-600" : "bg-amber-600");
-          
-          // Kung ang admin ang nakatingin, lagyan ng sub-department breakdown indicator tag
-          var subDeptIndicator = (currentUser.department.toLowerCase() === "admin") ? ' <span class="text-[10px] text-purple-600 font-bold bg-purple-50 px-1 rounded">(' + l.subDept + ')</span>' : '';
+          var isCurrentAdmin = (currentUser.department.toLowerCase() === "admin" || currentUser.role === "ADMIN");
+          var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 font-bold bg-purple-50 px-1.5 py-0.5 rounded-md ml-1 border border-purple-200">(' + l.subDept + ')</span>' : '';
           
           var div = document.createElement('div');
-          div.className = "flex items-center gap-4 p-3 bg-slate-50 border border-slate-200 rounded-xl";
+          div.className = "flex items-center gap-4 p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100/70 transition";
           div.innerHTML =
-            '<div class="w-12 h-12 rounded-lg overflow-hidden border flex-shrink-0 bg-slate-200 relative cursor-pointer" onclick="viewSelfieModal(\'' + l.selfie + '\', \'' + l.name + '\', \'' + l.logType + '\')">' +
+            '<div class="w-12 h-12 rounded-lg overflow-hidden border flex-shrink-0 bg-slate-200 relative cursor-zoom-in active:scale-95 transition" onclick="viewSelfieModal(\'' + l.selfie + '\', \'' + l.name + '\', \'' + l.logType + '\')">' +
               '<img src="' + (l.selfie !== 'N/A' ? l.selfie : 'https://placehold.co/150') + '" class="w-full h-full object-cover" alt="selfie">' +
             '</div>' +
             '<div class="flex-1 min-w-0">' +
@@ -795,21 +825,20 @@
       });
     }
 
-    // INTERFACE DYNAMIC FLOATING MODAL ALERT GENERATOR FOR INTEGRATED LOG ENTRIES
     function viewSelfieModal(imgUrl, employeeName, logType) {
       if (!imgUrl || imgUrl === 'N/A' || imgUrl.includes('placehold.co')) {
         Swal.fire({ icon: 'info', title: 'Walang Larawan', text: 'Walang kalakip na selfie verification ang log entry na ito.', confirmButtonColor: '#0f172a' });
         return;
       }
       Swal.fire({
-        title: employeeName,
-        text: 'Uri ng Log: ' + logType + ' Verification Data',
+        title: '<span class="text-sm font-black text-slate-900 tracking-tight">' + employeeName + '</span>',
+        html: '<div class="text-[11px] text-slate-500 font-medium">Verification Preview (' + logType + ')</div>',
         imageUrl: imgUrl,
-        imageAlt: 'Verification Selfie',
+        imageAlt: 'Verification Selfie Logo Map',
         confirmButtonColor: '#0f172a',
         confirmButtonText: 'Isara ang Preview',
         customClass: {
-          image: 'rounded-2xl max-h-[65vh] object-contain shadow-md border'
+          image: 'rounded-xl max-h-[60vh] object-contain shadow-xl border border-slate-200'
         }
       });
     }
@@ -1104,12 +1133,14 @@
 
     function handleLogout() {
       localStorage.removeItem("pandayan_remembered_user");
+      localStorage.removeItem("pandayan_active_pane");
       if (gpsIntervalReference) clearInterval(gpsIntervalReference);
       currentUser = null;
       selectedLogType = "";
       clearPunchConsoleInputs();
       document.getElementById('dashboardContainer').classList.add('hidden');
       document.getElementById('mobileAdminMenuBtn').classList.add('hidden');
+      document.getElementById('dtBtn-admin').classList.add('hidden');
       document.getElementById('authContainer').classList.remove('hidden');
       document.getElementById('loginPassword').value = "";
     }
