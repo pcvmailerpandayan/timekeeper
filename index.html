@@ -168,9 +168,9 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
       
-      <div id="punchPane" class="lg:col-span-5 space-y-6">
+      <div id="punchPane" class="hidden lg:block lg:col-span-5 space-y-6">
         <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 space-y-5">
           <h3 class="text-base font-bold text-slate-900 flex items-center border-b pb-3 border-slate-100">
             <i class="fa-solid fa-fingerprint text-red-600 mr-2"></i> Attendance Punch Console
@@ -246,7 +246,7 @@
         </div>
       </div>
 
-      <div id="monitorPane" class="lg:col-span-7 flex flex-col bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 h-[715px]">
+      <div id="monitorPane" class="hidden lg:flex lg:col-span-7 flex-col bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 min-h-[500px] lg:h-[715px]">
         <h3 class="text-base font-bold text-slate-900 flex items-center border-b pb-3 border-slate-100 mb-4">
           <i class="fa-solid fa-users text-blue-600 mr-2"></i> Sub-Department Monitor (Real-time Feed)
         </h3>
@@ -288,7 +288,7 @@
         </div>
       </div>
 
-      <div id="historyPane" class="lg:col-span-12 bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 space-y-4">
+      <div id="historyPane" class="hidden lg:block lg:col-span-12 bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 space-y-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 border-slate-100">
           <h3 class="text-base font-bold text-slate-900 flex items-center">
             <i class="fa-solid fa-chart-user text-emerald-600 mr-2"></i> Personal Logs History & Allowances
@@ -374,7 +374,10 @@
       })
       .then(function(response) { return response.json(); })
       .then(function(data) { if (successCallback) successCallback(data); })
-      .catch(function(error) { console.error("Critical API Error: ", error); });
+      .catch(function(error) {
+        console.error("Critical API Error: ", error);
+        if (failureCallback) failureCallback(error);
+      });
     }
 
     window.addEventListener('DOMContentLoaded', function() {
@@ -519,8 +522,6 @@
       loadBranchDataset();
       loadDepartmentMonitorFeed();
       executeHistoryAndMissingPipeline();
-      
-      // I-trigger ang viewport alignment logic engine
       switchActiveViewPane(activeViewPaneMode);
     }
 
@@ -531,30 +532,30 @@
       else { menu.classList.remove('mobile-menu-active'); overlay.classList.add('hidden'); }
     }
 
-    // FIXED HYBRID RESPONSIVE PANE DISPATCHER CONTROLLER SYSTEM
+    // RESPONSIVE INTERFACE MANAGEMENT SYSTEM (Desktop All-in-one vs Mobile Side Drawer Tabs)
     function switchActiveViewPane(targetPane) {
       activeViewPaneMode = targetPane;
       localStorage.setItem("pandayan_active_pane", targetPane); 
       toggleMobileMenu(false);
       
-      // DESKTOP: Lahat visible at isang bagsakan (All-in-one Screen Grid View)
+      var panes = ['punch', 'monitor', 'history', 'admin'];
+      var isAdmin = (currentUser && (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin"));
+      
       if (window.innerWidth >= 1024) {
+        // DESKTOP: Lahat visible sa screen para sa All-in-one Viewport Layout
         document.getElementById('punchPane').style.display = 'block';
         document.getElementById('monitorPane').style.display = 'flex';
         document.getElementById('historyPane').style.display = 'block';
-        
-        var isAdmin = (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin");
         document.getElementById('adminPane').style.display = isAdmin ? 'flex' : 'none';
         
-        // Premium behavior: I-smooth scroll ang viewport papunta sa piniling target section
+        // Premium behavior: I-smooth scroll ang page patungo sa piniling target block area
         var targetSection = document.getElementById(targetPane + 'Pane');
-        if (targetSection) {
+        if (targetSection && (targetPane !== 'admin' || isAdmin)) {
           targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       } 
-      // MOBILE PULL-UP DRAWER VIEW: Isa-isa pa ring magpapalit ang mga pahina gaya ng hiningi mo
       else {
-        var panes = ['punch', 'monitor', 'history', 'admin'];
+        // MOBILE: Isa-isang magtatago at magpapalit ang mga pahina gaya ng hiningi mo
         panes.forEach(function(p) {
           var el = document.getElementById(p + 'Pane');
           if (el) el.style.display = 'none';
@@ -562,13 +563,16 @@
         
         var activePaneEl = document.getElementById(targetPane + 'Pane');
         if (activePaneEl) {
-          activePaneEl.style.display = (targetPane === 'monitor' || targetPane === 'admin') ? 'flex' : 'block';
+          if (targetPane === 'admin' && !isAdmin) {
+            document.getElementById('punchPane').style.display = 'block';
+          } else {
+            activePaneEl.style.display = (targetPane === 'monitor' || targetPane === 'admin') ? 'flex' : 'block';
+          }
         }
       }
       
-      // I-update ang responsive class indicator markers
-      var panesList = ['punch', 'monitor', 'history', 'admin'];
-      panesList.forEach(function(p) {
+      // I-update ang kulay ng active indicators
+      panes.forEach(function(p) {
         var dtBtn = document.getElementById('dtBtn-' + p);
         if (dtBtn) dtBtn.className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 transition";
         var mbBtn = document.getElementById('mbBtn-' + p);
@@ -635,7 +639,7 @@
           document.getElementById('mapWrapper').innerHTML = '<iframe width="100%" height="100%" frameborder="0" src="https://maps.google.com/maps?q=' + currentLat + ',' + currentLng + '&z=15&output=embed"></iframe>';
           evaluateSubmissionReadiness();
         }, function(error) {
-          Swal.fire({ icon: 'error', title: 'Naka-patay ang GPS!', text: 'Mandatory na nakabukas ang GPS upang magamit ang portal na ito.', allowOutsideClick: false, confirmButtonText: 'I-retry', confirmButtonColor: '#dc2626' }).then(function() { pullGPSLocation(); });
+          Swal.fire({ icon: 'error', title: 'Naka-patay ang GPS!', text: 'Mandatory na nakabukas ang GPS upang magamit ang portal.', allowOutsideClick: false, confirmButtonText: 'I-retry', confirmButtonColor: '#dc2626' }).then(function() { pullGPSLocation(); });
         }, { enableHighAccuracy: true, timeout: 30000, maximumAge: 10000 });
       }
       pullGPSLocation();
@@ -699,7 +703,19 @@
           var isCurrentAdmin = (currentUser.department.toLowerCase() === "admin" || currentUser.role === "ADMIN");
           var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 font-bold bg-purple-50 px-1.5 py-0.5 rounded-md ml-1 border border-purple-200">(' + l.subDept + ')</span>' : '';
           
-          var imgSrc = (l.selfie && l.selfie !== 'N/A' && l.selfie.trim() !== "") ? l.selfie : 'https://placehold.co/150?text=No+Image';
+          // CRITICAL FIXED ENFORCED CDN RENDERING: Kinukuha ang id kahit ano pa ang pagkaka-edit sa Sheets para sa permanenteng load sa iOS/Android
+          var imgSrc = 'https://placehold.co/150?text=No+Image';
+          if (l.selfie && l.selfie !== 'N/A' && l.selfie.toString().trim() !== "") {
+            var rawUrl = l.selfie.toString().trim();
+            var fileIdMatch = rawUrl.match(/(?:id=|\/d\/|src=)([\w-]+)/);
+            if (fileIdMatch && fileIdMatch[1] && fileIdMatch[1].length > 10) {
+              imgSrc = 'https://lh3.googleusercontent.com/d/' + fileIdMatch[1] + '=s800';
+            } else if (rawUrl.includes('data:image') || rawUrl.includes('googleusercontent.com')) {
+              imgSrc = rawUrl;
+            } else {
+              imgSrc = rawUrl;
+            }
+          }
 
           var div = document.createElement('div');
           div.className = "flex items-center gap-4 p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100/70 transition";
