@@ -675,14 +675,14 @@
       gpsIntervalReference = setInterval(pullGPSLocation, 20000);
     }
 
+    // FIXED: PINAGBUKOD ANG BRANCH CODE AT PANGALAN GAMIT ANG ESPASYO UPANG MAIWASAN ANG ANUMANG SPECIAL CHARACTERS
     function loadBranchDataset() {
       executeServerRequest({ action: "getBranches" }, function(branches) {
         var dl = document.getElementById('branchDataset');
         dl.innerHTML = "";
         branches.forEach(function(b) {
           var opt = document.createElement('option');
-          // PINURONG PANGALAN NANG WALANG ANUMANG SPECIAL CHARACTER O BRACKETS GAYA NG NINANAIS MO
-          opt.value = b.name; 
+          opt.value = b.code + " " + b.name; 
           dl.appendChild(opt);
         });
       });
