@@ -52,7 +52,9 @@
         <div class="relative">
           <i class="fa-solid fa-lock absolute left-3 top-3.5 text-slate-400"></i>
           <input type="password" id="loginPassword" class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition" placeholder="••••••••">
-          <button type="button" onclick="togglePasswordDisplay('loginPassword', this)" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-eye"></i></button>
+          <button type="button" onclick="togglePasswordDisplay('loginPassword', this)" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 outline-none">
+            <i class="fa-solid fa-eye"></i>
+          </button>
         </div>
       </div>
       
@@ -65,8 +67,8 @@
         <i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In
       </button>
       <div class="flex justify-between text-xs font-medium text-slate-600 pt-2">
-        <button type="button" onclick="switchAuth('forgot')" class="hover:text-red-600 transition bg-transparent border-0 p-0 cursor-pointer">Nakalimutan ang Password?</button>
-        <button type="button" onclick="switchAuth('register')" class="hover:text-red-600 transition bg-transparent border-0 p-0 cursor-pointer">Gumawa ng Account</button>
+        <button type="button" onclick="switchAuth('forgot')" class="hover:text-red-600 transition bg-transparent border-0 p-0 cursor-pointer outline-none">Nakalimutan ang Password?</button>
+        <button type="button" onclick="switchAuth('register')" class="hover:text-red-600 transition bg-transparent border-0 p-0 cursor-pointer outline-none">Gumawa ng Account</button>
       </div>
     </div>
 
@@ -87,21 +89,23 @@
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Password</label>
         <div class="relative">
           <input type="password" id="regPassword" class="w-full px-4 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none" placeholder="Gumawa ng Password">
-          <button type="button" onclick="togglePasswordDisplay('regPassword', this)" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-eye"></i></button>
+          <button type="button" onclick="togglePasswordDisplay('regPassword', this)" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 outline-none">
+            <i class="fa-solid fa-eye"></i>
+          </button>
         </div>
       </div>
       <button type="button" id="btnRegister" onclick="handleRegister()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl transition shadow-md">
         Irehistro ang Account
       </button>
       <div class="text-center pt-2">
-        <button type="button" onclick="switchAuth('login')" class="text-xs font-medium text-red-600 hover:underline bg-transparent border-0 cursor-pointer">Bumalik sa Log In</button>
+        <button type="button" onclick="switchAuth('login')" class="text-xs font-medium text-red-600 hover:underline bg-transparent border-0 cursor-pointer outline-none">Bumalik sa Log In</button>
       </div>
     </div>
 
     <div id="forgotFormSection" class="space-y-4 hidden">
       <p class="text-sm text-slate-600 text-center">Mangyaring makipag-ugnayan sa inyong <strong>TTP Administrator</strong> o <strong>HR Department</strong> para sa pag-reset ng inyong password upang mapanatili ang seguridad ng account.</p>
       <div class="text-center pt-2">
-        <button type="button" onclick="switchAuth('login')" class="text-xs font-medium text-red-600 hover:underline bg-transparent border-0 cursor-pointer">Bumalik sa Log In</button>
+        <button type="button" onclick="switchAuth('login')" class="text-xs font-medium text-red-600 hover:underline bg-transparent border-0 cursor-pointer outline-none">Bumalik sa Log In</button>
       </div>
     </div>
   </div>
@@ -124,7 +128,8 @@
       </div>
       
       <div class="flex items-center space-x-4">
-        <div class="text-right block"> <div class="text-xs sm:text-sm font-bold tracking-wide text-red-500" id="liveClock">00:00:00 PM</div>
+        <div class="text-right block">
+          <div class="text-xs sm:text-sm font-bold tracking-wide text-red-500" id="liveClock">00:00:00 PM</div>
           <div class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-bold" id="liveDate">Date Loader</div>
         </div>
         <button type="button" onclick="handleLogout()" class="px-3 sm:px-4 py-2 bg-slate-800 hover:bg-red-600 text-xs sm:text-sm font-medium rounded-xl transition duration-200">
@@ -352,7 +357,6 @@
       });
     }
 
-    // CHECK FOR SAVED REMEMBER ME COOKIE SESSION UPON APP INITIALIZATION
     window.addEventListener('DOMContentLoaded', function() {
       initClock();
       setupGlobalKeyBindings();
@@ -577,9 +581,7 @@
           badge.textContent = "GPS Verified";
           badge.className = "px-2 py-0.5 bg-emerald-100 text-emerald-700 font-black rounded text-[9px] uppercase tracking-wide";
           
-          document.getElementById('mapWrapper').innerHTML = `
-            <iframe width="100%" height="100%" frameborder="0" src="https://maps.google.com/maps?q=${currentLat},${currentLng}&z=15&output=embed"></iframe>
-          `;
+          document.getElementById('mapWrapper').innerHTML = '<iframe width="100%" height="100%" frameborder="0" src="https://maps.google.com/maps?q=' + currentLat + ',' + currentLng + '&z=15&output=embed"></iframe>';
 
           evaluateSubmissionReadiness();
         }, function(error) {
@@ -607,7 +609,7 @@
         }, {
           enableHighAccuracy: true,
           timeout: 30000,
-          maximumAge: 10000 // Mas mahigpit na age telemetry checkpoint 
+          maximumAge: 10000
         });
       }
 
@@ -657,7 +659,6 @@
       evaluateSubmissionReadiness();
     }
 
-    // STRICT CHECKING: Lahat ng input field ay kailangang may laman bago mag-active ang button
     function evaluateSubmissionReadiness() {
       var branch = document.getElementById('branchInput').value.trim();
       var isValid = selectedLogType !== "" && branch !== "" && capturedPhotoBase64 !== "" && currentLat !== "";
@@ -719,10 +720,10 @@
             '<div class="flex-1 min-w-0">' +
               '<div class="flex justify-between items-start">' +
                 '<h4 class="font-bold text-slate-900 text-xs truncate">' + l.name + '</h4>' +
-                <span class="text-[10px] text-slate-400 font-mono">' + l.date + '</span>' +
+                '<span class="text-[10px] text-slate-400 font-mono">' + l.date + '</span>' +
               '</div>' +
               '<p class="text-[11px] text-slate-600 truncate mt-0.5"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>' + l.branch + '</p>' +
-              '<a href="http://googleusercontent.com/maps.google.com/?q=' + l.lat + ',' + l.lng + '" target="_blank" rel="noopener noreferrer" class="text-[10px] text-blue-600 font-medium hover:underline block">' +
+              '<a href="https://maps.google.com/?q=' + l.lat + ',' + l.lng + '" target="_blank" rel="noopener noreferrer" class="text-[10px] text-blue-600 font-medium hover:underline block">' +
               '<i class="fa-solid fa-map-location-dot mr-1"></i>Suriin sa Google Maps</a>' +
             '</div>';
           container.appendChild(div);
@@ -745,7 +746,6 @@
         if (summary.length === 0) {
           tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-400">Walang natagpuang log sa piniling petsa.</td></tr>';
         } else {
-          // CHRONOLOGICAL VIEW ORDER SORTING LOGIC FOR AUDIT TRAIL ALIGNMENT
           summary.sort(function(a, b) {
             return a.sortDateObj - b.sortDateObj;
           });
@@ -757,7 +757,6 @@
             
             var isOut = (s.logType === "OUT");
             
-            // IF OUT TYPE ROW: Buksan ang meal, transpo, at breakdown text area. IF NOT: I-lock at i-disable.
             var mealInputHtml = isOut ? 
               '<div class="relative"><span class="absolute left-2 top-2 text-slate-400 font-bold">₱</span>' +
               '<input type="number" value="' + s.meal + '" onchange="syncAllowanceToSheet(' + s.rowId + ', this)" class="allowance-input w-full pl-6 pr-2 py-1 bg-white border border-slate-300 rounded-lg text-slate-700 font-bold focus:border-red-500 outline-none text-xs" placeholder="0.00"></div>' : 
@@ -777,7 +776,7 @@
                 '<td class="p-3 font-bold text-purple-700">' + s.date + '</td>' +
                 '<td class="p-3 font-mono text-purple-600">' + s.time + '</td>' +
                 '<td class="p-3"><span class="px-2 py-0.5 font-black rounded-md text-[10px] bg-purple-100 text-purple-800">' + s.logType + '</span></td>' +
-                '<td class="p-3 text-slate-600 font-semibold italic" colspan="4">' + s.branch + ' &rarr; Dahilan: ' + s.reasonText + '</td>';
+                '<td class="p-3 text-slate-600 font-semibold italic" colspan="4">' + s.branch + ' → Dahilan: ' + s.reasonText + '</td>';
             } else {
               tr.innerHTML =
                 '<td class="p-3 font-medium text-slate-900">' + s.date + '</td>' +
@@ -792,7 +791,6 @@
           });
         }
 
-        // RE-FETCH MISSING LOGS VIEW SIDEBAR DRAWER PIPELINE
         executeServerRequest({ action: "getMissingLogs", employeeId: currentUser.employeeId, fromDate: fromDate, toDate: toDate }, function(missing) {
           var grid = document.getElementById('missingLogsGrid');
           if (missing.length === 0) {
@@ -869,7 +867,6 @@
       });
     }
 
-    // EXCLUSIVE FOR ADMIN CONTROLLER LOADING QUEUE TASK
     function loadAdminApprovalQueue() {
       var queueContainer = document.getElementById('adminPendingQueue');
       queueContainer.innerHTML = '<div class="text-xs text-slate-500 italic"><i class="fa-solid fa-spinner animate-spin mr-1"></i>Chine-check ang mga bagong accounts...</div>';
