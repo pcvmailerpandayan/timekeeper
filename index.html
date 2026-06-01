@@ -124,10 +124,10 @@
       </div>
       
       <div class="hidden lg:flex items-center space-x-1 bg-slate-800 p-1 rounded-xl text-xs border border-slate-700 font-bold">
-        <button type="button" onclick="switchActiveViewPane('punch')" id="dtBtn-punch" class="px-4 py-2 rounded-lg text-white bg-red-600 shadow-md">Punch Console</button>
-        <button type="button" onclick="switchActiveViewPane('monitor')" id="dtBtn-monitor" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 transition">Sub-Department Feed</button>
+        <button type="button" onclick="switchActiveViewPane('punch')" id="dtBtn-punch" class="px-4 py-2 rounded-lg text-slate-300 transition">Punch Console</button>
+        <button type="button" onclick="switchActiveViewPane('monitor')" id="dtBtn-monitor" class="px-4 py-2 rounded-lg text-slate-300 transition">Sub-Department Feed</button>
+        <button type="button" onclick="switchActiveViewPane('history')" id="dtBtn-history" class="px-4 py-2 rounded-lg text-slate-300 transition">Logs & Allowance History</button>
         <button type="button" onclick="switchActiveViewPane('admin')" id="dtBtn-admin" class="px-4 py-2 rounded-lg text-purple-400 hover:text-purple-300 transition hidden">Admin Panel</button>
-        <button type="button" onclick="switchActiveViewPane('history')" id="dtBtn-history" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 transition">Logs & Allowance History</button>
       </div>
       
       <div class="flex items-center space-x-4">
@@ -532,7 +532,6 @@
       else { menu.classList.remove('mobile-menu-active'); overlay.classList.add('hidden'); }
     }
 
-    // RESPONSIVE INTERFACE MANAGEMENT SYSTEM (Desktop All-in-one vs Mobile Side Drawer Tabs)
     function switchActiveViewPane(targetPane) {
       activeViewPaneMode = targetPane;
       localStorage.setItem("pandayan_active_pane", targetPane); 
@@ -542,20 +541,17 @@
       var isAdmin = (currentUser && (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin"));
       
       if (window.innerWidth >= 1024) {
-        // DESKTOP: Lahat visible sa screen para sa All-in-one Viewport Layout
         document.getElementById('punchPane').style.display = 'block';
         document.getElementById('monitorPane').style.display = 'flex';
         document.getElementById('historyPane').style.display = 'block';
         document.getElementById('adminPane').style.display = isAdmin ? 'flex' : 'none';
         
-        // Premium behavior: I-smooth scroll ang page patungo sa piniling target block area
         var targetSection = document.getElementById(targetPane + 'Pane');
         if (targetSection && (targetPane !== 'admin' || isAdmin)) {
           targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       } 
       else {
-        // MOBILE: Isa-isang magtatago at magpapalit ang mga pahina gaya ng hiningi mo
         panes.forEach(function(p) {
           var el = document.getElementById(p + 'Pane');
           if (el) el.style.display = 'none';
@@ -571,7 +567,6 @@
         }
       }
       
-      // I-update ang kulay ng active indicators
       panes.forEach(function(p) {
         var dtBtn = document.getElementById('dtBtn-' + p);
         if (dtBtn) dtBtn.className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 transition";
@@ -685,6 +680,7 @@
       executeServerRequest({ action: "submitAttendance", payload: payload }, function(res) {
         toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log');
         if (res.success) { Swal.fire({ icon: 'success', title: 'Naisend na!', text: res.message, timer: 2000, showConfirmButton: false }); clearPunchConsoleInputs(); loadDepartmentMonitorFeed(); executeHistoryAndMissingPipeline(); }
+        else { Swal.fire({ icon: 'error', title: 'Error sa Sheet', text: res.message }); }
       });
     }
 
@@ -703,15 +699,12 @@
           var isCurrentAdmin = (currentUser.department.toLowerCase() === "admin" || currentUser.role === "ADMIN");
           var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 font-bold bg-purple-50 px-1.5 py-0.5 rounded-md ml-1 border border-purple-200">(' + l.subDept + ')</span>' : '';
           
-          // CRITICAL FIXED ENFORCED CDN RENDERING: Kinukuha ang id kahit ano pa ang pagkaka-edit sa Sheets para sa permanenteng load sa iOS/Android
           var imgSrc = 'https://placehold.co/150?text=No+Image';
           if (l.selfie && l.selfie !== 'N/A' && l.selfie.toString().trim() !== "") {
             var rawUrl = l.selfie.toString().trim();
             var fileIdMatch = rawUrl.match(/(?:id=|\/d\/|src=)([\w-]+)/);
             if (fileIdMatch && fileIdMatch[1] && fileIdMatch[1].length > 10) {
               imgSrc = 'https://lh3.googleusercontent.com/d/' + fileIdMatch[1] + '=s800';
-            } else if (rawUrl.includes('data:image') || rawUrl.includes('googleusercontent.com')) {
-              imgSrc = rawUrl;
             } else {
               imgSrc = rawUrl;
             }
