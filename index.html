@@ -30,7 +30,6 @@
 </head>
 <body class="text-slate-800 font-sans antialiased p-2 md:p-6">
 
-  <!-- ================= AUTHENTICATION PORTAL ================= -->
   <div id="authContainer" class="max-w-md mx-auto mt-12 bg-white rounded-2xl shadow-2xl overflow-hidden p-8 border border-slate-200">
     <div class="text-center mb-8">
       <div class="w-20 h-20 bg-red-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg mb-4">
@@ -40,7 +39,6 @@
       <p class="text-sm text-slate-500 mt-1">Fieldwork Attendance Management System</p>
     </div>
 
-    <!-- LOGIN FORM -->
     <div id="loginFormSection" class="space-y-4">
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Employee ID</label>
@@ -64,14 +62,12 @@
         <i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In
       </button>
       
-      <!-- FIXED: IBINALIK ANG BALANSENG NAVIGATION LINKS COUPLING -->
       <div class="flex justify-between text-xs font-medium text-slate-600 pt-2">
         <button type="button" onclick="switchAuth('forgot')" class="hover:text-red-600 transition bg-transparent border-0 p-0 cursor-pointer outline-none">Nakalimutan ang Password?</button>
         <button type="button" onclick="switchAuth('register')" class="hover:text-red-600 transition bg-transparent border-0 p-0 cursor-pointer outline-none">Gumawa ng Account</button>
       </div>
     </div>
 
-    <!-- REGISTRATION FORM -->
     <div id="registerFormSection" class="space-y-4 hidden">
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Employee ID</label>
@@ -102,7 +98,6 @@
       </div>
     </div>
 
-    <!-- FIXED: IBINALIK ANG FORGOT PASSWORD ADVISORY BOX CONTAINER SYSTEM -->
     <div id="forgotFormSection" class="space-y-4 hidden">
       <p class="text-sm text-slate-600 text-center">Mangyaring makipag-ugnayan sa inyong <strong>TTP Administrator (Emp # 114030062)</strong> o <strong>HR Department</strong> para sa pag-reset ng inyong password upang mapanatili ang seguridad ng account.</p>
       <div class="text-center pt-2">
@@ -112,10 +107,8 @@
   </div>
 
 
-  <!-- ================= MAIN DASHBOARD PORTAL ================= -->
   <div id="dashboardContainer" class="max-w-[1600px] mx-auto space-y-6 hidden">
     
-    <!-- TOP NAVIGATION BAR -->
     <div class="bg-slate-900 text-white p-4 rounded-2xl flex justify-between items-center shadow-xl gap-4 relative">
       <div class="flex items-center space-x-3">
         <button type="button" onclick="toggleMobileMenu(true)" class="lg:hidden text-white text-xl p-2 bg-slate-800 rounded-xl hover:bg-slate-700 transition">
@@ -130,12 +123,11 @@
         </div>
       </div>
       
-      <!-- DESKTOP PANES SELECTOR NAVIGATION SYSTEM -->
       <div class="hidden lg:flex items-center space-x-1 bg-slate-800 p-1 rounded-xl text-xs border border-slate-700 font-bold">
-        <button type="button" onclick="switchActiveViewPane('punch')" id="dtBtn-punch" class="px-4 py-2 rounded-lg text-slate-300 transition">Punch Console</button>
-        <button type="button" onclick="switchActiveViewPane('monitor')" id="dtBtn-monitor" class="px-4 py-2 rounded-lg text-slate-300 transition">Sub-Department Feed</button>
-        <button type="button" onclick="switchActiveViewPane('history')" id="dtBtn-history" class="px-4 py-2 rounded-lg text-slate-300 transition">Logs & Allowance History</button>
+        <button type="button" onclick="switchActiveViewPane('punch')" id="dtBtn-punch" class="px-4 py-2 rounded-lg text-white bg-red-600 shadow-md">Punch Console</button>
+        <button type="button" onclick="switchActiveViewPane('monitor')" id="dtBtn-monitor" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 transition">Sub-Department Feed</button>
         <button type="button" onclick="switchActiveViewPane('admin')" id="dtBtn-admin" class="px-4 py-2 rounded-lg text-purple-400 hover:text-purple-300 transition hidden">Admin Panel</button>
+        <button type="button" onclick="switchActiveViewPane('history')" id="dtBtn-history" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 transition">Logs & Allowance History</button>
       </div>
       
       <div class="flex items-center space-x-4">
@@ -149,7 +141,6 @@
       </div>
     </div>
 
-    <!-- MOBILE SIDEBAR DRAWER MENU -->
     <div id="mobileSidebarOverlay" onclick="toggleMobileMenu(false)" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden lg:hidden"></div>
     <div id="mobileSidebarMenu" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 p-6 shadow-2xl transform -translate-x-full transition duration-300 ease-in-out lg:hidden flex flex-col justify-between">
       <div class="space-y-6">
@@ -177,11 +168,9 @@
       </div>
     </div>
 
-    <!-- MAIN INTERACTIVE WRAPPER BLOCK DISPLAY HOOK -->
-    <div class="w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       
-      <!-- PANE 1: PUNCH CONSOLE -->
-      <div id="punchPane" class="hidden max-w-2xl mx-auto space-y-6">
+      <div id="punchPane" class="lg:col-span-5 space-y-6">
         <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 space-y-5">
           <h3 class="text-base font-bold text-slate-900 flex items-center border-b pb-3 border-slate-100">
             <i class="fa-solid fa-fingerprint text-red-600 mr-2"></i> Attendance Punch Console
@@ -257,12 +246,11 @@
         </div>
       </div>
 
-      <!-- PANE 2: DEPARTMENT FEED MONITOR -->
-      <div id="monitorPane" class="hidden max-w-4xl mx-auto flex-col bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 min-h-[500px]">
+      <div id="monitorPane" class="lg:col-span-7 flex flex-col bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 h-[715px]">
         <h3 class="text-base font-bold text-slate-900 flex items-center border-b pb-3 border-slate-100 mb-4">
           <i class="fa-solid fa-users text-blue-600 mr-2"></i> Sub-Department Monitor (Real-time Feed)
         </h3>
-        <div id="departmentFeed" class="space-y-3 pr-1 custom-scrollbar">
+        <div id="departmentFeed" class="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
           <div class="text-center py-12 text-slate-400 text-sm">
             <i class="fa-solid fa-circle-notch animate-spin text-2xl text-slate-300 mb-2 block"></i>
             Kumukuha ng datos...
@@ -270,8 +258,37 @@
         </div>
       </div>
 
-      <!-- PANE 3: HISTORY & MISSING TRACKER -->
-      <div id="historyPane" class="hidden bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 space-y-4">
+      <div id="adminPane" class="hidden lg:col-span-12 flex-col bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 space-y-6">
+        <div class="border-b pb-3 border-slate-100 flex items-center space-x-2">
+          <i class="fa-solid fa-user-shield text-purple-700 text-xl"></i>
+          <h3 class="text-base font-black text-slate-900 tracking-tight">Admin Control Portal Dashboard</h3>
+        </div>
+        
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-purple-700 flex items-center"><i class="fa-solid fa-hourglass-half mr-1.5"></i> Pending Approvals Queue</h4>
+            <div id="adminPendingQueue" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar"></div>
+          </div>
+          <div class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center"><i class="fa-solid fa-clock-rotate-left mr-1.5"></i> Account Processing Log History</h4>
+            <div class="overflow-x-auto border rounded-xl bg-white max-h-[350px] custom-scrollbar">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-500 font-bold border-b sticky top-0 z-10">
+                    <th class="p-2.5">ID</th>
+                    <th class="p-2.5">Pangalan</th>
+                    <th class="p-2.5">Departamento</th>
+                    <th class="p-2.5 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="adminHistoryLogTable" class="divide-y divide-slate-100 text-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="historyPane" class="lg:col-span-12 bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 space-y-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 border-slate-100">
           <h3 class="text-base font-bold text-slate-900 flex items-center">
             <i class="fa-solid fa-chart-user text-emerald-600 mr-2"></i> Personal Logs History & Allowances
@@ -331,41 +348,9 @@
         </div>
       </div>
 
-      <!-- PANE 4: EXCLUSIVE ADMIN CONTROL DASHBOARD -->
-      <div id="adminPane" class="hidden bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 space-y-6">
-        <div class="border-b pb-3 border-slate-100 flex items-center space-x-2">
-          <i class="fa-solid fa-user-shield text-purple-700 text-xl"></i>
-          <h3 class="text-base font-black text-slate-900 tracking-tight">Admin Control Portal Dashboard</h3>
-        </div>
-        
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <div class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-purple-700 flex items-center"><i class="fa-solid fa-hourglass-half mr-1.5"></i> Pending Approvals Queue</h4>
-            <div id="adminPendingQueue" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar"></div>
-          </div>
-          <div class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center"><i class="fa-solid fa-clock-rotate-left mr-1.5"></i> Account Processing Log History</h4>
-            <div class="overflow-x-auto border rounded-xl bg-white max-h-[350px] custom-scrollbar">
-              <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr class="bg-slate-100 text-slate-500 font-bold border-b sticky top-0 z-10">
-                    <th class="p-2.5">ID</th>
-                    <th class="p-2.5">Pangalan</th>
-                    <th class="p-2.5">Departamento</th>
-                    <th class="p-2.5 text-center">Status</th>
-                  </tr>
-                </thead>
-                <tbody id="adminHistoryLogTable" class="divide-y divide-slate-100 text-slate-700"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT CORNERSTONE ENGINE ================= -->
   <script>
     const WEB_APP_API_URL = "https://script.google.com/macros/s/AKfycbzB3pv_R7RjDbYmMuf4d7egGMYQSf07Xjjj7Ix2q2yCGGafJJ3xoKM-4UBEC6TsWs0A/exec";
 
@@ -387,14 +372,9 @@
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload)
       })
-      .then(function(response) {
-        return response.json();
-      })
+      .then(function(response) { return response.json(); })
       .then(function(data) { if (successCallback) successCallback(data); })
-      .catch(function(error) {
-        console.error("Critical API Error: ", error);
-        if (failureCallback) failureCallback(error);
-      });
+      .catch(function(error) { console.error("Critical API Error: ", error); });
     }
 
     window.addEventListener('DOMContentLoaded', function() {
@@ -406,10 +386,8 @@
       var savedUser = localStorage.getItem("pandayan_remembered_user");
       if (savedUser) {
         currentUser = JSON.parse(savedUser);
-        
         var savedPane = localStorage.getItem("pandayan_active_pane");
         if (savedPane) { activeViewPaneMode = savedPane; }
-        
         bootDashboardPortal();
       }
     });
@@ -421,8 +399,7 @@
         dropdown.innerHTML = "";
         depts.forEach(function(d) {
           var opt = document.createElement('option');
-          opt.value = d;
-          opt.textContent = d;
+          opt.value = d; opt.textContent = d;
           dropdown.appendChild(opt);
         });
       });
@@ -450,10 +427,7 @@
     function setupGlobalKeyBindings() {
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
-          if (!currentUser) {
-            e.preventDefault();
-            document.getElementById('btnLogin').click();
-          }
+          if (!currentUser) { e.preventDefault(); document.getElementById('btnLogin').click(); }
         }
       });
     }
@@ -468,7 +442,6 @@
       }, 1000);
     }
 
-    // FIXED: IBINALIK ANG FORGOT PASSWORD VIEW MAP ROUTING COMMAND
     function switchAuth(view) {
       document.getElementById('loginFormSection').classList.add('hidden');
       document.getElementById('registerFormSection').classList.add('hidden');
@@ -481,7 +454,6 @@
     function handleLogin() {
       var empId = document.getElementById('loginEmpId').value.trim();
       var pass = document.getElementById('loginPassword').value.trim();
-      
       if (!empId || !pass) { 
         Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Punan ang ID at Password box.', confirmButtonColor: '#dc2626' });
         return; 
@@ -547,57 +519,73 @@
       loadBranchDataset();
       loadDepartmentMonitorFeed();
       executeHistoryAndMissingPipeline();
+      
+      // I-trigger ang viewport alignment logic engine
       switchActiveViewPane(activeViewPaneMode);
     }
 
     function toggleMobileMenu(open) {
       var menu = document.getElementById('mobileSidebarMenu');
       var overlay = document.getElementById('mobileSidebarOverlay');
-      if (open) {
-        menu.classList.add('mobile-menu-active');
-        overlay.classList.remove('hidden');
-      } else {
-        menu.classList.remove('mobile-menu-active');
-        overlay.classList.add('hidden');
-      }
+      if (open) { menu.classList.add('mobile-menu-active'); overlay.classList.remove('hidden'); } 
+      else { menu.classList.remove('mobile-menu-active'); overlay.classList.add('hidden'); }
     }
 
+    // FIXED HYBRID RESPONSIVE PANE DISPATCHER CONTROLLER SYSTEM
     function switchActiveViewPane(targetPane) {
       activeViewPaneMode = targetPane;
       localStorage.setItem("pandayan_active_pane", targetPane); 
       toggleMobileMenu(false);
       
-      var panes = ['punch', 'monitor', 'history', 'admin'];
-      panes.forEach(function(p) {
-        var el = document.getElementById(p + 'Pane');
-        if (el) el.style.display = 'none';
+      // DESKTOP: Lahat visible at isang bagsakan (All-in-one Screen Grid View)
+      if (window.innerWidth >= 1024) {
+        document.getElementById('punchPane').style.display = 'block';
+        document.getElementById('monitorPane').style.display = 'flex';
+        document.getElementById('historyPane').style.display = 'block';
         
+        var isAdmin = (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin");
+        document.getElementById('adminPane').style.display = isAdmin ? 'flex' : 'none';
+        
+        // Premium behavior: I-smooth scroll ang viewport papunta sa piniling target section
+        var targetSection = document.getElementById(targetPane + 'Pane');
+        if (targetSection) {
+          targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } 
+      // MOBILE PULL-UP DRAWER VIEW: Isa-isa pa ring magpapalit ang mga pahina gaya ng hiningi mo
+      else {
+        var panes = ['punch', 'monitor', 'history', 'admin'];
+        panes.forEach(function(p) {
+          var el = document.getElementById(p + 'Pane');
+          if (el) el.style.display = 'none';
+        });
+        
+        var activePaneEl = document.getElementById(targetPane + 'Pane');
+        if (activePaneEl) {
+          activePaneEl.style.display = (targetPane === 'monitor' || targetPane === 'admin') ? 'flex' : 'block';
+        }
+      }
+      
+      // I-update ang responsive class indicator markers
+      var panesList = ['punch', 'monitor', 'history', 'admin'];
+      panesList.forEach(function(p) {
         var dtBtn = document.getElementById('dtBtn-' + p);
         if (dtBtn) dtBtn.className = "px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 transition";
-        
         var mbBtn = document.getElementById('mbBtn-' + p);
         if (mbBtn) mbBtn.className = "w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-slate-600 hover:bg-slate-50 transition text-left";
       });
       
-      var activePaneEl = document.getElementById(targetPane + 'Pane');
-      if (activePaneEl) {
-        activePaneEl.style.display = (targetPane === 'monitor' || targetPane === 'admin') ? 'flex' : 'block';
-      }
-      
       var activeDtBtn = document.getElementById('dtBtn-' + targetPane);
       if (activeDtBtn) {
-        activeDtBtn.className = targetPane === 'admin' ? 
-          "px-4 py-2 rounded-lg bg-purple-600 text-white shadow-md font-bold transition" : 
-          "px-4 py-2 rounded-lg bg-red-600 text-white shadow-md font-bold transition";
+        activeDtBtn.className = targetPane === 'admin' ? "px-4 py-2 rounded-lg bg-purple-600 text-white shadow-md font-bold transition" : "px-4 py-2 rounded-lg bg-red-600 text-white shadow-md font-bold transition";
       }
-      
       var activeMbBtn = document.getElementById('mbBtn-' + targetPane);
       if (activeMbBtn) {
-        activeMbBtn.className = targetPane === 'admin' ?
-          "w-full flex items-center space-x-3 p-3 font-bold rounded-xl bg-purple-50 text-purple-600 transition text-left" :
-          "w-full flex items-center space-x-3 p-3 font-bold rounded-xl bg-red-50 text-red-600 transition text-left";
+        activeMbBtn.className = targetPane === 'admin' ? "w-full flex items-center space-x-3 p-3 font-bold rounded-xl bg-purple-50 text-purple-600 transition text-left" : "w-full flex items-center space-x-3 p-3 font-bold rounded-xl bg-red-50 text-red-600 transition text-left";
       }
     }
+
+    window.addEventListener('resize', function() { switchActiveViewPane(activeViewPaneMode); });
 
     function triggerNativeMobileCamera() {
       document.getElementById('nativeCameraInput').click();
@@ -612,27 +600,20 @@
       reader.onload = function(e) {
         img.onload = function() {
           var canvas = document.createElement('canvas');
-          var MAX_WIDTH = 800;
-          var MAX_HEIGHT = 800;
-          var width = img.width;
-          var height = img.height;
+          var MAX_WIDTH = 800; var MAX_HEIGHT = 800;
+          var width = img.width; var height = img.height;
           
-          if (width > height) {
-            if (width > MAX_WIDTH) { height = Math.round(height * MAX_WIDTH / width); width = MAX_WIDTH; }
-          } else {
-            if (height > MAX_HEIGHT) { width = Math.round(width * MAX_HEIGHT / height); height = MAX_HEIGHT; }
-          }
+          if (width > height) { if (width > MAX_WIDTH) { height = Math.round(height * MAX_WIDTH / width); width = MAX_WIDTH; } } 
+          else { if (height > MAX_HEIGHT) { width = Math.round(width * MAX_HEIGHT / height); height = MAX_HEIGHT; } }
           
-          canvas.width = width;
-          canvas.height = height;
+          canvas.width = width; canvas.height = height;
           var ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
           capturedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
           
           document.getElementById('selfiePlaceholderText').classList.add('hidden');
           var view = document.getElementById('selfieImgView');
-          view.src = capturedPhotoBase64;
-          view.classList.remove('hidden');
+          view.src = capturedPhotoBase64; view.classList.remove('hidden');
           
           evaluateSubmissionReadiness();
         };
@@ -642,171 +623,89 @@
     }
 
     function initEnforcedGeolocatorTelemetry() {
-      if (!navigator.geolocation) {
-        Swal.fire({ icon: 'error', title: 'Kritikal na Error', text: 'Walang GPS Module ang browser mo.', allowOutsideClick: false, showConfirmButton: false });
-        return;
-      }
-
+      if (!navigator.geolocation) { return; }
       function pullGPSLocation() {
         navigator.geolocation.getCurrentPosition(function(pos) {
-          currentLat = pos.coords.latitude;
-          currentLng = pos.coords.longitude;
-          
+          currentLat = pos.coords.latitude; currentLng = pos.coords.longitude;
           document.getElementById('txtLat').textContent = currentLat.toFixed(5);
           document.getElementById('txtLng').textContent = currentLng.toFixed(5);
-          
           var badge = document.getElementById('gpsBadge');
           badge.textContent = "GPS Verified";
           badge.className = "px-2 py-0.5 bg-emerald-100 text-emerald-700 font-black rounded text-[9px] uppercase tracking-wide";
-          
           document.getElementById('mapWrapper').innerHTML = '<iframe width="100%" height="100%" frameborder="0" src="https://maps.google.com/maps?q=' + currentLat + ',' + currentLng + '&z=15&output=embed"></iframe>';
-
           evaluateSubmissionReadiness();
         }, function(error) {
-          currentLat = "";
-          currentLng = "";
-          document.getElementById('txtLat').textContent = "LOCKED";
-          document.getElementById('txtLng').textContent = "LOCKED";
-          
-          var badge = document.getElementById('gpsBadge');
-          badge.textContent = "GPS DENIED";
-          badge.className = "px-2 py-0.5 bg-rose-100 text-rose-700 font-black rounded text-[9px] uppercase tracking-wide animate-bounce";
-          
-          evaluateSubmissionReadiness();
-          
-          Swal.fire({
-            icon: 'error',
-            title: 'Naka-patay ang GPS!',
-            text: 'Mandatory na nakabukas ang GPS/Location ng iyong device upang magamit ang portal na ito para sa tamang palakad ng oras.',
-            allowOutsideClick: false,
-            confirmButtonText: 'I-retry ang GPS Connection',
-            confirmButtonColor: '#dc2626'
-          }).then(function() {
-            pullGPSLocation();
-          });
-        }, {
-          enableHighAccuracy: true,
-          timeout: 30000,
-          maximumAge: 10000
-        });
+          Swal.fire({ icon: 'error', title: 'Naka-patay ang GPS!', text: 'Mandatory na nakabukas ang GPS upang magamit ang portal na ito.', allowOutsideClick: false, confirmButtonText: 'I-retry', confirmButtonColor: '#dc2626' }).then(function() { pullGPSLocation(); });
+        }, { enableHighAccuracy: true, timeout: 30000, maximumAge: 10000 });
       }
-
       pullGPSLocation();
       gpsIntervalReference = setInterval(pullGPSLocation, 20000);
     }
 
     function loadBranchDataset() {
       executeServerRequest({ action: "getBranches" }, function(branches) {
-        var dl = document.getElementById('branchDataset');
-        dl.innerHTML = "";
+        var dl = document.getElementById('branchDataset'); dl.innerHTML = "";
         branches.forEach(function(b) {
-          var opt = document.createElement('option');
-          opt.value = b.code + " " + b.name; 
-          dl.appendChild(opt);
+          var opt = document.createElement('option'); opt.value = b.code + " " + b.name; dl.appendChild(opt);
         });
       });
     }
 
     function addNewLocationPrompt() {
-      Swal.fire({
-        title: 'Bagong Lokasyon',
-        text: 'Ipasok ang pangalan ng bagong fieldwork area:',
-        input: 'text',
-        inputPlaceholder: 'Hal. Pandayan Malolos',
-        showCancelButton: true,
-        confirmButtonColor: '#0f172a',
-        cancelButtonColor: '#64748b',
-        confirmButtonText: 'Idagdag'
-      }).then(function(result) {
-        if (result.value && result.value.trim() !== "") {
-          document.getElementById('branchInput').value = result.value.trim();
-          evaluateSubmissionReadiness();
-        }
+      Swal.fire({ title: 'Bagong Lokasyon', text: 'Ipasok ang pangalan ng bagong fieldwork area:', input: 'text', inputPlaceholder: 'Hal. Pandayan Malolos', showCancelButton: true, confirmButtonColor: '#0f172a', cancelButtonColor: '#64748b', confirmButtonText: 'Idagdag' }).then(function(result) {
+        if (result.value && result.value.trim() !== "") { document.getElementById('branchInput').value = result.value.trim(); evaluateSubmissionReadiness(); }
       });
     }
 
     function selectLogType(btnElement, type) {
       var buttons = document.querySelectorAll('#logTypeGroup button');
-      buttons.forEach(function(b) {
-        b.classList.remove('bg-red-600', 'text-white', 'border-red-600');
-        b.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
-      });
-      btnElement.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
-      btnElement.classList.add('bg-red-600', 'text-white', 'border-red-600');
-      selectedLogType = type;
-      evaluateSubmissionReadiness();
+      buttons.forEach(function(b) { b.className = "py-2.5 border-2 border-slate-200 hover:border-slate-300 rounded-xl font-bold text-sm text-slate-700 transition active:scale-95 bg-white"; });
+      btnElement.className = "py-2.5 border-2 border-red-600 rounded-xl font-bold text-sm text-white bg-red-600 transition active:scale-95";
+      selectedLogType = type; evaluateSubmissionReadiness();
     }
 
     function evaluateSubmissionReadiness() {
       var branch = document.getElementById('branchInput').value.trim();
       var btn = document.getElementById('btnSubmitAttendance');
       var isValid = selectedLogType !== "" && branch !== "" && capturedPhotoBase64 !== "" && currentLat !== "";
-      
       btn.disabled = !isValid;
-      if (isValid) {
-        btn.className = "w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition duration-200 shadow-xl shadow-red-600/10 active:scale-[0.99] cursor-pointer";
-      } else {
-        btn.className = "w-full py-3.5 bg-slate-300 text-slate-500 font-bold rounded-xl transition duration-200 cursor-not-allowed select-none";
-      }
+      btn.className = isValid ? "w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition duration-200 shadow-xl cursor-pointer" : "w-full py-3.5 bg-slate-300 text-slate-500 font-bold rounded-xl transition duration-200 cursor-not-allowed select-none";
     }
 
     document.getElementById('branchInput').addEventListener('input', evaluateSubmissionReadiness);
 
     function processAttendanceSubmission() {
-      if (!currentLat || !currentLng) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Bawal mag-log nang walang valid na GPS location.' });
-        return;
-      }
       var branch = document.getElementById('branchInput').value.trim();
-      var payload = {
-        employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department,
-        logType: selectedLogType, branch: branch, lat: currentLat, lng: currentLng, selfie: capturedPhotoBase64
-      };
-      toggleButtonState('btnSubmitAttendance', true, 'Ipinapadala sa Server...');
-
+      var payload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, logType: selectedLogType, branch: branch, lat: currentLat, lng: currentLng, selfie: capturedPhotoBase64 };
+      toggleButtonState('btnSubmitAttendance', true, 'Ipinapadala...');
       executeServerRequest({ action: "submitAttendance", payload: payload }, function(res) {
         toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log');
-        if (res.success) {
-          Swal.fire({ icon: 'success', title: 'Naisend na!', text: res.message, timer: 2000, showConfirmButton: false });
-          clearPunchConsoleInputs();
-          loadDepartmentMonitorFeed();
-          executeHistoryAndMissingPipeline();
-        } else {
-          Swal.fire({ icon: 'error', title: 'Failed', text: res.message });
-        }
-      }, function() {
-        toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log');
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Koneksyon nabigo. Subukang muli.' });
+        if (res.success) { Swal.fire({ icon: 'success', title: 'Naisend na!', text: res.message, timer: 2000, showConfirmButton: false }); clearPunchConsoleInputs(); loadDepartmentMonitorFeed(); executeHistoryAndMissingPipeline(); }
       });
     }
 
     function clearPunchConsoleInputs() {
-      capturedPhotoBase64 = "";
-      document.getElementById('selfieImgView').classList.add('hidden');
-      document.getElementById('selfieImgView').src = "";
-      document.getElementById('selfiePlaceholderText').classList.remove('hidden');
-      document.getElementById('nativeCameraInput').value = "";
-      evaluateSubmissionReadiness();
+      capturedPhotoBase64 = ""; document.getElementById('selfieImgView').classList.add('hidden'); document.getElementById('selfieImgView').src = "";
+      document.getElementById('selfiePlaceholderText').classList.remove('hidden'); document.getElementById('nativeCameraInput').value = ""; evaluateSubmissionReadiness();
     }
 
     function loadDepartmentMonitorFeed() {
       executeServerRequest({ action: "getDepartmentLogs", employeeId: currentUser.employeeId, department: currentUser.department }, function(logs) {
         var container = document.getElementById('departmentFeed');
-        if (logs.length === 0) {
-          container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Wala pang nakatalang log ang iyong departamento ngayong araw.</div>';
-          return;
-        }
+        if (logs.length === 0) { container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Wala pang nakatalang log ngayon.</div>'; return; }
         container.innerHTML = "";
         logs.forEach(function(l) {
           var badgeColor = l.logType === "IN" ? "bg-emerald-600" : (l.logType === "OUT" ? "bg-rose-600" : "bg-amber-600");
           var isCurrentAdmin = (currentUser.department.toLowerCase() === "admin" || currentUser.role === "ADMIN");
           var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 font-bold bg-purple-50 px-1.5 py-0.5 rounded-md ml-1 border border-purple-200">(' + l.subDept + ')</span>' : '';
           
+          var imgSrc = (l.selfie && l.selfie !== 'N/A' && l.selfie.trim() !== "") ? l.selfie : 'https://placehold.co/150?text=No+Image';
+
           var div = document.createElement('div');
           div.className = "flex items-center gap-4 p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100/70 transition";
           div.innerHTML =
-            '<div class="w-12 h-12 rounded-lg overflow-hidden border flex-shrink-0 bg-slate-200 relative cursor-zoom-in active:scale-95 transition" onclick="viewSelfieModal(\'' + l.selfie + '\', \'' + l.name + '\', \'' + l.logType + '\')">' +
-              '<img src="' + (l.selfie !== 'N/A' ? l.selfie : 'https://placehold.co/150') + '" class="w-full h-full object-cover" alt="selfie">' +
+            '<div class="w-12 h-12 rounded-lg overflow-hidden border flex-shrink-0 bg-slate-200 relative cursor-zoom-in active:scale-95 transition" onclick="viewSelfieModal(\'' + imgSrc + '\', \'' + l.name + '\', \'' + l.logType + '\')">' +
+              '<img src="' + imgSrc + '" onerror="this.onerror=null; this.src=\'https://placehold.co/150?text=No+Image\';" class="w-full h-full object-cover" alt="selfie">' +
             '</div>' +
             '<div class="flex-1 min-w-0">' +
               '<div class="flex justify-between items-start gap-1">' +
@@ -815,8 +714,7 @@
               '</div>' +
               '<p class="text-[11px] text-slate-600 truncate mt-0.5"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>' + l.branch + '</p>' +
               '<div class="flex justify-between items-center mt-1">' +
-                '<a href="https://maps.google.com/?q=' + l.lat + ',' + l.lng + '" target="_blank" rel="noopener noreferrer" class="text-[10px] text-blue-600 font-medium hover:underline block">' +
-                '<i class="fa-solid fa-map-location-dot mr-1"></i>Suriin sa Google Maps</a>' +
+                '<a href="https://maps.google.com/?q=' + l.lat + ',' + l.lng + '" target="_blank" rel="noopener noreferrer" class="text-[10px] text-blue-600 font-medium hover:underline block"><i class="fa-solid fa-map-location-dot mr-1"></i>Suriin sa Google Maps</a>' +
                 '<span class="text-[9px] text-slate-400 font-mono">' + l.date + '</span>' +
               '</div>' +
             '</div>';
@@ -826,250 +724,104 @@
     }
 
     function viewSelfieModal(imgUrl, employeeName, logType) {
-      if (!imgUrl || imgUrl === 'N/A' || imgUrl.includes('placehold.co')) {
-        Swal.fire({ icon: 'info', title: 'Walang Larawan', text: 'Walang kalakip na selfie verification ang log entry na ito.', confirmButtonColor: '#0f172a' });
-        return;
-      }
-      Swal.fire({
-        title: '<span class="text-sm font-black text-slate-900 tracking-tight">' + employeeName + '</span>',
-        html: '<div class="text-[11px] text-slate-500 font-medium">Verification Preview (' + logType + ')</div>',
-        imageUrl: imgUrl,
-        imageAlt: 'Verification Selfie Logo Map',
-        confirmButtonColor: '#0f172a',
-        confirmButtonText: 'Isara ang Preview',
-        customClass: {
-          image: 'rounded-xl max-h-[60vh] object-contain shadow-xl border border-slate-200'
-        }
-      });
+      if (!imgUrl || imgUrl === 'N/A' || imgUrl.includes('text=No+Image')) { Swal.fire({ icon: 'info', title: 'Walang Larawan', text: 'Walang valid na larawan sa database.', confirmButtonColor: '#0f172a' }); return; }
+      Swal.fire({ title: '<span class="text-sm font-black text-slate-900">' + employeeName + '</span>', html: '<div class="text-[11px] text-slate-500 font-medium">Verification Preview (' + logType + ')</div>', imageUrl: imgUrl, imageAlt: 'Selfie', confirmButtonColor: '#0f172a', confirmButtonText: 'Isara', customClass: { image: 'rounded-xl max-h-[60vh] object-contain shadow-xl border' } });
     }
 
     function executeHistoryAndMissingPipeline() {
       var fromDate = document.getElementById('filterFrom').value;
       var toDate = document.getElementById('filterTo').value;
       if (!fromDate || !toDate) return;
-
       toggleButtonState('btnFilterHistory', true, 'Kinukuha...');
       var tbody = document.getElementById('summaryTableBody');
-      tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-400"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i>Ina-update ang kasaysayan...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-400"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i>Ina-update...</td></tr>';
 
       executeServerRequest({ action: "getPersonalSummary", employeeId: currentUser.employeeId, fromDate: fromDate, toDate: toDate }, function(summary) {
         toggleButtonState('btnFilterHistory', false, 'I-Filter History');
-        
-        if (summary.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-400">Walang natagpuang log sa piniling petsa.</td></tr>';
-        } else {
-          summary.sort(function(a, b) { return a.sortDateObj - b.sortDateObj; });
-          tbody.innerHTML = "";
+        if (summary.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-400">Walang natagpuang log.</td></tr>'; } 
+        else {
+          summary.sort(function(a, b) { return a.sortDateObj - b.sortDateObj; }); tbody.innerHTML = "";
           summary.forEach(function(s) {
-            var tr = document.createElement('tr');
-            tr.className = "hover:bg-slate-50 transition";
+            var tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 transition";
             var isOut = (s.logType === "OUT");
-            
-            var mealInputHtml = isOut ? 
-              '<div class="relative"><span class="absolute left-2 top-2 text-slate-400 font-bold">₱</span><input type="number" value="' + s.meal + '" onchange="syncAllowanceToSheet(' + s.rowId + ', this)" class="allowance-input w-full pl-6 pr-2 py-1 bg-white border border-slate-300 rounded-lg text-slate-700 font-bold focus:border-red-500 outline-none text-xs" placeholder="0.00"></div>' : 
-              '<div class="text-slate-400 font-mono text-center bg-slate-100 py-1 rounded-lg select-none">Locked</div>';
-              
-            var transpoInputHtml = isOut ? 
-              '<div class="relative"><span class="absolute left-2 top-2 text-slate-400 font-bold">₱</span><input type="number" value="' + s.transpo + '" onchange="syncAllowanceToSheet(' + s.rowId + ', this)" class="allowance-input w-full pl-6 pr-2 py-1 bg-white border border-slate-300 rounded-lg text-slate-700 font-bold focus:border-red-500 outline-none text-xs" placeholder="0.00"></div>' : 
-              '<div class="text-slate-400 font-mono text-center bg-slate-100 py-1 rounded-lg select-none">Locked</div>';
+            var mealInputHtml = isOut ? '<div class="relative"><span class="absolute left-2 top-2 text-slate-400 font-bold">₱</span><input type="number" value="' + s.meal + '" onchange="syncAllowanceToSheet(' + s.rowId + ', this)" class="allowance-input w-full pl-6 pr-2 py-1 bg-white border border-slate-300 rounded-lg text-slate-700 font-bold outline-none text-xs"></div>' : '<div class="text-slate-400 text-center bg-slate-100 py-1 rounded-lg">Locked</div>';
+            var transpoInputHtml = isOut ? '<div class="relative"><span class="absolute left-2 top-2 text-slate-400 font-bold">₱</span><input type="number" value="' + s.transpo + '" onchange="syncAllowanceToSheet(' + s.rowId + ', this)" class="allowance-input w-full pl-6 pr-2 py-1 bg-white border border-slate-300 rounded-lg text-slate-700 font-bold outline-none text-xs"></div>' : '<div class="text-slate-400 text-center bg-slate-100 py-1 rounded-lg">Locked</div>';
+            var detailsInputHtml = isOut ? '<textarea onchange="syncAllowanceToSheet(' + s.rowId + ', this)" class="allowance-details w-full p-1 border border-slate-300 rounded-lg text-slate-700 outline-none text-[11px] h-10 resize-none">' + s.details + '</textarea>' : '<div class="text-slate-400 italic text-center bg-slate-100 py-2 rounded-lg text-[11px]">Available only on OUT</div>';
 
-            var detailsInputHtml = isOut ?
-              '<textarea onchange="syncAllowanceToSheet(' + s.rowId + ', this)" class="allowance-details w-full p-1 border border-slate-300 rounded-lg text-slate-700 focus:border-red-500 outline-none text-[11px] h-10 resize-none" placeholder="Isulat ang From-To transpo breakdown...">' + s.details + '</textarea>' :
-              '<div class="text-slate-400 italic text-[11px] text-center bg-slate-100 py-2 rounded-lg select-none">Available only on final OUT</div>';
-
-            if (s.logType === "MISSING LOG REASON") {
-              tr.innerHTML = 
-                '<td class="p-3 font-bold text-purple-700">' + s.date + '</td>' +
-                '<td class="p-3 font-mono text-purple-600">' + s.time + '</td>' +
-                '<td class="p-3"><span class="px-2 py-0.5 font-black rounded-md text-[10px] bg-purple-100 text-purple-800">' + s.logType + '</span></td>' +
-                '<td class="p-3 text-slate-600 font-semibold italic" colspan="4">' + s.branch + ' → Dahilan: ' + s.reasonText + '</td>';
-            } else {
-              tr.innerHTML =
-                '<td class="p-3 font-medium text-slate-900">' + s.date + '</td>' +
-                '<td class="p-3 font-mono">' + s.time + '</td>' +
-                '<td class="p-3"><span class="px-2 py-0.5 font-bold rounded-md text-[10px] ' + getLogStyleClass(s.logType) + '">' + s.logType + '</span></td>' +
-                '<td class="p-3 text-slate-600">' + s.branch + '</td>' +
-                '<td class="p-2">' + mealInputHtml + '</td>' +
-                '<td class="p-2">' + transpoInputHtml + '</td>' +
-                '<td class="p-2">' + detailsInputHtml + '</td>';
-            }
+            if (s.logType === "MISSING LOG REASON") { tr.innerHTML = '<td class="p-3 font-bold text-purple-700">' + s.date + '</td><td class="p-3 font-mono text-purple-600">' + s.time + '</td><td class="p-3"><span class="px-2 py-0.5 rounded-md text-[10px] bg-purple-100 text-purple-800">' + s.logType + '</span></td><td class="p-3 text-slate-600 font-semibold italic" colspan="4">' + s.branch + ' → Dahilan: ' + s.reasonText + '</td>'; } 
+            else { tr.innerHTML = '<td class="p-3 font-medium text-slate-900">' + s.date + '</td><td class="p-3 font-mono">' + s.time + '</td><td class="p-3"><span class="px-2 py-0.5 font-bold rounded-md text-[10px] ' + getLogStyleClass(s.logType) + '">' + s.logType + '</span></td><td class="p-3 text-slate-600">' + s.branch + '</td><td class="p-2">' + mealInputHtml + '</td><td class="p-2">' + transpoInputHtml + '</td><td class="p-2">' + detailsInputHtml + '</td>'; }
             tbody.appendChild(tr);
           });
         }
-
-        executeServerRequest({ action: "getMissingLogs", employeeId: currentUser.employeeId, fromDate: fromDate, toDate: toDate }, function(missing) {
-          fetchedMissingLogsArrayCache = missing; 
-          renderMissingLogsViewLayout();
-        });
+        executeServerRequest({ action: "getMissingLogs", employeeId: currentUser.employeeId, fromDate: fromDate, toDate: toDate }, function(missing) { fetchedMissingLogsArrayCache = missing; renderMissingLogsViewLayout(); });
       });
     }
 
     function setMissingLayoutMode(mode) {
       missingLayoutMode = mode;
       var buttons = ["List", "Small", "Large"];
-      buttons.forEach(function(b) {
-        document.getElementById("btnLayout" + b).className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition text-slate-500 hover:text-slate-900";
-      });
+      buttons.forEach(function(b) { document.getElementById("btnLayout" + b).className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition text-slate-500"; });
       document.getElementById("btnLayout" + mode.charAt(0).toUpperCase() + mode.slice(1)).className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-white shadow-sm text-slate-900";
       renderMissingLogsViewLayout();
     }
 
     function renderMissingLogsViewLayout() {
       var grid = document.getElementById('missingLogsGrid');
-      if (fetchedMissingLogsArrayCache.length === 0) {
-        grid.innerHTML = '<p class="text-emerald-600 font-bold text-xs p-4 col-span-full text-center bg-emerald-50 rounded-xl"><i class="fa-solid fa-square-check mr-1"></i>Mahusay! Kumpleto ang iyong time logs.</p>';
-        return;
-      }
+      if (fetchedMissingLogsArrayCache.length === 0) { grid.innerHTML = '<p class="text-emerald-600 font-bold text-xs p-4 col-span-full text-center bg-emerald-50 rounded-xl">Kumpleto ang iyong time logs.</p>'; return; }
       grid.innerHTML = "";
-      
-      if (missingLayoutMode === "list") {
-        grid.className = "grid grid-cols-1 gap-2";
-      } else if (missingLayoutMode === "small") {
-        grid.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3";
-      } else {
-        grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
-      }
+      grid.className = missingLayoutMode === "list" ? "grid grid-cols-1 gap-2" : (missingLayoutMode === "small" ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4");
 
       fetchedMissingLogsArrayCache.forEach(function(m) {
         var div = document.createElement('div');
-        
-        if (missingLayoutMode === "list") {
-          div.className = "bg-slate-50 border border-slate-200 p-3 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs shadow-sm";
-          div.innerHTML =
-            '<div class="flex items-center space-x-3"><div><span class="font-mono font-black text-slate-900">' + m.date + '</span>' +
-            ' <span class="text-[9px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded uppercase ml-2">' + m.day + '</span></div></div>' +
-            '<div class="flex items-center gap-2 w-full sm:w-auto">' +
-              '<input type="text" id="reason-' + m.date + '" class="reason-input flex-1 sm:w-64 p-2 border border-slate-300 rounded-lg bg-white outline-none" placeholder="Dahilan ng kawalan...">' +
-              '<button type="button" onclick="submitAbsenceReason(\'' + m.date + '\', this)" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition flex-shrink-0">Ipadala</button>' +
-            '</div>';
-        } else if (missingLayoutMode === "small") {
-          div.className = "bg-slate-50 border border-slate-200 p-3 rounded-xl flex flex-col justify-between text-center gap-2 shadow-sm";
-          div.innerHTML =
-            '<div><div class="font-mono font-bold text-slate-900 text-xs">' + m.date + '</div>' +
-            '<div class="text-[9px] text-red-700 font-bold uppercase mt-0.5">' + m.day + '</div></div>' +
-            '<button type="button" onclick="triggerSmallLayoutReasonPrompt(\'' + m.date + '\')" class="w-full py-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold rounded-md transition"><i class="fa-solid fa-pen-to-square"></i> Dahilan</button>';
-        } else {
-          div.className = "bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2 flex flex-col justify-between shadow-sm text-xs";
-          div.innerHTML =
-            '<div><div class="flex justify-between items-center"><span class="font-mono font-bold text-slate-900">' + m.date + '</span>' +
-            '<span class="text-[9px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded uppercase">' + m.day + '</span></div>' +
-            '<p class="text-[11px] text-slate-500 mt-1">Walang nakitang time entry para sa araw na ito.</p></div>' +
-            '<div class="space-y-1.5 pt-2">' +
-              '<input type="text" id="reason-' + m.date + '" class="reason-input w-full p-2 border border-slate-300 rounded-lg bg-white outline-none focus:border-red-500" placeholder="Ipasok ang dahilan ng kawalan...">' +
-              '<button type="button" onclick="submitAbsenceReason(\'' + m.date + '\', this)" class="w-full py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition flex items-center justify-center">Ipadala ang Dahilan</button>' +
-            '</div>';
-        }
+        if (missingLayoutMode === "list") { div.className = "bg-slate-50 border p-3 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-3 text-xs shadow-sm"; div.innerHTML = '<div><span class="font-mono font-black text-slate-900">' + m.date + '</span><span class="text-[9px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded ml-2 uppercase">' + m.day + '</span></div><div class="flex items-center gap-2 w-full sm:w-auto"><input type="text" id="reason-' + m.date + '" class="w-full sm:w-64 p-2 border rounded-lg bg-white outline-none" placeholder="Dahilan ng kawalan..."><button type="button" onclick="submitAbsenceReason(\'' + m.date + '\', this)" class="px-4 py-2 bg-slate-900 text-white font-bold rounded-lg transition">Ipadala</button></div>'; } 
+        else if (missingLayoutMode === "small") { div.className = "bg-slate-50 border p-3 rounded-xl flex flex-col justify-between text-center gap-2 shadow-sm"; div.innerHTML = '<div><div class="font-mono font-bold text-slate-900 text-xs">' + m.date + '</div><div class="text-[9px] text-red-700 font-bold uppercase mt-0.5">' + m.day + '</div></div><button type="button" onclick="triggerSmallLayoutReasonPrompt(\'' + m.date + '\')" class="w-full py-1 bg-slate-900 text-white text-[10px] font-bold rounded-md transition">Dahilan</button>'; } 
+        else { div.className = "bg-slate-50 border p-4 rounded-xl space-y-2 flex flex-col justify-between shadow-sm text-xs"; div.innerHTML = '<div><div class="flex justify-between items-center"><span class="font-mono font-bold text-slate-900">' + m.date + '</span><span class="text-[9px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded uppercase">' + m.day + '</span></div><p class="text-[11px] text-slate-500 mt-1">Walang time entry para sa araw na ito.</p></div><div class="space-y-1.5 pt-2"><input type="text" id="reason-' + m.date + '" class="w-full p-2 border rounded-lg bg-white outline-none" placeholder="Ipasok ang dahilan ng kawalan..."><button type="button" onclick="submitAbsenceReason(\'' + m.date + '\', this)" class="w-full py-1.5 bg-slate-900 text-white font-bold rounded-lg transition">Ipadala ang Dahilan</button></div>'; }
         grid.appendChild(div);
       });
     }
 
     function triggerSmallLayoutReasonPrompt(dateStr) {
-      Swal.fire({
-        title: 'Dahilan ng Kawalan',
-        text: 'Ipasok ang dahilan para sa ' + dateStr + ':',
-        input: 'text',
-        inputPlaceholder: 'Hal. Naka-leave / Nalimutan mag punch out',
-        showCancelButton: true,
-        confirmButtonColor: '#0f172a',
-        cancelButtonColor: '#64748b',
-        confirmButtonText: 'Ipadala'
-      }).then(function(result) {
-        if (result.value && result.value.trim() !== "") {
-          var payload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, reason: result.value.trim() };
-          executeServerRequest({ action: "saveMissingLogReason", payload: payload }, function(res) {
-            if (res.success) {
-              Swal.fire({ icon: 'success', title: 'Naitala!', text: res.message, timer: 1500, showConfirmButton: false });
-              executeHistoryAndMissingPipeline();
-            }
-          });
-        }
+      Swal.fire({ title: 'Dahilan ng Kawalan', text: 'Ipasok ang dahilan para sa ' + dateStr + ':', input: 'text', inputPlaceholder: 'Hal. Naka-leave', showCancelButton: true, confirmButtonColor: '#0f172a', cancelButtonColor: '#64748b', confirmButtonText: 'Ipadala' }).then(function(result) {
+        if (result.value && result.value.trim() !== "") { executeServerRequest({ action: "saveMissingLogReason", payload: { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, reason: result.value.trim() } }, function() { executeHistoryAndMissingPipeline(); }); }
       });
     }
 
     function submitAbsenceReason(dateStr, buttonElement) {
-      var input = document.getElementById('reason-' + dateStr);
-      var reasonVal = input.value.trim();
-      if (!reasonVal) { 
-        Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Mangyaring maglagay ng valid na dahilan.' });
-        return; 
-      }
-      
-      input.disabled = true;
-      buttonElement.disabled = true;
-      buttonElement.innerHTML = 'Sending...';
-
-      var payload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, reason: reasonVal };
-      executeServerRequest({ action: "saveMissingLogReason", payload: payload }, function(res) {
-        if (res.success) {
-          Swal.fire({ icon: 'success', title: 'Naitala na!', text: res.message, timer: 1500, showConfirmButton: false });
-          executeHistoryAndMissingPipeline();
-        } else {
-          input.disabled = false;
-          buttonElement.disabled = false;
-          buttonElement.innerHTML = 'Ipadala';
-          Swal.fire({ icon: 'error', title: 'Error', text: res.message });
-        }
+      var input = document.getElementById('reason-' + dateStr); var reasonVal = input.value.trim();
+      if (!reasonVal) { Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Maglagay ng valid na dahilan.' }); return; }
+      input.disabled = true; buttonElement.disabled = true;
+      executeServerRequest({ action: "saveMissingLogReason", payload: { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, reason: reasonVal } }, function(res) {
+        if (res.success) { executeHistoryAndMissingPipeline(); }
       });
     }
 
     function syncAllowanceToSheet(rowId, element) {
-      var tr = element.closest('tr');
-      var inputs = tr.querySelectorAll('input[type="number"]');
-      var textarea = tr.querySelector('textarea');
-      
-      var mealVal = inputs[0].value;
-      var transpoVal = inputs[1].value;
-      var detailsVal = textarea ? textarea.value : "";
-      
+      var tr = element.closest('tr'); var inputs = tr.querySelectorAll('input[type="number"]'); var textarea = tr.querySelector('textarea');
       element.classList.add('border-amber-500', 'bg-amber-50');
-
-      executeServerRequest({ action: "updateAllowances", rowId: rowId, meal: mealVal, transpo: transpoVal, details: detailsVal }, function(res) {
+      executeServerRequest({ action: "updateAllowances", rowId: rowId, meal: inputs[0].value, transpo: inputs[1].value, details: textarea ? textarea.value : "" }, function(res) {
         element.classList.remove('border-amber-500', 'bg-amber-50');
-        if (res.success) {
-          element.classList.add('border-emerald-500', 'bg-emerald-50');
-          setTimeout(function() { element.classList.remove('border-emerald-500', 'bg-emerald-50'); }, 1000);
-        }
       });
     }
 
     function loadAdminApprovalQueue() {
-      var queueContainer = document.getElementById('adminPendingQueue');
-      var historyTableBody = document.getElementById('adminHistoryLogTable');
-      
-      queueContainer.innerHTML = '<div class="text-xs text-slate-500 italic">Chine-check...</div>';
-      historyTableBody.innerHTML = '<tr><td colspan="4" class="p-3 text-center text-slate-400">Loading...</td></tr>';
-      
+      var queueContainer = document.getElementById('adminPendingQueue'); var historyTableBody = document.getElementById('adminHistoryLogTable');
       executeServerRequest({ action: "getPendingUsers", adminId: currentUser.employeeId }, function(data) {
-        if (!data.pending || data.pending.length === 0) {
-          queueContainer.innerHTML = '<div class="text-xs text-emerald-600 font-bold bg-emerald-50 p-3 rounded-xl"><i class="fa-solid fa-circle-check mr-1"></i>Walang nag-aantay na account approval.</div>';
-        } else {
+        if (!data.pending || data.pending.length === 0) { queueContainer.innerHTML = '<div class="text-xs text-emerald-600 font-bold bg-emerald-50 p-3 rounded-xl">Walang nag-aantay na account approval.</div>'; } 
+        else {
           queueContainer.innerHTML = "";
           data.pending.forEach(function(u) {
-            var item = document.createElement('div');
-            item.className = "flex justify-between items-center bg-white p-3 border rounded-xl gap-2 text-xs shadow-sm";
-            item.innerHTML = 
-              '<div><span class="font-bold text-slate-900">' + u.name + '</span> (' + u.employeeId + ')<br><span class="text-[10px] text-slate-500">' + u.department + '</span></div>' +
-              '<div class="flex gap-1 flex-shrink-0">' +
-                '<button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', \'APPROVED\', this)" class="px-2 py-1 bg-emerald-600 text-white rounded font-bold text-[11px] hover:bg-emerald-700 transition">Approve</button>' +
-                '<button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', \'DENIED\', this)" class="px-2 py-1 bg-rose-600 text-white rounded font-bold text-[11px] hover:bg-rose-700 transition">Deny</button>' +
-              '</div>';
+            var item = document.createElement('div'); item.className = "flex justify-between items-center bg-white p-3 border rounded-xl text-xs shadow-sm";
+            item.innerHTML = '<div><span class="font-bold">' + u.name + '</span> (' + u.employeeId + ')<br><span class="text-[10px] text-slate-500">' + u.department + '</span></div><div class="flex gap-1"><button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', \'APPROVED\', this)" class="px-2 py-1 bg-emerald-600 text-white rounded text-[11px] font-bold">Approve</button><button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', \'DENIED\', this)" class="px-2 py-1 bg-rose-600 text-white rounded text-[11px] font-bold">Deny</button></div>';
             queueContainer.appendChild(item);
           });
         }
-
-        if (!data.history || data.history.length === 0) {
-          historyTableBody.innerHTML = '<tr><td colspan="4" class="p-3 text-center text-slate-400">Walang kasaysayan ng pag-apruba.</td></tr>';
-        } else {
+        if (!data.history || data.history.length === 0) { historyTableBody.innerHTML = '<tr><td colspan="4" class="p-3 text-center">Walang kasaysayan.</td></tr>'; } 
+        else {
           historyTableBody.innerHTML = "";
           data.history.forEach(function(h) {
-            var badgeStyle = h.status === "APPROVED" ? "bg-emerald-100 text-emerald-800 font-bold" : "bg-rose-100 text-rose-800 font-bold";
-            var tr = document.createElement('tr');
-            tr.className = "hover:bg-slate-50 border-b last:border-0";
-            tr.innerHTML = 
-              '<td class="p-2.5 font-mono">' + h.employeeId + '</td>' +
-              '<td class="p-2.5 font-medium">' + h.name + '</td>' +
-              '<td class="p-2.5 text-slate-500">' + h.department + '</td>' +
-              '<td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] uppercase ' + badgeStyle + '">' + h.status + '</span></td>';
+            var badgeStyle = h.status === "APPROVED" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800";
+            var tr = document.createElement('tr'); tr.className = "border-b text-slate-700";
+            tr.innerHTML = '<td class="p-2.5 font-mono">' + h.employeeId + '</td><td class="p-2.5 font-medium">' + h.name + '</td><td class="p-2.5 text-slate-500">' + h.department + '</td><td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ' + badgeStyle + '">' + h.status + '</span></td>';
             historyTableBody.appendChild(tr);
           });
         }
@@ -1078,38 +830,17 @@
 
     function executeAccountApproval(empId, statusString, buttonElement) {
       buttonElement.disabled = true;
-      buttonElement.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
-      
       executeServerRequest({ action: "processApproval", adminId: currentUser.employeeId, targetEmpId: empId, statusStatus: statusString }, function(res) {
-        if (res.success) {
-          Swal.fire({ icon: 'success', title: 'Done', text: res.message, timer: 1500, showConfirmButton: false });
-          loadAdminApprovalQueue();
-        }
+        if (res.success) { loadAdminApprovalQueue(); }
       });
     }
 
     function toggleHistoryViewTabs(view) {
-      var btnActual = document.getElementById('tabBtnActualLogs');
-      var btnMissing = document.getElementById('tabBtnMissingLogs');
-      var paneActual = document.getElementById('subViewActualLogs');
-      var paneMissing = document.getElementById('subViewMissingLogs');
+      var btnActual = document.getElementById('tabBtnActualLogs'); var btnMissing = document.getElementById('tabBtnMissingLogs');
+      var paneActual = document.getElementById('subViewActualLogs'); var paneMissing = document.getElementById('subViewMissingLogs');
       var missingToolbar = document.getElementById('missingLayoutToolbar');
-      
-      if (view === 'actual') {
-        paneActual.classList.remove('hidden');
-        paneMissing.classList.add('hidden');
-        missingToolbar.classList.add('hidden');
-        missingToolbar.classList.remove('flex');
-        btnActual.className = "px-4 py-2 text-red-600 border-b-2 border-red-600";
-        btnMissing.className = "px-4 py-2 text-slate-400 hover:text-slate-600 transition";
-      } else {
-        paneActual.classList.add('hidden');
-        paneMissing.classList.remove('hidden');
-        missingToolbar.classList.remove('hidden');
-        missingToolbar.classList.add('flex');
-        btnMissing.className = "px-4 py-2 text-red-600 border-b-2 border-red-600";
-        btnActual.className = "px-4 py-2 text-slate-400 hover:text-slate-600 transition";
-      }
+      if (view === 'actual') { paneActual.classList.remove('hidden'); paneMissing.classList.add('hidden'); missingToolbar.classList.add('hidden'); btnActual.className = "px-4 py-2 text-red-600 border-b-2 border-red-600"; btnMissing.className = "px-4 py-2 text-slate-400"; } 
+      else { paneActual.classList.add('hidden'); paneMissing.classList.remove('hidden'); missingToolbar.classList.remove('hidden'); missingToolbar.classList.add('flex'); btnMissing.className = "px-4 py-2 text-red-600 border-b-2 border-red-600"; btnActual.className = "px-4 py-2 text-slate-400"; }
     }
 
     function getLogStyleClass(type) {
@@ -1120,28 +851,16 @@
     }
 
     function toggleButtonState(btnId, isLoading, text) {
-      var btn = document.getElementById(btnId);
-      if (!btn) return;
-      if (isLoading) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Processing...';
-      } else {
-        btn.disabled = false;
-        btn.innerHTML = text;
-      }
+      var btn = document.getElementById(btnId); if (!btn) return;
+      if (isLoading) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Processing...'; } 
+      else { btn.disabled = false; btn.innerHTML = text; }
     }
 
     function handleLogout() {
-      localStorage.removeItem("pandayan_remembered_user");
-      localStorage.removeItem("pandayan_active_pane");
+      localStorage.removeItem("pandayan_remembered_user"); localStorage.removeItem("pandayan_active_pane");
       if (gpsIntervalReference) clearInterval(gpsIntervalReference);
-      currentUser = null;
-      selectedLogType = "";
-      clearPunchConsoleInputs();
-      document.getElementById('dashboardContainer').classList.add('hidden');
-      document.getElementById('mobileAdminMenuBtn').classList.add('hidden');
-      document.getElementById('dtBtn-admin').classList.add('hidden');
-      document.getElementById('authContainer').classList.remove('hidden');
+      currentUser = null; selectedLogType = ""; clearPunchConsoleInputs();
+      document.getElementById('dashboardContainer').classList.add('hidden'); document.getElementById('authContainer').classList.remove('hidden');
       document.getElementById('loginPassword').value = "";
     }
   </script>
