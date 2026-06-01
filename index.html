@@ -26,7 +26,6 @@
       background: #cbd5e1;
       border-radius: 4px;
     }
-    /* ZOOM EFFECT CAPABILITY FOR SELFIE FEED */
     .selfie-zoomable {
       transition: transform 0.2s ease-in-out;
       cursor: zoom-in;
@@ -42,7 +41,6 @@
 </head>
 <body class="text-slate-800 font-sans antialiased p-2 md:p-6">
 
-  <!-- ================= AUTHENTICATION PORTAL ================= -->
   <div id="authContainer" class="max-w-md mx-auto mt-12 bg-white rounded-2xl shadow-2xl overflow-hidden p-8 border border-slate-200">
     <div class="text-center mb-8">
       <div class="w-20 h-20 bg-red-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg mb-4">
@@ -52,7 +50,6 @@
       <p class="text-sm text-slate-500 mt-1">Fieldwork Attendance Management System</p>
     </div>
 
-    <!-- LOGIN FORM -->
     <div id="loginFormSection" class="space-y-4">
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Employee ID</label>
@@ -86,7 +83,6 @@
       </div>
     </div>
 
-    <!-- REGISTRATION FORM WITH SYSTEM DEPARTMENT DROPDOWN LINK -->
     <div id="registerFormSection" class="space-y-4 hidden">
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Employee ID</label>
@@ -98,9 +94,7 @@
       </div>
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Departamento</label>
-        <select id="regDept" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none cursor-pointer focus:ring-2 focus:ring-slate-900">
-          <!-- Populated dynamically via target worksheet tab -->
-        </select>
+        <select id="regDept" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none cursor-pointer focus:ring-2 focus:ring-slate-900"></select>
       </div>
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Password</label>
@@ -119,7 +113,6 @@
       </div>
     </div>
 
-    <!-- FORGOT PASSWORD FORM -->
     <div id="forgotFormSection" class="space-y-4 hidden">
       <p class="text-sm text-slate-600 text-center">Mangyaring makipag-ugnayan sa inyong <strong>TTP Administrator</strong> o <strong>HR Department</strong> para sa pag-reset ng inyong password upang mapanatili ang seguridad ng account.</p>
       <div class="text-center pt-2">
@@ -129,10 +122,8 @@
   </div>
 
 
-  <!-- ================= MAIN DASHBOARD PORTAL ================= -->
   <div id="dashboardContainer" class="max-w-[1600px] mx-auto space-y-6 hidden">
     
-    <!-- TOP NAVIGATION BAR -->
     <div class="bg-slate-900 text-white p-4 rounded-2xl flex justify-between items-center shadow-xl gap-4 relative">
       <div class="flex items-center space-x-3">
         <button type="button" onclick="toggleMobileMenu(true)" class="lg:hidden text-white text-xl p-2 bg-slate-800 rounded-xl hover:bg-slate-700 transition">
@@ -158,7 +149,6 @@
       </div>
     </div>
 
-    <!-- MOBILE SIDEBAR DRAWER MENU -->
     <div id="mobileSidebarOverlay" onclick="toggleMobileMenu(false)" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden lg:hidden"></div>
     <div id="mobileSidebarMenu" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 p-6 shadow-2xl transform -translate-x-full transition duration-300 ease-in-out lg:hidden flex flex-col justify-between">
       <div class="space-y-6">
@@ -186,10 +176,8 @@
       </div>
     </div>
 
-    <!-- SPLIT GRID -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       
-      <!-- PANE 1: PUNCH CONSOLE -->
       <div id="punchPane" class="block lg:col-span-5 space-y-6">
         <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 space-y-5">
           <h3 class="text-base font-bold text-slate-900 flex items-center border-b pb-3 border-slate-100">
@@ -230,7 +218,6 @@
                 <img id="selfieImgView" class="w-full h-full object-cover hidden" src="" alt="Selfie Preview">
               </div>
               
-              <!-- NATIVE CAMERA FORCED ACCESS PARAMS INJECTED HERE -->
               <input type="file" id="nativeCameraInput" accept="image/*" capture="user" class="hidden" onchange="processNativeMobileCameraCapture(this)">
               
               <button type="button" onclick="triggerNativeMobileCamera()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition duration-150 flex items-center justify-center">
@@ -239,7 +226,6 @@
             </div>
           </div>
 
-          <!-- ENFORCED TELEMETRY MAP WRAPPER -->
           <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
             <span class="block text-xs font-bold uppercase tracking-wider text-slate-500 flex justify-between items-center">
               <span>4. Device GPS Telemetry (Locked)</span>
@@ -262,14 +248,12 @@
             </div>
           </div>
 
-          <!-- SUBMIT ATTENDANCE LOG BUTTON CONTROL -->
           <button type="button" id="btnSubmitAttendance" onclick="processAttendanceSubmission()" class="w-full py-3.5 bg-slate-300 text-slate-500 font-bold rounded-xl transition duration-200 cursor-not-allowed select-none" disabled>
             <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log
           </button>
         </div>
       </div>
 
-      <!-- PANE 2: DEPARTMENT FEED MONITOR -->
       <div id="monitorPane" class="hidden lg:flex lg:col-span-7 flex-col bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 max-h-[690px]">
         <h3 class="text-base font-bold text-slate-900 flex items-center border-b pb-3 border-slate-100 mb-4">
           <i class="fa-solid fa-users text-blue-600 mr-2"></i> Sub-Department Monitor (Real-time)
@@ -282,7 +266,6 @@
         </div>
       </div>
 
-      <!-- PANE 4: EXCLUSIVE ADMIN PORTAL VIEW (OPTIMIZED SPANNING FULL VIEW FOR DESKTOP COMPATIBILITY) -->
       <div id="adminPane" class="hidden lg:hidden lg:col-span-12 flex-col bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 space-y-6">
         <div class="border-b pb-3 border-slate-100 flex items-center space-x-2">
           <i class="fa-solid fa-user-shield text-purple-700 text-xl"></i>
@@ -290,29 +273,23 @@
         </div>
         
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <!-- Left Column Queue Card -->
           <div class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50">
             <h4 class="text-xs font-bold uppercase tracking-wider text-purple-700 flex items-center"><i class="fa-solid fa-hourglass-half mr-1.5"></i> Pending Approvals Queue</h4>
-            <div id="adminPendingQueue" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
-              <!-- Rendered via loop -->
-            </div>
+            <div id="adminPendingQueue" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar"></div>
           </div>
-          <!-- Right Column History Tracker Logs -->
           <div class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50">
             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center"><i class="fa-solid fa-clock-rotate-left mr-1.5"></i> Account Processing Log History</h4>
-            <div class="overflow-x-auto border rounded-xl bg-white">
+            <div class="overflow-x-auto border rounded-xl bg-white max-h-[350px] custom-scrollbar">
               <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr class="bg-slate-100 text-slate-500 font-bold border-b">
+                  <tr class="bg-slate-100 text-slate-500 font-bold border-b sticky top-0 z-10">
                     <th class="p-2.5">ID</th>
                     <th class="p-2.5">Pangalan</th>
                     <th class="p-2.5">Departamento</th>
                     <th class="p-2.5 text-center">Status</th>
                   </tr>
                 </thead>
-                <tbody id="adminHistoryLogTable" class="divide-y divide-slate-100 text-slate-700">
-                  <!-- Retained log state arrays mapping -->
-                </tbody>
+                <tbody id="adminHistoryLogTable" class="divide-y divide-slate-100 text-slate-700"></tbody>
               </table>
             </div>
           </div>
@@ -321,7 +298,6 @@
 
     </div>
 
-    <!-- PANE 3: HISTORY & MISSING TRACKER -->
     <div id="historyPane" class="hidden lg:block bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 space-y-4">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 border-slate-100">
         <h3 class="text-base font-bold text-slate-900 flex items-center">
@@ -353,7 +329,6 @@
           </button>
         </div>
         
-        <!-- LAYOUT VIEW CONFIGURATION CONTROLLER TOOLBAR FOR MISSING LOGS TYPE -->
         <div id="missingLayoutToolbar" class="items-center space-x-1 bg-slate-100 p-1 rounded-xl mb-1 self-end hidden">
           <button type="button" onclick="setMissingLayoutMode('list')" id="btnLayoutList" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">List View</button>
           <button type="button" onclick="setMissingLayoutMode('small')" id="btnLayoutSmall" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">Small Icons</button>
@@ -383,16 +358,13 @@
       </div>
 
       <div id="subViewMissingLogs" class="hidden">
-        <div id="missingLogsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Structured via choice array renderer layout engine links -->
-        </div>
+        <div id="missingLogsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </div>
 
     </div>
 
   </div>
 
-  <!-- ================= JAVASCRIPT CORNERSTONE ENGINE ================= -->
   <script>
     const WEB_APP_API_URL = "https://script.google.com/macros/s/AKfycbzB3pv_R7RjDbYmMuf4d7egGMYQSf07Xjjj7Ix2q2yCGGafJJ3xoKM-4UBEC6TsWs0A/exec";
 
@@ -403,7 +375,7 @@
     let currentLng = "";
     let currentMobileView = "punch"; 
     let gpsIntervalReference = null;
-    let missingLayoutMode = "large"; // Default display allocation tracking logic variable
+    let missingLayoutMode = "large"; 
     let fetchedMissingLogsArrayCache = [];
 
     function executeServerRequest(payload, successCallback, failureCallback) {
@@ -432,7 +404,7 @@
       initClock();
       setupGlobalKeyBindings();
       setDefaultFilterDates();
-      loadSystemDepartmentsList(); // Awtomatikong kukuha ng kagawaran dropdown mula sa sheet tab
+      loadSystemDepartmentsList(); 
       
       var savedUser = localStorage.getItem("pandayan_remembered_user");
       if (savedUser) {
@@ -709,7 +681,8 @@
         dl.innerHTML = "";
         branches.forEach(function(b) {
           var opt = document.createElement('option');
-          opt.value = '[' + b.code + '] ' + b.name;
+          // PINURONG PANGALAN NANG WALANG ANUMANG SPECIAL CHARACTER O BRACKETS GAYA NG NINANAIS MO
+          opt.value = b.name; 
           dl.appendChild(opt);
         });
       });
@@ -718,7 +691,7 @@
     function addNewLocationPrompt() {
       Swal.fire({
         title: 'Bagong Lokasyon',
-        text: 'Ipasok ang pangalan o code ng bagong fieldwork area:',
+        text: 'Ipasok ang pangalan ng bagong fieldwork area:',
         input: 'text',
         inputPlaceholder: 'Hal. Pandayan Malolos',
         showCancelButton: true,
@@ -745,7 +718,6 @@
       evaluateSubmissionReadiness();
     }
 
-    // STRICT SHIELD ENFORCEMENT CONDITIONAL CLASS TOGGLE
     function evaluateSubmissionReadiness() {
       var branch = document.getElementById('branchInput').value.trim();
       var btn = document.getElementById('btnSubmitAttendance');
@@ -887,22 +859,19 @@
         }
 
         executeServerRequest({ action: "getMissingLogs", employeeId: currentUser.employeeId, fromDate: fromDate, toDate: toDate }, function(missing) {
-          fetchedMissingLogsArrayCache = missing; // Cache the response payload structure
+          fetchedMissingLogsArrayCache = missing; 
           renderMissingLogsViewLayout();
         });
       });
     }
 
-    // MULTI-ARRANGEMENT LAYOUT ENGINE FOR MISSING TRACKER CARD BLOCKS
     function setMissingLayoutMode(mode) {
       missingLayoutMode = mode;
-      
       var buttons = ["List", "Small", "Large"];
       buttons.forEach(function(b) {
         document.getElementById("btnLayout" + b).className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition text-slate-500 hover:text-slate-900";
       });
       document.getElementById("btnLayout" + mode.charAt(0).toUpperCase() + mode.slice(1)).className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-white shadow-sm text-slate-900";
-      
       renderMissingLogsViewLayout();
     }
 
@@ -914,7 +883,6 @@
       }
       grid.innerHTML = "";
       
-      // Dynamic column assignment mapping based on selected wrapper arrangement choice
       if (missingLayoutMode === "list") {
         grid.className = "grid grid-cols-1 gap-2";
       } else if (missingLayoutMode === "small") {
@@ -942,7 +910,6 @@
             '<div class="text-[9px] text-red-700 font-bold uppercase mt-0.5">' + m.day + '</div></div>' +
             '<button type="button" onclick="triggerSmallLayoutReasonPrompt(\'' + m.date + '\')" class="w-full py-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold rounded-md transition"><i class="fa-solid fa-pen-to-square"></i> Dahilan</button>';
         } else {
-          // LARGE CARD ARRANGEMENT
           div.className = "bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2 flex flex-col justify-between shadow-sm text-xs";
           div.innerHTML =
             '<div><div class="flex justify-between items-center"><span class="font-mono font-bold text-slate-900">' + m.date + '</span>' +
@@ -969,8 +936,6 @@
         confirmButtonText: 'Ipadala'
       }).then(function(result) {
         if (result.value && result.value.trim() !== "") {
-          var dummyBtn = document.createElement('button');
-          // Mock data setup injection wrapper mapping
           var payload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, reason: result.value.trim() };
           executeServerRequest({ action: "saveMissingLogReason", payload: payload }, function(res) {
             if (res.success) {
@@ -1028,7 +993,6 @@
       });
     }
 
-    // AUDIT TRAIL DATA RECORD RETENTION PIPELINE LOGIC INTEGRATION
     function loadAdminApprovalQueue() {
       var queueContainer = document.getElementById('adminPendingQueue');
       var historyTableBody = document.getElementById('adminHistoryLogTable');
@@ -1037,7 +1001,6 @@
       historyTableBody.innerHTML = '<tr><td colspan="4" class="p-3 text-center text-slate-400">Loading...</td></tr>';
       
       executeServerRequest({ action: "getPendingUsers", adminId: currentUser.employeeId }, function(data) {
-        // 1. Process Pending Queue view structure
         if (!data.pending || data.pending.length === 0) {
           queueContainer.innerHTML = '<div class="text-xs text-emerald-600 font-bold bg-emerald-50 p-3 rounded-xl"><i class="fa-solid fa-circle-check mr-1"></i>Walang nag-aantay na account approval.</div>';
         } else {
@@ -1055,7 +1018,6 @@
           });
         }
 
-        // 2. Process Processed History Log Table data matching records retention parameters
         if (!data.history || data.history.length === 0) {
           historyTableBody.innerHTML = '<tr><td colspan="4" class="p-3 text-center text-slate-400">Walang kasaysayan ng pag-apruba.</td></tr>';
         } else {
