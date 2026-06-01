@@ -26,17 +26,6 @@
       background: #cbd5e1;
       border-radius: 4px;
     }
-    .selfie-zoomable {
-      transition: transform 0.2s ease-in-out;
-      cursor: zoom-in;
-    }
-    .selfie-zoomable:hover {
-      transform: scale(2.2);
-      position: relative;
-      z-index: 50;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
-    }
   </style>
 </head>
 <body class="text-slate-800 font-sans antialiased p-2 md:p-6">
@@ -675,7 +664,6 @@
       gpsIntervalReference = setInterval(pullGPSLocation, 20000);
     }
 
-    // FIXED: PINAGBUKOD ANG BRANCH CODE AT PANGALAN GAMIT ANG ESPASYO UPANG MAIWASAN ANG ANUMANG SPECIAL CHARACTERS
     function loadBranchDataset() {
       executeServerRequest({ action: "getBranches" }, function(branches) {
         var dl = document.getElementById('branchDataset');
@@ -781,15 +769,18 @@
         logs.forEach(function(l) {
           var badgeColor = l.logType === "IN" ? "bg-emerald-600" : (l.logType === "OUT" ? "bg-rose-600" : "bg-amber-600");
           
+          // Kung ang admin ang nakatingin, lagyan ng sub-department breakdown indicator tag
+          var subDeptIndicator = (currentUser.department.toLowerCase() === "admin") ? ' <span class="text-[10px] text-purple-600 font-bold bg-purple-50 px-1 rounded">(' + l.subDept + ')</span>' : '';
+          
           var div = document.createElement('div');
           div.className = "flex items-center gap-4 p-3 bg-slate-50 border border-slate-200 rounded-xl";
           div.innerHTML =
-            '<div class="w-12 h-12 rounded-lg overflow-hidden border flex-shrink-0 bg-slate-200 relative">' +
-              '<img src="' + (l.selfie !== 'N/A' ? l.selfie : 'https://placehold.co/150') + '" class="w-full h-full object-cover selfie-zoomable" alt="selfie">' +
+            '<div class="w-12 h-12 rounded-lg overflow-hidden border flex-shrink-0 bg-slate-200 relative cursor-pointer" onclick="viewSelfieModal(\'' + l.selfie + '\', \'' + l.name + '\', \'' + l.logType + '\')">' +
+              '<img src="' + (l.selfie !== 'N/A' ? l.selfie : 'https://placehold.co/150') + '" class="w-full h-full object-cover" alt="selfie">' +
             '</div>' +
             '<div class="flex-1 min-w-0">' +
               '<div class="flex justify-between items-start gap-1">' +
-                '<h4 class="font-bold text-slate-900 text-xs truncate">' + l.name + '</h4>' +
+                '<h4 class="font-bold text-slate-900 text-xs truncate">' + l.name + subDeptIndicator + '</h4>' +
                 '<span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase text-white tracking-wider ' + badgeColor + '">' + l.logType + '</span>' +
               '</div>' +
               '<p class="text-[11px] text-slate-600 truncate mt-0.5"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>' + l.branch + '</p>' +
@@ -801,6 +792,25 @@
             '</div>';
           container.appendChild(div);
         });
+      });
+    }
+
+    // INTERFACE DYNAMIC FLOATING MODAL ALERT GENERATOR FOR INTEGRATED LOG ENTRIES
+    function viewSelfieModal(imgUrl, employeeName, logType) {
+      if (!imgUrl || imgUrl === 'N/A' || imgUrl.includes('placehold.co')) {
+        Swal.fire({ icon: 'info', title: 'Walang Larawan', text: 'Walang kalakip na selfie verification ang log entry na ito.', confirmButtonColor: '#0f172a' });
+        return;
+      }
+      Swal.fire({
+        title: employeeName,
+        text: 'Uri ng Log: ' + logType + ' Verification Data',
+        imageUrl: imgUrl,
+        imageAlt: 'Verification Selfie',
+        confirmButtonColor: '#0f172a',
+        confirmButtonText: 'Isara ang Preview',
+        customClass: {
+          image: 'rounded-2xl max-h-[65vh] object-contain shadow-md border'
+        }
       });
     }
 
