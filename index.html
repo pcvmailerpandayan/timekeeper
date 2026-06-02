@@ -36,6 +36,11 @@
         background: #334155;
       }
     }
+    /* Smooth CSS Toggle logic overlay for relative menu system */
+    .dropdown-container:hover .dropdown-menu-pane,
+    .dropdown-container:focus-within .dropdown-menu-pane {
+      display: block !important;
+    }
   </style>
 </head>
 <body class="text-slate-800 dark:text-slate-100 font-sans antialiased p-0 transition-colors duration-200">
@@ -117,6 +122,7 @@
       </div>
     </div>
   </div>
+
   <div id="dashboardContainer" class="w-full mx-auto hidden lg:pl-72 relative min-h-screen flex flex-col">
     
     <div class="sticky top-0 z-30 bg-white dark:bg-slate-950 text-slate-900 dark:text-white p-4 flex justify-between items-center shadow-md gap-4 border-b border-slate-200 dark:border-slate-800 w-full transition-colors duration-200">
@@ -127,9 +133,27 @@
         <div class="bg-red-600 p-2.5 rounded-xl hidden sm:block shadow-md">
           <i class="fa-solid fa-business-time text-xl text-white"></i>
         </div>
-        <div>
-          <h1 class="text-base sm:text-lg font-black leading-tight tracking-tight text-slate-900 dark:text-white" id="userDisplayName">Loading...</h1>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="userDisplayDept">Loading...</p>
+        
+        <div class="relative dropdown-container inline-block text-left">
+          <div tabindex="0" class="flex items-center space-x-1.5 cursor-pointer select-none group p-1 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/60 transition">
+            <div>
+              <h1 class="text-base sm:text-lg font-black leading-tight tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span id="userDisplayName">Loading...</span>
+                <i class="fa-solid fa-circle-chevron-down text-slate-400 text-xs transition-transform group-hover:text-red-500"></i>
+              </h1>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="userDisplayDept">Loading...</p>
+            </div>
+          </div>
+          
+          <div class="absolute left-0 mt-1 w-52 rounded-xl shadow-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hidden z-50 dropdown-menu-pane overflow-hidden animate-fadeIn">
+            <div class="bg-slate-50 dark:bg-slate-800/50 p-2 border-b dark:border-slate-800 text-[10px] uppercase tracking-widest font-black text-slate-400">Pamahalaan ang Account</div>
+            <button type="button" onclick="triggerAccountPasswordChangeModal()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 outline-none">
+              <i class="fa-solid fa-key text-red-500 text-sm"></i> Baguhin ang Password
+            </button>
+            <button type="button" onclick="handleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-2 border-t dark:border-slate-800 outline-none lg:hidden">
+              <i class="fa-solid fa-power-off text-slate-400 text-sm"></i> Log-out Portal
+            </button>
+          </div>
         </div>
       </div>
       
@@ -138,13 +162,13 @@
           <div class="text-xs sm:text-sm font-black tracking-wide text-red-600 dark:text-red-500" id="liveClock">00:00:00 PM</div>
           <div class="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-wider" id="liveDate">Date Loader</div>
         </div>
-        <button type="button" onclick="handleLogout()" class="px-3 sm:px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-red-600 dark:hover:bg-red-600 text-slate-700 dark:text-slate-200 hover:text-white dark:hover:text-white text-xs sm:text-sm font-bold rounded-xl transition duration-200 border border-slate-200 dark:border-slate-700 shadow-sm">
+        <button type="button" onclick="handleLogout()" class="px-3 sm:px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-red-600 dark:hover:bg-red-600 text-slate-700 dark:text-slate-200 hover:text-white dark:hover:text-white text-xs sm:text-sm font-bold rounded-xl transition duration-200 border border-slate-200 dark:border-slate-700 shadow-sm hidden lg:flex items-center">
           <i class="fa-solid fa-power-off mr-1.5 text-red-500"></i> <span>Log-out</span>
         </button>
       </div>
     </div>
 
-    <div id="sidebarMenuOverlay" onclick="toggleSidebarMenuGateway(false)" class="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
+<div id="sidebarMenuOverlay" onclick="toggleSidebarMenuGateway(false)" class="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
     <div id="sidebarMenuLayoutWindow" class="fixed top-0 left-0 bottom-0 h-screen w-72 bg-white dark:bg-slate-900 z-40 p-6 shadow-2xl lg:shadow-none transform -translate-x-full transition duration-300 ease-in-out lg:translate-x-0 lg:border-r lg:border-slate-200/80 lg:dark:border-slate-800 flex flex-col justify-between transition-colors">
       <div class="space-y-6">
         <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4">
@@ -169,14 +193,14 @@
           </button>
         </nav>
       </div>
-      <div class="border-t dark:border-slate-800 pt-4 text-center">
-        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">Pandayan Timekeeper v15.0</p>
+      <div class="border-t pt-4 text-center dark:border-slate-800">
+        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">Pandayan Timekeeper v16.0</p>
       </div>
     </div>
 
     <div class="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full flex-1">
       
-      <div id="punchPane" class="block lg:col-span-5 space-y-6 w-full">
+      <div id="punchPane" class="block lg:col-span-5 space-y-6 w-full lg:max-h-[calc(100vh-130px)] lg:overflow-y-auto pr-1 custom-scrollbar">
         <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800/80 space-y-5 transition-colors">
           <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center border-b pb-3 border-slate-100 dark:border-slate-800 uppercase tracking-wider">
             <i class="fa-solid fa-fingerprint text-red-600 mr-2 text-base"></i> Attendance Punch Console
@@ -186,6 +210,7 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">1. Uri ng Log</label>
             <div class="grid grid-cols-3 gap-2" id="logTypeGroup">
               <button type="button" onclick="selectLogType(this, 'IN')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition">IN</button>
+
               <button type="button" onclick="selectLogType(this, 'LB OUT')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition">LB OUT</button>
               <button type="button" onclick="selectLogType(this, 'LB IN')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition">LB IN</button>
               <button type="button" onclick="selectLogType(this, 'CB OUT')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition">CB OUT</button>
@@ -205,7 +230,6 @@
               <button type="button" onclick="addNewLocationPrompt()" class="px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md transition"><i class="fa-solid fa-plus text-base"></i></button>
             </div>
           </div>
-
 
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">3. Required Verification Selfie</label>
@@ -246,8 +270,8 @@
         </div>
       </div>
 
-      <div id="monitorPane" class="hidden lg:flex lg:col-span-7 flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 min-h-[500px] lg:h-[735px] w-full transition-colors">
-        <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center border-b pb-3 border-slate-100 dark:border-slate-800 mb-4 uppercase tracking-wider">
+      <div id="monitorPane" class="hidden lg:flex lg:col-span-7 flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 h-[500px] lg:h-[calc(100vh-130px)] w-full transition-colors overflow-hidden">
+        <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center border-b pb-3 border-slate-100 dark:border-slate-800 mb-4 uppercase tracking-wider flex-shrink-0">
           <i class="fa-solid fa-users text-blue-600 dark:text-blue-400 mr-2 text-base"></i> Sub-Department Monitor (Real-time Feed)
         </h3>
         <div id="departmentFeed" class="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
@@ -298,6 +322,7 @@
             </div>
             <i class="fa-solid fa-calendar-check text-slate-700 dark:text-slate-800 text-3xl"></i>
           </div>
+
           <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border dark:border-slate-800 flex items-center justify-between shadow-sm">
             <div>
               <span class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block tracking-wider">Total Meal Allowance</span>
@@ -346,6 +371,7 @@
             <h4 class="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 flex items-center"><i class="fa-solid fa-hourglass-half mr-1.5"></i> Pending Approvals Queue</h4>
             <div id="adminPendingQueue" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar"></div>
           </div>
+
           <div class="border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 bg-slate-50/50 dark:bg-slate-800/20">
             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center"><i class="fa-solid fa-clock-rotate-left mr-1.5"></i> Account Processing Log History</h4>
             <div class="overflow-x-auto border dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 max-h-[350px] custom-scrollbar">
@@ -390,6 +416,7 @@
             <button type="button" id="tabBtnActualLogs" onclick="toggleHistoryViewTabs('actual')" class="px-4 py-2 text-red-600 dark:text-red-400 border-b-2 border-red-600 dark:border-red-400">Mga Nakatalang Log / Allowances (Detailed)</button>
             <button type="button" id="tabBtnMissingLogs" onclick="toggleHistoryViewTabs('missing')" class="px-4 py-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 transition">Mga Nawawalang Log (Missing Logs)</button>
           </div>
+
           <div id="missingLayoutToolbar" class="items-center space-x-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-1 self-end hidden">
             <button type="button" onclick="setMissingLayoutMode('list')" id="btnLayoutList" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">List View</button>
             <button type="button" onclick="setMissingLayoutMode('small')" id="btnLayoutSmall" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">Small Icons</button>
@@ -514,6 +541,41 @@
       else { input.type = "password"; buttonElement.innerHTML = '<i class="fa-solid fa-eye"></i>'; }
     }
 
+    function triggerAccountPasswordChangeModal() {
+      let formHtml = '<div class="text-left text-xs space-y-2 p-1 text-slate-800 dark:text-slate-200">' +
+                       '<p class="text-slate-500 mb-2">Ipasok ang iyong bagong nais na password sa ibaba upang awtomatikong mag-update sa database.</p>' +
+                       '<label class="font-bold text-slate-600 dark:text-slate-400">Bagong Password</label>' +
+                       '<input id="swalNewPass" type="password" class="w-full p-2.5 border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl outline-none font-bold mb-1" placeholder="••••••••">' +
+                       '<label class="font-bold text-slate-600 dark:text-slate-400">Kumpirmahin ang Bagong Password</label>' +
+                       '<input id="swalConfirmPass" type="password" class="w-full p-2.5 border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl outline-none font-bold animate-fadeIn" placeholder="••••••••">' +
+                     '</div>';
+                     
+      Swal.fire({
+        title: 'Palitan ang Password',
+        html: formHtml,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        confirmButtonText: 'I-Save Bagong Password',
+        preConfirm: () => {
+          var p1 = document.getElementById('swalNewPass').value.trim();
+          var p2 = document.getElementById('swalConfirmPass').value.trim();
+          if (!p1 || !p2) { Swal.showValidationMessage('Mangyaring punan ang magkabilang patlang!'); return false; }
+          if (p1 !== p2) { Swal.showValidationMessage('Hindi nagtutugma ang dalawang password!'); return false; }
+          if (p1.length < 4) { Swal.showValidationMessage('Masyadong maikli ang password (min. 4 characters)!'); return false; }
+          return p1;
+        }
+      }).then(function(result) {
+        if (result.value) {
+          Swal.fire({ title: 'Nag-i-update...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+          executeServerRequest({ action: "changePassword", employeeId: currentUser.employeeId.toString().trim(), newPassword: result.value }, function(res) {
+            if (res.success) { Swal.fire({ icon: 'success', title: 'Matagumpay!', text: res.message, timer: 2000, showConfirmButton: false }); } 
+            else { Swal.fire({ icon: 'error', title: 'Kabiguan', text: res.message }); }
+          });
+        }
+      });
+    }
+
     function setDefaultFilterDates() {
       var localNow = new Date(); var year = localNow.getFullYear(); var month = String(localNow.getMonth() + 1).padStart(2, '0'); var day = String(localNow.getDate()).padStart(2, '0'); var today = year + '-' + month + '-' + day;
       var pastDate = new Date(); pastDate.setDate(pastDate.getDate() - 7); var pYear = pastDate.getFullYear(); var pMonth = String(pastDate.getMonth() + 1).padStart(2, '0'); var pDay = String(pastDate.getDate()).padStart(2, '0'); var pastStr = pYear + '-' + pMonth + '-' + pDay;
@@ -596,7 +658,7 @@
     function evaluateSubmissionReadiness() { var branch = document.getElementById('branchInput').value.trim(); var btn = document.getElementById('btnSubmitAttendance'); var isValid = selectedLogType !== "" && branch !== "" && capturedPhotoBase64 !== "" && currentLat !== ""; btn.disabled = !isValid; btn.className = isValid ? "w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition duration-200 shadow-xl cursor-pointer text-xs" : "w-full py-3.5 bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold rounded-xl transition duration-200 cursor-not-allowed select-none text-xs"; }
     document.getElementById('branchInput').addEventListener('input', evaluateSubmissionReadiness);
 
-    function loadDepartmentMonitorFeed() { executeServerRequest({ action: "getDepartmentLogs", employeeId: currentUser.employeeId.toString().trim(), department: currentUser.department }, function(logs) { var container = document.getElementById('departmentFeed'); if (!logs || logs.length === 0) { container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Wala pang nakatalang log ngayon.</div>'; return; } container.innerHTML = ""; logs.forEach(function(l) { var badgeColor = l.logType === "IN" ? "bg-emerald-600" : (l.logType === "OUT" ? "bg-rose-600" : "bg-amber-600"); var isCurrentAdmin = (currentUser.department.toLowerCase() === "admin" || currentUser.role === "ADMIN"); var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-950 px-1.5 py-0.5 rounded-md ml-1 border border-purple-200 dark:border-purple-800">(' + l.subDept + ')</span>' : ''; var imgSrc = 'https://placehold.co/150?text=No+Image'; if (l.selfie && l.selfie !== 'N/A' && l.selfie.toString().trim() !== "") { var rawUrl = l.selfie.toString().trim(); var fileIdMatch = rawUrl.match(/(?:id=|\/d\/|src=)([\w-]+)/); if (fileIdMatch && fileIdMatch[1] && fileIdMatch[1].length > 10) { imgSrc = 'https://lh3.googleusercontent.com/d/' + fileIdMatch[1] + '=s800'; } else { imgSrc = rawUrl; } } var div = document.createElement('div'); div.className = "flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100/70 transition"; div.innerHTML = '<div class="w-12 h-12 rounded-lg overflow-hidden border dark:border-slate-700 flex-shrink-0 bg-slate-200 relative cursor-zoom-in active:scale-95 transition" onclick="viewSelfieModal(\'' + imgSrc + '\', \'' + l.name + '\', \'' + l.logType + '\')"><img src="' + imgSrc + '" onerror="this.onerror=null; this.src=\'https://placehold.co/150?text=No+Image\';" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><div class="flex justify-between items-start gap-1"><h4 class="font-bold text-slate-900 dark:text-white text-xs truncate">' + l.name + subDeptIndicator + '</h4><span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase text-white tracking-wider ' + badgeColor + '">' + l.logType + '</span></div><p class="text-[11px] text-slate-600 dark:text-slate-400 truncate mt-0.5"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>' + l.branch + '</p><div class="flex justify-between items-center mt-1"><a href="https://maps.google.com/?q=' + l.lat + ',' + l.lng + '" target="_blank" class="text-[10px] text-blue-600 font-medium hover:underline block"><i class="fa-solid fa-map-location-dot mr-1"></i>Google Maps</a><span class="text-[9px] text-slate-400 font-mono">' + l.date + '</span></div></div>'; container.appendChild(div); }); }); }
+    function loadDepartmentMonitorFeed() { executeServerRequest({ action: "getDepartmentLogs", employeeId: currentUser.employeeId.toString().trim(), department: currentUser.department }, function(logs) { var container = document.getElementById('departmentFeed'); if (!logs || logs.length === 0) { container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Wala pang nakatalang log ngayon.</div>'; return; } container.innerHTML = ""; logs.forEach(function(l) { var badgeColor = l.logType === "IN" ? "bg-emerald-600" : (l.logType === "OUT" ? "bg-rose-600" : "bg-amber-600"); var isCurrentAdmin = (currentUser.department.toLowerCase() === "admin" || currentUser.role === "ADMIN"); var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-950 px-1.5 py-0.5 rounded-md ml-1 border border-purple-200 dark:border-purple-800">(' + l.subDept + ')</span>' : ''; var imgSrc = 'https://placehold.co/150?text=No+Image'; if (l.selfie && l.selfie !== 'N/A' && l.selfie.toString().trim() !== "") { var rawUrl = l.selfie.toString().trim(); var fileIdMatch = rawUrl.match(/(?:id=|\/d\/|src=)([\w-]+)/); if (fileIdMatch && fileIdMatch[1] && fileIdMatch[1].length > 10) { imgSrc = 'https://lh3.googleusercontent.com/d/' + fileIdMatch[1] + '=s800'; } else { imgSrc = rawUrl; } } var div = document.createElement('div'); div.className = "flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100/70 transition"; div.innerHTML = '<div class="w-12 h-12 rounded-lg overflow-hidden border dark:border-slate-700 flex-shrink-0 bg-slate-200 relative cursor-zoom-in active:scale-95 transition" onclick="viewSelfieModal(\'' + imgSrc + '\', \'' + l.name + '\', \'' + l.logType + '\')"><img src="' + imgSrc + '" onerror="this.onerror=null; this.src=\'https://placehold.co/150?text=No+Image\';" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><div class="flex justify-between items-start gap-1"><h4 class="font-bold text-slate-900 dark:text-white text-xs truncate">' + l.name + subDeptIndicator + '</h4><span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase text-white tracking-wider ' + badgeColor + '">' + l.logType + '</span></div><p class="text-[11px] text-slate-600 dark:text-slate-400 truncate mt-0.5"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>' + l.branch + '</p><div class="flex justify-between items-center mt-1 flex-wrap gap-1"><a href="https://maps.google.com/?q=' + l.lat + ',' + l.lng + '" target="_blank" class="text-[10px] text-blue-600 font-medium hover:underline block"><i class="fa-solid fa-map-location-dot mr-1"></i>Google Maps</a><span class="text-[10px] md:text-xs lg:text-[13px] text-slate-500 dark:text-slate-400 font-mono font-black bg-slate-100/80 dark:bg-slate-800 px-2 py-0.5 rounded border dark:border-slate-700/80 tracking-tight">' + l.date + '</span></div></div>'; container.appendChild(div); }); }); }
     function viewSelfieModal(imgUrl, employeeName, logType) { if (!imgUrl || imgUrl === 'N/A' || imgUrl.includes('text=No+Image')) { Swal.fire({ icon: 'info', title: 'Walang Larawan', text: 'Wala sa database.' }); return; } Swal.fire({ title: '<span class="text-sm font-black text-slate-900">' + employeeName + '</span>', html: '<div class="text-[11px]">Preview (' + logType + ')</div>', imageUrl: imgUrl, confirmButtonColor: '#0f172a', confirmButtonText: 'Isara' }); }
 
     function processAttendanceSubmission() { var branch = document.getElementById('branchInput').value.trim(); var payload = { employeeId: currentUser.employeeId.toString().trim(), name: currentUser.name, department: currentUser.department, logType: selectedLogType, branch: branch, lat: currentLat, lng: currentLng, selfie: capturedPhotoBase64 }; toggleButtonState('btnSubmitAttendance', true, 'Ipinapadala...'); executeServerRequest({ action: "submitAttendance", payload: payload }, function(res) { toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log'); if (res.success) { Swal.fire({ icon: 'success', title: 'Naisend na!', text: res.message, timer: 2000, showConfirmButton: false }); clearPunchConsoleInputs(); loadDepartmentMonitorFeed(); executeHistoryAndMissingPipeline(); } else { Swal.fire({ icon: 'error', title: 'Error', text: res.message }); } }); }
@@ -636,7 +698,7 @@
         var missingLabel = m.missingTypes.join(", "); var div = document.createElement('div'); var timeFields = buildManualTimeFieldsHtml(m.missingTypes, m.date);
         if (missingLayoutMode === "list") { div.className = "bg-slate-50 dark:bg-slate-900 border dark:border-slate-800 p-3 rounded-xl flex flex-col justify-between gap-3 text-xs shadow-sm border-l-4 border-l-red-500"; div.innerHTML = '<div class="flex flex-wrap items-center justify-between"><div><span class="font-mono font-black text-slate-900 dark:text-white">' + m.date + '</span><span class="text-[9px] bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-400 font-black px-1.5 py-0.5 rounded ml-2 uppercase">' + m.day + '</span><span class="ml-2 text-red-600 dark:text-red-400 font-bold">Kulang: ' + missingLabel + '</span></div></div>' + timeFields + '<div class="flex flex-wrap items-center gap-1.5 w-full mt-1"><input type="number" id="meal-' + m.date + '" class="w-20 p-2 border dark:border-slate-700 rounded-lg font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white" placeholder="Meal ₱"><input type="number" id="transpo-' + m.date + '" class="w-20 p-2 border dark:border-slate-700 rounded-lg font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white" placeholder="Trns ₱"><input type="text" id="reason-' + m.date + '" class="flex-1 min-w-[150px] p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white" placeholder="Dahilan..."><button type="button" onclick="submitAbsenceReason(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="px-5 py-2 bg-slate-900 dark:bg-slate-800 text-white font-bold rounded-lg text-xs flex-shrink-0">Ipadala</button></div>'; } 
         else if (missingLayoutMode === "small") { div.className = "bg-slate-50 dark:bg-slate-900 border dark:border-slate-800 p-3 rounded-xl flex flex-col justify-between text-center gap-2 shadow-sm border-t-2 border-t-red-500"; div.innerHTML = '<div><div class="font-mono font-bold text-slate-900 dark:text-white text-xs">' + m.date + '</div><div class="text-[9px] text-red-700 dark:text-red-400 font-bold uppercase mt-0.5">' + m.day + '</div><div class="text-[9px] font-medium text-red-500 dark:text-red-400 mt-1 truncate">Kulang: ' + missingLabel + '</div></div><button type="button" onclick="triggerSmallLayoutReasonPrompt(\'' + m.date + '\', \'' + missingLabel + '\')" class="w-full py-1 bg-slate-900 dark:bg-slate-800 text-white text-[10px] font-bold rounded-md transition">Dahilan & Oras</button>'; } 
-        else { div.className = "bg-slate-50 dark:bg-slate-900 border dark:border-slate-800 p-4 rounded-xl space-y-2 flex flex-col justify-between shadow-sm text-xs border-l-4 border-l-red-500"; div.innerHTML = '<div><div class="flex justify-between items-center"><span class="font-mono font-bold text-slate-900 dark:text-white">' + m.date + '</span><span class="text-[9px] bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-400 font-black px-1.5 py-0.5 rounded uppercase">' + m.day + '</span></div><p class="text-[11px] text-red-600 dark:text-red-400 font-bold mt-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Nawawala ang log na: ' + missingLabel + '</p></div>' + timeFields + '<div class="space-y-1.5 pt-1"><div class="grid grid-cols-2 gap-1.5"><input type="number" id="meal-' + m.date + '" class="w-full p-2 border dark:border-slate-700 rounded-lg font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white" placeholder="Meal ₱"><input type="number" id="transpo-' + m.date + '" class="w-full p-2 border dark:border-slate-700 rounded-lg font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white" placeholder="Transpo ₱"></div><input type="text" id="reason-' + m.date + '" class="w-full p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white" placeholder="Ipasok ang dahilan ng kawalan..."><button type="button" onclick="submitAbsenceReason(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="w-full py-1.5 bg-slate-900 dark:bg-slate-800 text-white font-bold rounded-lg text-xs">Ipadala ang Detalye</button></div>'; }
+        else { div.className = "bg-slate-50 dark:bg-slate-900 border dark:border-slate-800 p-4 rounded-xl space-y-2 flex flex-col justify-between shadow-sm text-xs border-l-4 border-l-red-500"; div.innerHTML = '<div><div class="flex justify-between items-center"><span class="font-mono font-bold text-slate-900 dark:text-white">' + m.date + '</span><span class="text-[9px] bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-400 font-black px-1.5 py-0.5 rounded uppercase">' + m.day + '</span></div><p class="text-[11px] text-red-600 dark:text-red-400 font-bold mt-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Nawawala ang log na: ' + missingLabel + '</p></div>' + timeFields + '<div class="space-y-1.5 pt-1"><div class="grid grid-cols-2 gap-1.5"><input type="number" id="meal-' + m.date + '" class="w-full p-2 border dark:border-slate-700 rounded-lg font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white" placeholder="Meal ₱"><input type="number" id="transpo-' + m.date + '" class="w-full p-2 border dark:border-slate-700 rounded-lg font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white" placeholder="Transpo ₱"></div><input type="text" id="reason-' + m.date + '" class="w-full p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white" placeholder="Ipasok ang dahilan ng kawalan..."><button type="button" onclick="submitAbsenceReason(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="w-full py-1.5 bg-slate-900 text-white font-bold rounded-lg text-xs">Ipadala ang Detalye</button></div>'; }
         grid.appendChild(div);
       });
     }
