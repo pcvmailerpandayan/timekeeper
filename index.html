@@ -58,6 +58,11 @@
         </div>
       </div>
 
+      <div class="flex items-center mt-1">
+        <input type="checkbox" id="loginRememberMe" class="w-4 h-4 text-red-600 bg-slate-50 border-slate-300 rounded focus:ring-red-500 accent-red-600 cursor-pointer">
+        <label for="loginRememberMe" class="ml-2 text-xs font-medium text-slate-600 cursor-pointer select-none">Tandaan Ako (Remember Me)</label>
+      </div>
+
       <button type="button" id="btnLogin" onclick="handleLogin()" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition shadow-lg shadow-red-600/20 active:scale-[0.98]">
         <i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In
       </button>
@@ -71,7 +76,7 @@
     <div id="registerFormSection" class="space-y-4 hidden">
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Employee ID</label>
-        <input type="text" id="regEmpId" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none" placeholder="Hal. 114030061" autocomplete="off">
+        <input type="text" id="regEmpId" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none" placeholder="Hal.(9-digits) 114030062" autocomplete="off">
       </div>
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Buong Pangalan</label>
@@ -79,7 +84,9 @@
       </div>
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Departamento</label>
-        <select id="regDept" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none cursor-pointer focus:ring-2 focus:ring-slate-900"></select>
+        <select id="regDept" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none cursor-pointer focus:ring-2 focus:ring-slate-900">
+          <option value="">Naglo-load ng listahan...</option>
+        </select>
       </div>
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Password</label>
@@ -278,6 +285,8 @@
                     <th class="p-2.5">ID</th>
                     <th class="p-2.5">Pangalan</th>
                     <th class="p-2.5">Departamento</th>
+                    <th class="p-2.5">Reg. Oras</th>
+                    <th class="p-2.5">Action Oras</th>
                     <th class="p-2.5 text-center">Status</th>
                   </tr>
                 </thead>
@@ -364,6 +373,7 @@
     let missingLayoutMode = "large"; 
     let fetchedMissingLogsArrayCache = [];
 
+    // IN-UPDATE: Pinalakas na Error Catching Framework para sa mga DNS / Network Drop alerts
     function executeServerRequest(payload, successCallback, failureCallback) {
       fetch(WEB_APP_API_URL, {
         method: "POST",
@@ -376,6 +386,19 @@
       .then(function(data) { if (successCallback) successCallback(data); })
       .catch(function(error) {
         console.error("Critical API Error: ", error);
+        
+        // Visual Fallback Alert Notification para alam ng user kung may problema sa DNS o link configuration
+        Swal.fire({
+          icon: 'error',
+          title: 'Network / API Connection Timeout',
+          html: '<div class="text-left text-xs space-y-1 text-slate-600">' +
+                  '<p><strong>Sanhi:</strong> Hindi ma-resolve ng browser ang Google Apps Script token.</p>' +
+                  '<p>1. Siguraduhing tugma ang iyong <code>WEB_APP_API_URL</code> sa linya 316.</p>' +
+                  '<p>2. I-check ang koneksyon sa internet o i-refresh ang pahina.</p>' +
+                '</div>',
+          confirmButtonColor: '#dc2626'
+        });
+        
         if (failureCallback) failureCallback(error);
       });
     }
@@ -391,6 +414,7 @@
         currentUser = JSON.parse(savedUser);
         var savedPane = localStorage.getItem("pandayan_active_pane");
         if (savedPane) { activeViewPaneMode = savedPane; }
+        document.getElementById('loginRememberMe').checked = true;
         bootDashboardPortal();
       }
     });
@@ -400,11 +424,17 @@
         var dropdown = document.getElementById('regDept');
         if (!dropdown) return;
         dropdown.innerHTML = "";
-        depts.forEach(function(d) {
-          var opt = document.createElement('option');
-          opt.value = d; opt.textContent = d;
-          dropdown.appendChild(opt);
-        });
+        
+        // Punan ang seleksyon kung matagumpay na nakuha ang array
+        if(Array.isArray(depts) && depts.length > 0) {
+          depts.forEach(function(d) {
+            var opt = document.createElement('option');
+            opt.value = d; opt.textContent = d;
+            dropdown.appendChild(opt);
+          });
+        } else {
+          dropdown.innerHTML = '<option value="">Walang nahanap na departamento</option>';
+        }
       });
     }
 
@@ -467,7 +497,13 @@
         toggleButtonState('btnLogin', false, '<i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In');
         if (res.success) {
           currentUser = res;
-          localStorage.setItem("pandayan_remembered_user", JSON.stringify(currentUser));
+          
+          if (document.getElementById('loginRememberMe').checked) {
+            localStorage.setItem("pandayan_remembered_user", JSON.stringify(currentUser));
+          } else {
+            localStorage.removeItem("pandayan_remembered_user");
+          }
+          
           Swal.fire({ icon: 'success', title: 'Mabuhay!', text: 'Matagumpay na naka-log in.', timer: 1500, showConfirmButton: false });
           bootDashboardPortal();
         } else {
@@ -475,7 +511,6 @@
         }
       }, function() {
         toggleButtonState('btnLogin', false, '<i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In');
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Hindi makakonekta sa server.', confirmButtonColor: '#dc2626' });
       });
     }
 
@@ -692,7 +727,7 @@
     function loadDepartmentMonitorFeed() {
       executeServerRequest({ action: "getDepartmentLogs", employeeId: currentUser.employeeId, department: currentUser.department }, function(logs) {
         var container = document.getElementById('departmentFeed');
-        if (logs.length === 0) { container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Wala pang nakatalang log ngayon.</div>'; return; }
+        if (!logs || logs.length === 0) { container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Wala pang nakatalang log ngayon.</div>'; return; }
         container.innerHTML = "";
         logs.forEach(function(l) {
           var badgeColor = l.logType === "IN" ? "bg-emerald-600" : (l.logType === "OUT" ? "bg-rose-600" : "bg-amber-600");
@@ -747,7 +782,7 @@
 
       executeServerRequest({ action: "getPersonalSummary", employeeId: currentUser.employeeId, fromDate: fromDate, toDate: toDate }, function(summary) {
         toggleButtonState('btnFilterHistory', false, 'I-Filter History');
-        if (summary.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-400">Walang natagpuang log.</td></tr>'; } 
+        if (!summary || summary.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-400">Walang natagpuang log.</td></tr>'; } 
         else {
           summary.sort(function(a, b) { return a.sortDateObj - b.sortDateObj; }); tbody.innerHTML = "";
           summary.forEach(function(s) {
@@ -762,7 +797,7 @@
             tbody.appendChild(tr);
           });
         }
-        executeServerRequest({ action: "getMissingLogs", employeeId: currentUser.employeeId, fromDate: fromDate, toDate: toDate }, function(missing) { fetchedMissingLogsArrayCache = missing; renderMissingLogsViewLayout(); });
+        executeServerRequest({ action: "getMissingLogs", employeeId: currentUser.employeeId, fromDate: fromDate, toDate: toDate }, function(missing) { fetchedMissingLogsArrayCache = missing || []; renderMissingLogsViewLayout(); });
       });
     }
 
@@ -776,31 +811,100 @@
 
     function renderMissingLogsViewLayout() {
       var grid = document.getElementById('missingLogsGrid');
-      if (fetchedMissingLogsArrayCache.length === 0) { grid.innerHTML = '<p class="text-emerald-600 font-bold text-xs p-4 col-span-full text-center bg-emerald-50 rounded-xl">Kumpleto ang iyong time logs.</p>'; return; }
+      if (!fetchedMissingLogsArrayCache || fetchedMissingLogsArrayCache.length === 0) { grid.innerHTML = '<p class="text-emerald-600 font-bold text-xs p-4 col-span-full text-center bg-emerald-50 rounded-xl">Kumpleto at maayos ang iyong time logs.</p>'; return; }
       grid.innerHTML = "";
       grid.className = missingLayoutMode === "list" ? "grid grid-cols-1 gap-2" : (missingLayoutMode === "small" ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4");
 
       fetchedMissingLogsArrayCache.forEach(function(m) {
         var div = document.createElement('div');
-        if (missingLayoutMode === "list") { div.className = "bg-slate-50 border p-3 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-3 text-xs shadow-sm"; div.innerHTML = '<div><span class="font-mono font-black text-slate-900">' + m.date + '</span><span class="text-[9px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded ml-2 uppercase">' + m.day + '</span></div><div class="flex items-center gap-2 w-full sm:w-auto"><input type="text" id="reason-' + m.date + '" class="w-full sm:w-64 p-2 border rounded-lg bg-white outline-none" placeholder="Dahilan ng kawalan..."><button type="button" onclick="submitAbsenceReason(\'' + m.date + '\', this)" class="px-4 py-2 bg-slate-900 text-white font-bold rounded-lg transition">Ipadala</button></div>'; } 
-        else if (missingLayoutMode === "small") { div.className = "bg-slate-50 border p-3 rounded-xl flex flex-col justify-between text-center gap-2 shadow-sm"; div.innerHTML = '<div><div class="font-mono font-bold text-slate-900 text-xs">' + m.date + '</div><div class="text-[9px] text-red-700 font-bold uppercase mt-0.5">' + m.day + '</div></div><button type="button" onclick="triggerSmallLayoutReasonPrompt(\'' + m.date + '\')" class="w-full py-1 bg-slate-900 text-white text-[10px] font-bold rounded-md transition">Dahilan</button>'; } 
-        else { div.className = "bg-slate-50 border p-4 rounded-xl space-y-2 flex flex-col justify-between shadow-sm text-xs"; div.innerHTML = '<div><div class="flex justify-between items-center"><span class="font-mono font-bold text-slate-900">' + m.date + '</span><span class="text-[9px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded uppercase">' + m.day + '</span></div><p class="text-[11px] text-slate-500 mt-1">Walang time entry para sa araw na ito.</p></div><div class="space-y-1.5 pt-2"><input type="text" id="reason-' + m.date + '" class="w-full p-2 border rounded-lg bg-white outline-none" placeholder="Ipasok ang dahilan ng kawalan..."><button type="button" onclick="submitAbsenceReason(\'' + m.date + '\', this)" class="w-full py-1.5 bg-slate-900 text-white font-bold rounded-lg transition">Ipadala ang Dahilan</button></div>'; }
+        if (missingLayoutMode === "list") { 
+          div.className = "bg-slate-50 border p-3 rounded-xl flex flex-col xl:flex-row justify-between items-center gap-3 text-xs shadow-sm"; 
+          div.innerHTML = '<div><span class="font-mono font-black text-slate-900">' + m.date + '</span><span class="text-[9px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded ml-2 uppercase">' + m.day + '</span></div>' +
+            '<div class="flex flex-wrap items-center gap-1.5 w-full xl:w-auto">' +
+              '<input type="number" id="meal-' + m.date + '" class="w-16 p-2 border rounded-lg bg-white outline-none text-xs" placeholder="Meal ₱">' +
+              '<input type="number" id="transpo-' + m.date + '" class="w-16 p-2 border rounded-lg bg-white outline-none text-xs" placeholder="Trns ₱">' +
+              '<input type="text" id="reason-' + m.date + '" class="flex-1 xl:w-56 p-2 border rounded-lg bg-white outline-none text-xs" placeholder="Dahilan ng kawalan...">' +
+              '<button type="button" onclick="submitAbsenceReason(\'' + m.date + '\', this)" class="px-4 py-2 bg-slate-900 text-white font-bold rounded-lg transition text-xs flex-shrink-0">Ipadala</button>' +
+            '</div>'; 
+        } 
+        else if (missingLayoutMode === "small") { 
+          div.className = "bg-slate-50 border p-3 rounded-xl flex flex-col justify-between text-center gap-2 shadow-sm"; 
+          div.innerHTML = '<div><div class="font-mono font-bold text-slate-900 text-xs">' + m.date + '</div><div class="text-[9px] text-red-700 font-bold uppercase mt-0.5">' + m.day + '</div></div><button type="button" onclick="triggerSmallLayoutReasonPrompt(\'' + m.date + '\')" class="w-full py-1 bg-slate-900 text-white text-[10px] font-bold rounded-md transition">Dahilan</button>'; 
+        } 
+        else { 
+          div.className = "bg-slate-50 border p-4 rounded-xl space-y-2 flex flex-col justify-between shadow-sm text-xs"; 
+          div.innerHTML = '<div><div class="flex justify-between items-center"><span class="font-mono font-bold text-slate-900">' + m.date + '</span><span class="text-[9px] bg-red-100 text-red-800 font-black px-1.5 py-0.5 rounded uppercase">' + m.day + '</span></div><p class="text-[11px] text-slate-500 mt-1">Incomplete o walang nakatalang time entry.</p></div>' +
+            '<div class="space-y-1.5 pt-2">' +
+              '<div class="grid grid-cols-2 gap-1.5">' +
+                '<input type="number" id="meal-' + m.date + '" class="w-full p-2 border rounded-lg bg-white outline-none text-xs" placeholder="Meal Allowance ₱">' +
+                '<input type="number" id="transpo-' + m.date + '" class="w-full p-2 border rounded-lg bg-white outline-none text-xs" placeholder="Transpo Allowance ₱">' +
+              '</div>' +
+              '<input type="text" id="reason-' + m.date + '" class="w-full p-2 border rounded-lg bg-white outline-none text-xs" placeholder="Ipasok ang dahilan ng kawalan...">' +
+              '<button type="button" onclick="submitAbsenceReason(\'' + m.date + '\', this)" class="w-full py-1.5 bg-slate-900 text-white font-bold rounded-lg transition text-xs">Ipadala ang Dahilan</button>' +
+            '</div>'; 
+        }
         grid.appendChild(div);
       });
     }
 
     function triggerSmallLayoutReasonPrompt(dateStr) {
-      Swal.fire({ title: 'Dahilan ng Kawalan', text: 'Ipasok ang dahilan para sa ' + dateStr + ':', input: 'text', inputPlaceholder: 'Hal. Naka-leave', showCancelButton: true, confirmButtonColor: '#0f172a', cancelButtonColor: '#64748b', confirmButtonText: 'Ipadala' }).then(function(result) {
-        if (result.value && result.value.trim() !== "") { executeServerRequest({ action: "saveMissingLogReason", payload: { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, reason: result.value.trim() } }, function() { executeHistoryAndMissingPipeline(); }); }
+      Swal.fire({
+        title: 'Dahilan at Allowance para sa ' + dateStr,
+        html:
+          '<div class="flex flex-col gap-2 text-left text-xs p-1">' +
+            '<label class="font-bold text-slate-600">Meal Allowance ₱</label><input id="swal-meal" type="number" class="w-full p-2 border rounded-xl outline-none" placeholder="0.00">' +
+            '<label class="font-bold text-slate-600">Transpo Allowance ₱</label><input id="swal-transpo" type="number" class="w-full p-2 border rounded-xl outline-none" placeholder="0.00">' +
+            '<label class="font-bold text-slate-600">Dahilan ng Kawalan</label><input id="swal-reason" type="text" class="w-full p-2 border rounded-xl outline-none" placeholder="Hal. Leave / Nakalimut mag OUT">' +
+          '</div>',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonColor: '#0f172a',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ipadala',
+        preConfirm: () => {
+          return {
+            meal: document.getElementById('swal-meal').value,
+            transpo: document.getElementById('swal-transpo').value,
+            reason: document.getElementById('swal-reason').value
+          }
+        }
+      }).then(function(result) {
+        if (result.value && result.value.reason.trim() !== "") {
+          var payload = { 
+            employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, 
+            targetDate: dateStr, reason: result.value.reason.trim(), meal: result.value.meal || "0", transpo: result.value.transpo || "0" 
+          };
+          executeServerRequest({ action: "saveMissingLogReason", payload: payload }, function(res) {
+            if (res.success) {
+              Swal.fire({ icon: 'success', title: 'Naitala!', text: res.message, timer: 1500, showConfirmButton: false });
+              executeHistoryAndMissingPipeline();
+            }
+          });
+        }
       });
     }
 
     function submitAbsenceReason(dateStr, buttonElement) {
-      var input = document.getElementById('reason-' + dateStr); var reasonVal = input.value.trim();
+      var input = document.getElementById('reason-' + dateStr); 
+      var mealInput = document.getElementById('meal-' + dateStr);
+      var transpoInput = document.getElementById('transpo-' + dateStr);
+      var reasonVal = input.value.trim();
+      
       if (!reasonVal) { Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Maglagay ng valid na dahilan.' }); return; }
-      input.disabled = true; buttonElement.disabled = true;
-      executeServerRequest({ action: "saveMissingLogReason", payload: { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, reason: reasonVal } }, function(res) {
-        if (res.success) { executeHistoryAndMissingPipeline(); }
+      
+      input.disabled = true;
+      if(mealInput) mealInput.disabled = true;
+      if(transpoInput) transpoInput.disabled = true;
+      buttonElement.disabled = true;
+      buttonElement.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
+
+      var payload = { 
+        employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, 
+        targetDate: dateStr, reason: reasonVal, meal: mealInput ? mealInput.value : "0", transpo: transpoInput ? transpoInput.value : "0" 
+      };
+      executeServerRequest({ action: "saveMissingLogReason", payload: payload }, function(res) {
+        if (res.success) { Swal.fire({ icon: 'success', title: 'Naitala!', text: res.message, timer: 1500, showConfirmButton: false }); executeHistoryAndMissingPipeline(); }
+        else { input.disabled = false; if(mealInput) mealInput.disabled = false; if(transpoInput) transpoInput.disabled = false; buttonElement.disabled = false; buttonElement.innerHTML = 'Ipadala'; }
       });
     }
 
@@ -815,22 +919,26 @@
     function loadAdminApprovalQueue() {
       var queueContainer = document.getElementById('adminPendingQueue'); var historyTableBody = document.getElementById('adminHistoryLogTable');
       executeServerRequest({ action: "getPendingUsers", adminId: currentUser.employeeId }, function(data) {
-        if (!data.pending || data.pending.length === 0) { queueContainer.innerHTML = '<div class="text-xs text-emerald-600 font-bold bg-emerald-50 p-3 rounded-xl">Walang nag-aantay na account approval.</div>'; } 
+        if (!data || !data.pending || data.pending.length === 0) { queueContainer.innerHTML = '<div class="text-xs text-emerald-600 font-bold bg-emerald-50 p-3 rounded-xl">Walang nag-aantay na account approval.</div>'; } 
         else {
           queueContainer.innerHTML = "";
           data.pending.forEach(function(u) {
-            var item = document.createElement('div'); item.className = "flex justify-between items-center bg-white p-3 border rounded-xl text-xs shadow-sm";
-            item.innerHTML = '<div><span class="font-bold">' + u.name + '</span> (' + u.employeeId + ')<br><span class="text-[10px] text-slate-500">' + u.department + '</span></div><div class="flex gap-1"><button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', \'APPROVED\', this)" class="px-2 py-1 bg-emerald-600 text-white rounded text-[11px] font-bold">Approve</button><button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', \'DENIED\', this)" class="px-2 py-1 bg-rose-600 text-white rounded text-[11px] font-bold">Deny</button></div>';
+            var item = document.createElement('div'); item.className = "flex justify-between items-center bg-white p-3 border rounded-xl text-xs shadow-sm gap-2";
+            item.innerHTML = '<div><span class="font-bold text-slate-900">' + u.name + '</span> (' + u.employeeId + ')<br><span class="text-[10px] text-slate-500">' + u.department + '</span><br><span class="text-[9px] text-slate-400 block mt-1"><i class="fa-regular fa-clock mr-1"></i>Reg: ' + u.regTime + '</span></div>' +
+              '<div class="flex gap-1 flex-shrink-0">' +
+                '<button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', \'APPROVED\', this)" class="px-2 py-1 bg-emerald-600 text-white rounded text-[11px] font-bold hover:bg-emerald-700 transition">Approve</button>' +
+                '<button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', \'DENIED\', this)" class="px-2 py-1 bg-rose-600 text-white rounded text-[11px] font-bold hover:bg-rose-700 transition">Deny</button>' +
+              '</div>';
             queueContainer.appendChild(item);
           });
         }
-        if (!data.history || data.history.length === 0) { historyTableBody.innerHTML = '<tr><td colspan="4" class="p-3 text-center">Walang kasaysayan.</td></tr>'; } 
+        if (!data || !data.history || data.history.length === 0) { historyTableBody.innerHTML = '<tr><td colspan="6" class="p-3 text-center text-slate-400">Walang kasaysayan.</td></tr>'; } 
         else {
           historyTableBody.innerHTML = "";
           data.history.forEach(function(h) {
             var badgeStyle = h.status === "APPROVED" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800";
-            var tr = document.createElement('tr'); tr.className = "border-b text-slate-700";
-            tr.innerHTML = '<td class="p-2.5 font-mono">' + h.employeeId + '</td><td class="p-2.5 font-medium">' + h.name + '</td><td class="p-2.5 text-slate-500">' + h.department + '</td><td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ' + badgeStyle + '">' + h.status + '</span></td>';
+            var tr = document.createElement('tr'); tr.className = "border-b text-slate-700 text-xs hover:bg-slate-50";
+            tr.innerHTML = '<td class="p-2.5 font-mono">' + h.employeeId + '</td><td class="p-2.5 font-medium">' + h.name + '</td><td class="p-2.5 text-slate-500">' + h.department + '</td><td class="p-2.5 text-slate-400 font-mono text-[10px]">' + h.regTime + '</td><td class="p-2.5 text-slate-400 font-mono text-[10px]">' + h.actionTime + '</td><td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ' + badgeStyle + '">' + h.status + '</span></td>';
             historyTableBody.appendChild(tr);
           });
         }
@@ -838,9 +946,15 @@
     }
 
     function executeAccountApproval(empId, statusString, buttonElement) {
-      buttonElement.disabled = true;
+      var parent = buttonElement.closest('div');
+      var buttons = parent.querySelectorAll('button');
+      buttons.forEach(function(b) { b.disabled = true; });
+      
+      buttonElement.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Sending...';
+      buttonElement.className = statusString === "APPROVED" ? "px-2 py-1 bg-emerald-800 text-white rounded text-[11px] font-bold animate-pulse scale-95 transition" : "px-2 py-1 bg-rose-800 text-white rounded text-[11px] font-bold animate-pulse scale-95 transition";
+      
       executeServerRequest({ action: "processApproval", adminId: currentUser.employeeId, targetEmpId: empId, statusStatus: statusString }, function(res) {
-        if (res.success) { loadAdminApprovalQueue(); }
+        if (res && res.success) { Swal.fire({ icon: 'success', title: 'Tapos Na!', text: res.message, timer: 1500, showConfirmButton: false }); loadAdminApprovalQueue(); }
       });
     }
 
