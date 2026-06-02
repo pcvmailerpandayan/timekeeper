@@ -36,7 +36,6 @@
         background: #334155;
       }
     }
-    /* Smooth CSS Toggle logic overlay for relative menu system */
     .dropdown-container:hover .dropdown-menu-pane,
     .dropdown-container:focus-within .dropdown-menu-pane {
       display: block !important;
@@ -59,7 +58,7 @@
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Employee ID</label>
         <div class="relative">
           <i class="fa-solid fa-user absolute left-3 top-3.5 text-slate-400"></i>
-          <input type="text" id="loginEmpId" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition text-slate-900 dark:text-white" placeholder="Ipasok ang ID" autocomplete="off">
+          <input type="text" id="loginEmpId" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-880 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition text-slate-900 dark:text-white" placeholder="Ipasok ang ID" autocomplete="off">
         </div>
       </div>
 
@@ -168,7 +167,7 @@
       </div>
     </div>
 
-<div id="sidebarMenuOverlay" onclick="toggleSidebarMenuGateway(false)" class="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
+    <div id="sidebarMenuOverlay" onclick="toggleSidebarMenuGateway(false)" class="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
     <div id="sidebarMenuLayoutWindow" class="fixed top-0 left-0 bottom-0 h-screen w-72 bg-white dark:bg-slate-900 z-40 p-6 shadow-2xl lg:shadow-none transform -translate-x-full transition duration-300 ease-in-out lg:translate-x-0 lg:border-r lg:border-slate-200/80 lg:dark:border-slate-800 flex flex-col justify-between transition-colors">
       <div class="space-y-6">
         <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4">
@@ -194,7 +193,7 @@
         </nav>
       </div>
       <div class="border-t pt-4 text-center dark:border-slate-800">
-        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">Pandayan Timekeeper v16.0</p>
+        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">Pandayan Timekeeper v16.1</p>
       </div>
     </div>
 
@@ -549,17 +548,10 @@
                        '<label class="font-bold text-slate-600 dark:text-slate-400">Kumpirmahin ang Bagong Password</label>' +
                        '<input id="swalConfirmPass" type="password" class="w-full p-2.5 border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl outline-none font-bold animate-fadeIn" placeholder="••••••••">' +
                      '</div>';
-                     
       Swal.fire({
-        title: 'Palitan ang Password',
-        html: formHtml,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonColor: '#dc2626',
-        confirmButtonText: 'I-Save Bagong Password',
+        title: 'Palitan ang Password', html: formHtml, focusConfirm: false, showCancelButton: true, confirmButtonColor: '#dc2626', confirmButtonText: 'I-Save Bagong Password',
         preConfirm: () => {
-          var p1 = document.getElementById('swalNewPass').value.trim();
-          var p2 = document.getElementById('swalConfirmPass').value.trim();
+          var p1 = document.getElementById('swalNewPass').value.trim(); var p2 = document.getElementById('swalConfirmPass').value.trim();
           if (!p1 || !p2) { Swal.showValidationMessage('Mangyaring punan ang magkabilang patlang!'); return false; }
           if (p1 !== p2) { Swal.showValidationMessage('Hindi nagtutugma ang dalawang password!'); return false; }
           if (p1.length < 4) { Swal.showValidationMessage('Masyadong maikli ang password (min. 4 characters)!'); return false; }
@@ -675,12 +667,19 @@
           summary.sort(function(a, b) { return a.sortDateObj - b.sortDateObj; }); tbody.innerHTML = "";
           summary.forEach(function(s) {
             var tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition";
-            var isLockedAttr = s.isLocked ? 'disabled' : ''; var lockClass = s.isLocked ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 font-mono' : 'bg-white dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-300';
-            var postBadge = s.isLocked ? ' <span class="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-400 rounded font-black text-[9px] uppercase ml-1"><i class="fa-solid fa-lock mr-0.5"></i>Posted</span>' : '';
+            
+            // STRICT INTERFACE LOCK RULES V16.1: Dapat ay may natapos na OUT log o MANUAL resolution bago mabuksan ang input fields.
+            var isEditable = !s.isLocked && s.allowAllowance;
+            var isLockedAttr = isEditable ? '' : 'disabled';
+            var lockClass = isEditable ? 'bg-white dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-300' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 font-mono cursor-not-allowed';
+            
+            var postBadge = s.isLocked ? ' <span class="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-400 rounded font-black text-[9px] uppercase ml-1"><i class="fa-solid fa-lock mr-0.5"></i>Posted</span>' : (!s.allowAllowance ? ' <span class="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded font-medium text-[9px] uppercase ml-1"><i class="fa-solid fa-hourglass-half mr-0.5"></i>Awaiting OUT log</span>' : '');
             var statusTypeStyle = s.logType === "COMPLETE" ? "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-400" : (s.logType === "MANUAL" ? "bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-400" : "bg-red-100 dark:bg-red-950/80 text-red-800 dark:text-red-400");
+            
             var mealInputHtml = '<div class="relative"><span class="absolute left-2 top-2 text-slate-400 font-bold">₱</span><input type="number" value="' + s.meal + '" ' + isLockedAttr + ' onchange="syncAllowanceToSheet(\'' + s.date + '\', this)" class="w-full pl-6 pr-2 py-1 border dark:border-slate-700 rounded-lg text-xs ' + lockClass + '"></div>';
             var transpoInputHtml = '<div class="relative"><span class="absolute left-2 top-2 text-slate-400 font-bold">₱</span><input type="number" value="' + s.transpo + '" ' + isLockedAttr + ' onchange="syncAllowanceToSheet(\'' + s.date + '\', this)" class="w-full pl-6 pr-2 py-1 border dark:border-slate-700 rounded-lg text-xs ' + lockClass + '"></div>';
-            var detailsInputHtml = '<textarea ' + isLockedAttr + ' onchange="syncAllowanceToSheet(\'' + s.date + '\', this)" class="w-full p-1 border dark:border-slate-700 rounded-lg text-[11px] h-10 resize-none ' + (s.isLocked ? 'bg-slate-100 dark:bg-slate-800 text-slate-400' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white') + '">' + s.details + '</textarea>';
+            var detailsInputHtml = '<textarea ' + isLockedAttr + ' onchange="syncAllowanceToSheet(\'' + s.date + '\', this)" class="w-full p-1 border dark:border-slate-700 rounded-lg text-[11px] h-10 resize-none ' + (isEditable ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 cursor-not-allowed') + '">' + s.details + '</textarea>';
+            
             tr.innerHTML = '<td class="p-3 font-bold text-slate-900 dark:text-white">' + s.date + postBadge + '</td><td class="p-3 font-mono font-bold text-slate-700 dark:text-slate-300 text-[11px]">' + s.time + '</td><td class="p-3"><span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase ' + statusTypeStyle + '">' + s.logType + '</span></td><td class="p-3 text-slate-500 dark:text-slate-400 truncate max-w-[150px]">' + s.branch + '</td><td class="p-2">' + mealInputHtml + '</td><td class="p-2">' + transpoInputHtml + '</td><td class="p-2">' + detailsInputHtml + '</td>'; tbody.appendChild(tr);
           });
         }
