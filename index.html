@@ -431,7 +431,8 @@
   </div>
 
   <script>
-    const WEB_APP_API_URL = "https://script.google.com/macros/s/AKfycbzB3pv_R7RjDbYmMuf4d7egGMYQSf07Xjjj7Ix2q2yCGGafJJ3xoKM-4UBEC6TsWs0A/exec";
+    // IPALIT MO DITO SA LOOB NG PANIPIT NA ITO ANG MAPIPILING URL NG IYONG CLOUDFLARE WORKER PROXY
+    const WEB_APP_API_URL = "https://winter-haze-4d14.pcvmailer-pandayan.workers.dev";
 
     let currentUser = null;
     let selectedLogType = ""; let capturedPhotoBase64 = "";
@@ -595,14 +596,12 @@
       else { menu.classList.remove('sidebar-menu-active'); overlay.classList.add('hidden'); }
     }
 
-    // SLIDE-OUT MENU GATEWAY: FORCED HIDE PORTAL CONTROLS IN BOTH VIEWS FOR REGULAR DEPARTMENTS
     function switchActiveViewPane(targetPane) {
       activeViewPaneMode = targetPane; localStorage.setItem("pandayan_active_pane", targetPane); toggleSidebarMenuGateway(false);
       var panes = ['punch', 'monitor', 'history', 'admin', 'payroll'];
       var isPayrollOrAdmin = (currentUser && (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin" || currentUser.department.toLowerCase() === "payroll"));
       
       panes.forEach(function(p) { var el = document.getElementById(p + 'Pane'); if (el) el.style.display = 'none'; });
-      
       var activePaneEl = document.getElementById(targetPane + 'Pane');
       if (activePaneEl) {
         if ((targetPane === 'admin' || targetPane === 'payroll') && !isPayrollOrAdmin) {
@@ -841,7 +840,6 @@
       });
     }
 
-    // DISCONNECTED CELL RE-SCANNING INJECTOR: Ipinapasa ang Employee ID at ang mismong actual na Date string para sa update lookup
     function syncAllowanceToSheet(dateStr, element) {
       var tr = element.closest('tr'); var inputs = tr.querySelectorAll('input[type="number"]'); var textarea = tr.querySelector('textarea'); element.classList.add('border-amber-500', 'bg-amber-50');
       executeServerRequest({ action: "updateAllowances", employeeId: currentUser.employeeId, dateStr: dateStr, meal: inputs[0].value, transpo: inputs[1].value, details: textarea ? textarea.value : "" }, function(res) {
