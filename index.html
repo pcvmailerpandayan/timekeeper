@@ -58,7 +58,7 @@
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Employee ID</label>
         <div class="relative">
           <i class="fa-solid fa-user absolute left-3 top-3.5 text-slate-400"></i>
-          <input type="text" id="loginEmpId" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-880 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition text-slate-900 dark:text-white" placeholder="Ipasok ang ID" autocomplete="off">
+          <input type="text" id="loginEmpId" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition text-slate-900 dark:text-white" placeholder="Ipasok ang ID" autocomplete="off">
         </div>
       </div>
 
@@ -184,16 +184,16 @@
           <button type="button" onclick="switchActiveViewPane('history')" id="navBtn-history" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-left text-xs">
             <i class="fa-solid fa-clock-rotate-left w-6 text-center text-slate-500 dark:text-slate-400 text-sm"></i> <span>Logs & Allowances</span>
           </button>
-          <button type="button" id="navBtn-payroll" onclick="switchActiveViewPane('payroll')" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30 transition text-left text-xs hidden">
+          <button type="button" id="navBtn-payroll" onclick="switchActiveViewPane('payroll')" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30 transition text-left text-xs" style="display: none;">
             <i class="fa-solid fa-file-invoice-dollar w-6 text-center text-sm"></i> <span>Payroll Summary Portal</span>
           </button>
-          <button type="button" id="navBtn-admin" onclick="switchActiveViewPane('admin')" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition text-left text-xs hidden">
+          <button type="button" id="navBtn-admin" onclick="switchActiveViewPane('admin')" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition text-left text-xs" style="display: none;">
             <i class="fa-solid fa-user-shield w-6 text-center text-sm"></i> <span>Admin Control Portal</span>
           </button>
         </nav>
       </div>
       <div class="border-t pt-4 text-center dark:border-slate-800">
-        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">Pandayan Timekeeper v16.1</p>
+        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">Pandayan Timekeeper v16.5</p>
       </div>
     </div>
 
@@ -300,7 +300,7 @@
           </div>
           <div>
             <label class="block font-bold text-slate-600 dark:text-slate-400 mb-1">I-Filter sa Departamento</label>
-            <select id="payDeptSelect" class="w-full p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none cursor-pointer"></select>
+            <select id="payDeptSelect" onchange="renderPayrollEmployeesDropdown()" class="w-full p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none cursor-pointer"></select>
           </div>
           <div>
             <label class="block font-bold text-slate-600 dark:text-slate-400 mb-1">Pangalan ng Empleyado</label>
@@ -457,6 +457,7 @@
     let activeViewPaneMode = "punch"; 
     let gpsIntervalReference = null; let backgroundSyncInterval = null; 
     let missingLayoutMode = "large"; let fetchedMissingLogsArrayCache = [];
+    let approvedEmployeesGlobalCache = []; 
 
     function executeServerRequest(payload, successCallback, failureCallback) {
       fetch(WEB_APP_API_URL, {
@@ -524,12 +525,27 @@
       var selectMenu = document.getElementById('payEmployeeIdSelect'); if (!selectMenu) return;
       selectMenu.innerHTML = '<option value="">Naglo-load ng mga empleyado...</option>';
       executeServerRequest({ action: "getApprovedEmployees" }, function(list) {
-        selectMenu.innerHTML = '<option value="">Lahat ng Empleyado</option>';
         if (Array.isArray(list)) {
-          list.forEach(function(emp) {
-            var opt = document.createElement('option'); opt.value = emp.employeeId.toString().trim();
-            opt.textContent = emp.name + " (" + emp.employeeId + ") [" + emp.department + "]"; selectMenu.appendChild(opt);
-          });
+          // GUSTONG IMPROVEMENT: Isasaayos ang listahan ng mga Kapwa mula A-Z (Alphabetical Sorting Loop)
+          list.sort(function(a, b) { return a.name.localeCompare(b.name); });
+          approvedEmployeesGlobalCache = list; 
+          renderPayrollEmployeesDropdown(); 
+        }
+      });
+    }
+
+    function renderPayrollEmployeesDropdown() {
+      var selectMenu = document.getElementById('payEmployeeIdSelect'); if (!selectMenu) return;
+      var selectedDept = document.getElementById('payDeptSelect').value;
+      selectMenu.innerHTML = '<option value="">Lahat ng Empleyado</option>';
+      
+      // GUSTONG IMPROVEMENT: Dynamic Filtering base sa kasalukuyang piniling Departamento sa drop-down list
+      approvedEmployeesGlobalCache.forEach(function(emp) {
+        if (!selectedDept || emp.department.toString().trim().toLowerCase() === selectedDept.toString().trim().toLowerCase()) {
+          var opt = document.createElement('option');
+          opt.value = emp.employeeId.toString().trim();
+          opt.textContent = emp.name + " (" + emp.employeeId + ")";
+          selectMenu.appendChild(opt);
         }
       });
     }
@@ -608,12 +624,11 @@
     function bootDashboardPortal() {
       document.getElementById('authContainer').classList.add('hidden'); document.getElementById('dashboardContainer').classList.remove('hidden');
       document.getElementById('userDisplayName').textContent = currentUser.name; document.getElementById('userDisplayDept').textContent = "Idineploy sa: " + currentUser.department;
+      
       var isPayrollOrAdmin = (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin" || currentUser.department.toLowerCase() === "payroll");
       if (isPayrollOrAdmin) {
-        document.getElementById('navBtn-admin').classList.remove('hidden'); document.getElementById('navBtn-payroll').classList.remove('hidden');
         loadAdminApprovalQueue(); loadApprovedEmployeesDropdown(); loadPlatinumPayrollReport();
       } else {
-        document.getElementById('navBtn-admin').classList.add('hidden'); document.getElementById('navBtn-payroll').classList.add('hidden');
         if (activeViewPaneMode === "admin" || activeViewPaneMode === "payroll") { activeViewPaneMode = "punch"; }
       }
       initEnforcedGeolocatorTelemetry(); loadBranchDataset(); loadDepartmentMonitorFeed(); executeHistoryAndMissingPipeline();
@@ -628,12 +643,28 @@
       activeViewPaneMode = targetPane; localStorage.setItem("pandayan_active_pane", targetPane); toggleSidebarMenuGateway(false);
       var panes = ['punch', 'monitor', 'history', 'admin', 'payroll'];
       var isPayrollOrAdmin = (currentUser && (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin" || currentUser.department.toLowerCase() === "payroll"));
-      panes.forEach(function(p) { var el = document.getElementById(p + 'Pane'); if (el) el.style.display = 'none'; });
+      
+      panes.forEach(function(p) {
+        var el = document.getElementById(p + 'Pane'); if (el) el.style.display = 'none';
+        var navBtn = document.getElementById('navBtn-' + p);
+        if (navBtn) {
+          // GUSTONG IMPROVEMENT: Ganap na itatago (style.display = none) ang clickable text/buttons kapag HINDI admin o payroll
+          if ((p === 'admin' || p === 'payroll') && !isPayrollOrAdmin) {
+            navBtn.style.display = 'none';
+          } else {
+            navBtn.style.display = 'flex';
+            if (p === 'admin') navBtn.className = "w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition text-left text-xs";
+            else if (p === 'payroll') navBtn.className = "w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30 transition text-left text-xs";
+            else navBtn.className = "w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-left text-xs";
+          }
+        }
+      });
+      
       var activePaneEl = document.getElementById(targetPane + 'Pane');
       if (activePaneEl) { if ((targetPane === 'admin' || targetPane === 'payroll') && !isPayrollOrAdmin) { document.getElementById('punchPane').style.display = 'block'; } else { activePaneEl.style.display = (targetPane === 'monitor' || targetPane === 'admin' || targetPane === 'payroll') ? 'flex' : 'block'; } }
-      panes.forEach(function(p) { var navBtn = document.getElementById('navBtn-' + p); if (navBtn) navBtn.className = "w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-left text-xs"; });
+      
       var currentActiveNavBtn = document.getElementById('navBtn-' + targetPane);
-      if (currentActiveNavBtn) {
+      if (currentActiveNavBtn && (isPayrollOrAdmin || (targetPane !== 'admin' && targetPane !== 'payroll'))) {
         if (targetPane === 'admin') currentActiveNavBtn.className = "w-full flex items-center space-x-3 p-3 font-bold rounded-xl bg-purple-50 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400 transition text-left text-xs";
         else if (targetPane === 'payroll') currentActiveNavBtn.className = "w-full flex items-center space-x-3 p-3 font-bold rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 transition text-left text-xs";
         else currentActiveNavBtn.className = "w-full flex items-center space-x-3 p-3 font-bold rounded-xl bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 transition text-left text-xs";
@@ -667,8 +698,6 @@
           summary.sort(function(a, b) { return a.sortDateObj - b.sortDateObj; }); tbody.innerHTML = "";
           summary.forEach(function(s) {
             var tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition";
-            
-            // STRICT INTERFACE LOCK RULES V16.1: Dapat ay may natapos na OUT log o MANUAL resolution bago mabuksan ang input fields.
             var isEditable = !s.isLocked && s.allowAllowance;
             var isLockedAttr = isEditable ? '' : 'disabled';
             var lockClass = isEditable ? 'bg-white dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-300' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 font-mono cursor-not-allowed';
@@ -720,10 +749,15 @@
       executeServerRequest({ action: "getPayrollReport", adminId: adminId, filterEmpId: fEmpId, filterDept: fDept, fromDate: fromD, toDate: toD }, function(res) {
         searchBtnText.innerHTML = "Suriin"; document.getElementById('btnPayrollSearchQuery').disabled = false;
         if(!res.success) { tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-red-500 font-bold">' + res.message + '</td></tr>'; return; }
-        document.getElementById('lblPayTotalDays').textContent = res.summary.totalDaysPresent; document.getElementById('lblPayTotalMeal').textContent = "₱" + res.summary.totalMeal.toFixed(2); document.getElementById('lblPayTotalTranspo').textContent = "₱" + res.summary.totalTranspo.toFixed(2);
+        
+        // GUSTONG IMPROVEMENT: Nilapatan ng propesyonal na comma-separator notation (.toLocaleString) ang mga dashboard widgets
+        document.getElementById('lblPayTotalDays').textContent = res.summary.totalDaysPresent; 
+        document.getElementById('lblPayTotalMeal').textContent = "₱" + res.summary.totalMeal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); 
+        document.getElementById('lblPayTotalTranspo').textContent = "₱" + res.summary.totalTranspo.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
         if(!res.reportRows || res.reportRows.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="p-8 text-center text-slate-400">Walang natagpuang logs.</td></tr>'; return; }
         tbody.innerHTML = ""; document.getElementById('paySelectAllRowsBox').checked = false;
-        res.reportRows.forEach(function(r) { var tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800 transition border-b border-slate-100 dark:border-slate-800"; var statusBadge = r.isPosted ? '<span class="px-2 py-0.5 bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-400 font-black rounded uppercase text-[10px]"><i class="fa-solid fa-lock mr-0.5"></i>Posted</span>' : '<span class="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-400 font-black rounded uppercase text-[10px]">Active</span>'; var checkboxHtml = r.isPosted ? '<i class="fa-solid fa-circle-check text-amber-500 text-base"></i>' : '<input type="checkbox" data-rows="' + r.associatedRowIds.join(',') + '" class="pay-row-checkbox w-4 h-4 cursor-pointer">'; tr.innerHTML = '<td class="p-3 text-center">' + checkboxHtml + '</td><td class="p-3 font-mono font-bold text-slate-900 dark:text-white">' + r.empId + '</td><td class="p-3 font-medium text-slate-800 dark:text-slate-200">' + r.name + '</td><td class="p-3 text-slate-500 dark:text-slate-400">' + r.department + '</td><td class="p-3 font-mono text-slate-700 dark:text-slate-300">' + r.date + '</td><td class="p-3 font-bold text-slate-800 dark:text-slate-200">₱' + r.meal.toFixed(2) + '</td><td class="p-3 font-bold text-slate-800 dark:text-slate-200">₱' + r.transpo.toFixed(2) + '</td><td class="p-3 text-center">' + statusBadge + '</td>'; tbody.appendChild(tr); });
+        res.reportRows.forEach(function(r) { var tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800 transition border-b border-slate-100 dark:border-slate-800"; var statusBadge = r.isPosted ? '<span class="px-2 py-0.5 bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-400 font-black rounded uppercase text-[10px]"><i class="fa-solid fa-lock mr-0.5"></i>Posted</span>' : '<span class="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-400 font-black rounded uppercase text-[10px]">Active</span>'; var checkboxHtml = r.isPosted ? '<i class="fa-solid fa-circle-check text-amber-500 text-base"></i>' : '<input type="checkbox" data-rows="' + r.associatedRowIds.join(',') + '" class="pay-row-checkbox w-4 h-4 cursor-pointer">'; tr.innerHTML = '<td class="p-3 text-center">' + checkboxHtml + '</td><td class="p-3 font-mono font-bold text-slate-900 dark:text-white">' + r.empId + '</td><td class="p-3 font-medium text-slate-800 dark:text-slate-200">' + r.name + '</td><td class="p-3 text-slate-500 dark:text-slate-400">' + r.department + '</td><td class="p-3 font-mono text-slate-700 dark:text-slate-300">' + r.date + '</td><td class="p-3 font-bold text-slate-800 dark:text-slate-200">₱' + r.meal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</td><td class="p-3 font-bold text-slate-800 dark:text-slate-200">₱' + r.transpo.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</td><td class="p-3 text-center">' + statusBadge + '</td>'; tbody.appendChild(tr); });
       }, function() { searchBtnText.innerHTML = "Suriin"; document.getElementById('btnPayrollSearchQuery').disabled = false; });
     }
 
@@ -739,3 +773,4 @@
   </script>
 </body>
 </html>
+
