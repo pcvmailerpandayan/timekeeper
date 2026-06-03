@@ -621,20 +621,39 @@
       });
     }
 
-    function bootDashboardPortal() {
-      document.getElementById('authContainer').classList.add('hidden'); document.getElementById('dashboardContainer').classList.remove('hidden');
-      document.getElementById('userDisplayName').textContent = currentUser.name; document.getElementById('userDisplayDept').textContent = "Idineploy sa: " + currentUser.department;
+function bootDashboardPortal() {
+      document.getElementById('authContainer').classList.add('hidden'); 
+      document.getElementById('dashboardContainer').classList.remove('hidden');
+      document.getElementById('userDisplayName').textContent = currentUser.name; 
+      document.getElementById('userDisplayDept').textContent = "Idineploy sa: " + currentUser.department;
       
       var isPayrollOrAdmin = (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin" || currentUser.department.toLowerCase() === "payroll");
       if (isPayrollOrAdmin) {
-        loadAdminApprovalQueue(); loadApprovedEmployeesDropdown(); loadPlatinumPayrollReport();
+        loadAdminApprovalQueue(); 
+        loadApprovedEmployeesDropdown(); 
+        loadPlatinumPayrollReport();
       } else {
         if (activeViewPaneMode === "admin" || activeViewPaneMode === "payroll") { activeViewPaneMode = "punch"; }
       }
-      initEnforcedGeolocatorTelemetry(); loadBranchDataset(); loadDepartmentMonitorFeed(); executeHistoryAndMissingPipeline();
+      
+      initEnforcedGeolocatorTelemetry(); 
+      loadBranchDataset(); 
+      loadDepartmentMonitorFeed(); 
+      executeHistoryAndMissingPipeline();
       switchActiveViewPane(activeViewPaneMode);
+      
+      // DITO MO MISMO IPAPALIT ITONG INAYOS NA SETINTERVAL BLOCK:
       if (backgroundSyncInterval) clearInterval(backgroundSyncInterval);
-      backgroundSyncInterval = setInterval(function() { if (currentUser) { loadDepartmentMonitorFeed(); if (activeViewPaneMode === "admin" && isPayrollOrAdmin) loadAdminApprovalQueue(); if (activeViewPaneMode === "payroll" && isPayrollOrAdmin) loadPlatinumPayrollReport(); } }, 30000);
+      backgroundSyncInterval = setInterval(function() { 
+        if (currentUser) { 
+          loadDepartmentMonitorFeed(); 
+          // Agresibong refresh para sa Admin at Payroll kahit anong tab ang pinapanood mo
+          if (isPayrollOrAdmin) {
+            loadAdminApprovalQueue(); 
+            loadPlatinumPayrollReport(); 
+          }
+        } 
+      }, 30000); // Tumatakbo bawat 30 segundo
     }
 
     function toggleSidebarMenuGateway(open) { var menu = document.getElementById('sidebarMenuLayoutWindow'); var overlay = document.getElementById('sidebarMenuOverlay'); if (open) { menu.classList.add('sidebar-menu-active'); overlay.classList.remove('hidden'); } else { menu.classList.remove('sidebar-menu-active'); overlay.classList.add('hidden'); } }
