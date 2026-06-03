@@ -575,7 +575,7 @@
         }
       }).then(function(result) {
         if (result.value) {
-          Swal.fire({ title: 'Nag-i-update...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+          Swal.fire({ title: 'Nag-a-update...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
           executeServerRequest({ action: "changePassword", employeeId: currentUser.employeeId.toString().trim(), newPassword: result.value }, function(res) {
             if (res.success) { Swal.fire({ icon: 'success', title: 'Matagumpay!', text: res.message, timer: 2000, showConfirmButton: false }); } 
             else { Swal.fire({ icon: 'error', title: 'Kabiguan', text: res.message }); }
