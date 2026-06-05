@@ -467,25 +467,43 @@
     let approvedEmployeesGlobalCache = []; 
     let activeFeedFilterData = null; // Platinum Cache Module for Real-time feed override parameters
 
-    function executeServerRequest(payload, successCallback, failureCallback) {
+function executeServerRequest(payload, successCallback, failureCallback) {
+      // Tinitingnan natin kung ang request ay galing sa tahimik na background sync
+      const isBackgroundRequest = payload && (payload.action === "getDepartmentLogs" || payload.action === "getPendingUsers" || payload.action === "getPayrollReport");
+
       fetch(WEB_APP_API_URL, {
         method: "POST", mode: "cors", redirect: "follow",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload)
       })
       .then(function(response) {
-        if (!response.ok) { throw new Error("Ang Cloudflare Worker ay nagbalik ng HTTP Status " + response.status); }
+        if (!response.ok) { throw new Error("HTTP Status " + response.status); }
         return response.text();
       })
       .then(function(text) {
         try {
           var data = JSON.parse(text);
+          
+          // Kung galing sa background fetch at may internal congestion warning si Google
+          if (isBackgroundRequest && data && data.success === false && data.isGoogleInternalError) {
+            console.warn("Tahimik na sinalo ng system ang pansamantalang trapik sa Google Sheets.");
+            return; // Hayaan lang, hindi ipapakita sa user ang popup
+          }
+          
           if (successCallback) successCallback(data);
         } catch(jsonErr) {
-          throw new Error("Hindi JSON data ang ibinalik ng network. Mali ang Google URL sa Cloudflare Worker.");
+          throw new Error("Hindi JSON data ang ibinalik ng network.");
         }
       })
       .catch(function(error) {
+        // DETEKSYON AT PAGTATAGO: Kung ito ay kusa o background sync lang, HUWAG magpakita ng popup alert!
+        if (isBackgroundRequest) {
+          console.warn("Background Sync Network Glitch (Sinalo sa Background): ", error.message);
+          if (failureCallback) failureCallback(error);
+          return; // Dito natatapos, tahimik ang portal sa paningin ng user
+        }
+
+        // CRITICAL ACTION: Kung ang tao ang mismong pumindot (Login/Submit), dito lang lalabas ang babala
         console.error("Critical API Error: ", error);
         Swal.fire({
           icon: 'error',
@@ -493,9 +511,7 @@
           html: '<div class="text-left text-xs space-y-2 text-slate-600 dark:text-slate-400">' +
                   '<p class="text-red-600 font-bold"><strong>Detalyadong Sanhi:</strong> ' + error.message + '</p>' +
                   '<p class="font-bold border-t border-slate-200 dark:border-slate-700 pt-1.5 mt-1.5 text-slate-800 dark:text-white">Paano ito Solusyunan agad:</p>' +
-                  '<p>1. Kopyahin ang iyong **Bagong Google Web App Link (/exec)** mula sa Apps Script Editor.</p>' +
-                  '<p>2. Buksan ang **Cloudflare Worker**, i-click ang **Edit Code**, at palitan ang linyang `const gasUrl = "..."` gamit ang bagong link.</p>' +
-                  '<p>3. Pindutin ang **Save and Deploy** sa Cloudflare.</p>' +
+                  '<p>Maaaring pansamantalang abala o puno ang database dahil sa sabay-sabay na log ng mga Kapwa. Mag-antay ng 3 hanggang 5 segundo at muling i-click ang button.</p>' +
                 '</div>',
           confirmButtonColor: '#dc2626'
         });
