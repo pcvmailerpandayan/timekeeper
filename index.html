@@ -40,6 +40,13 @@
     .dropdown-container:focus-within .dropdown-menu-pane {
       display: block !important;
     }
+    @keyframes pulse-bounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-3px) scale(1.02); }
+    }
+    .animate-bounce-custom {
+      animation: pulse-bounce 2s infinite ease-in-out;
+    }
   </style>
 </head>
 <body class="text-slate-800 dark:text-slate-100 font-sans antialiased p-0 transition-colors duration-200">
@@ -101,6 +108,7 @@
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Departamento</label>
         <select id="regDept" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none cursor-pointer text-slate-900 dark:text-white"></select>
       </div>
+
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Password</label>
         <div class="relative">
@@ -123,7 +131,7 @@
   </div>
 
   <div id="dashboardContainer" class="w-full mx-auto hidden lg:pl-72 relative min-h-screen flex flex-col">
-    
+
     <div class="sticky top-0 z-30 bg-white dark:bg-slate-950 text-slate-900 dark:text-white p-4 flex justify-between items-center shadow-md gap-4 border-b border-slate-200 dark:border-slate-800 w-full transition-colors duration-200">
       <div class="flex items-center space-x-3">
         <button type="button" onclick="toggleSidebarMenuGateway(true)" class="lg:hidden text-slate-800 dark:text-white text-xl p-2 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 transition outline-none">
@@ -132,7 +140,7 @@
         <div class="bg-red-600 p-2.5 rounded-xl hidden sm:block shadow-md">
           <i class="fa-solid fa-business-time text-xl text-white"></i>
         </div>
-        
+
         <div class="relative dropdown-container inline-block text-left">
           <div tabindex="0" class="flex items-center space-x-1.5 cursor-pointer select-none group p-1 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/60 transition">
             <div>
@@ -143,7 +151,7 @@
               <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="userDisplayDept">Loading...</p>
             </div>
           </div>
-          
+
           <div class="absolute left-0 mt-1 w-52 rounded-xl shadow-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hidden z-50 dropdown-menu-pane overflow-hidden animate-fadeIn">
             <div class="bg-slate-50 dark:bg-slate-800/50 p-2 border-b dark:border-slate-800 text-[10px] uppercase tracking-widest font-black text-slate-400">Pamahalaan ang Account</div>
             <button type="button" onclick="triggerAccountPasswordChangeModal()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 outline-none">
@@ -155,7 +163,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="flex items-center space-x-4">
         <div class="text-right block">
           <div class="text-xs sm:text-sm font-black tracking-wide text-red-600 dark:text-red-500" id="liveClock">00:00:00 PM</div>
@@ -174,6 +182,7 @@
           <span class="font-black text-slate-900 dark:text-white tracking-wider flex items-center text-sm"><i class="fa-solid fa-folder-tree text-red-600 mr-2 text-base"></i>TTP NAVIGATOR</span>
           <button type="button" onclick="toggleSidebarMenuGateway(false)" class="text-slate-400 hover:text-slate-600 text-xl lg:hidden"><i class="fa-solid fa-xmark"></i></button>
         </div>
+
         <nav class="space-y-1.5">
           <button type="button" onclick="switchActiveViewPane('punch')" id="navBtn-punch" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 transition text-left text-xs">
             <i class="fa-solid fa-fingerprint w-6 text-center text-slate-500 dark:text-slate-400 text-sm"></i> <span>Punch Console</span>
@@ -193,13 +202,13 @@
         </nav>
       </div>
       <div class="border-t pt-4 text-center dark:border-slate-800">
-        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">Pandayan Timekeeper v16.5</p>
+        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">Pandayan Timekeeper v16.6</p>
       </div>
     </div>
 
     <div class="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full flex-1">
       
-      <div id="punchPane" class="block lg:col-span-5 space-y-6 w-full lg:max-h-[calc(100vh-130px)] lg:overflow-y-auto pr-1 custom-scrollbar">
+<div id="punchPane" class="block lg:col-span-5 space-y-6 w-full lg:max-h-[calc(100vh-130px)] lg:overflow-y-auto pr-1 custom-scrollbar">
         <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800/80 space-y-5 transition-colors">
           <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center border-b pb-3 border-slate-100 dark:border-slate-800 uppercase tracking-wider">
             <i class="fa-solid fa-fingerprint text-red-600 mr-2 text-base"></i> Attendance Punch Console
@@ -209,7 +218,6 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">1. Uri ng Log</label>
             <div class="grid grid-cols-3 gap-2" id="logTypeGroup">
               <button type="button" onclick="selectLogType(this, 'IN')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition">IN</button>
-
               <button type="button" onclick="selectLogType(this, 'LB OUT')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition">LB OUT</button>
               <button type="button" onclick="selectLogType(this, 'LB IN')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition">LB IN</button>
               <button type="button" onclick="selectLogType(this, 'CB OUT')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition">CB OUT</button>
@@ -244,35 +252,36 @@
             </div>
           </div>
 
-          <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
-            <span class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex justify-between items-center">
-              <span>4. Device GPS Telemetry (Locked)</span>
-              <span id="gpsBadge" class="px-2 py-0.5 bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-400 font-black rounded text-[9px] uppercase tracking-wide animate-pulse">Checking GPS...</span>
-            </span>
-            <div class="grid grid-cols-2 gap-2 text-xs font-mono">
-              <div class="bg-white dark:bg-slate-800 px-3 py-2 rounded-lg border dark:border-slate-700">
-                <span class="text-slate-400 block text-[9px] uppercase">Latitude</span>
-                <span id="txtLat" class="font-bold text-slate-700 dark:text-slate-300">Required...</span>
-              </div>
-              <div class="bg-white dark:bg-slate-800 px-3 py-2 rounded-lg border dark:border-slate-700">
-                <span class="text-slate-400 block text-[9px] uppercase">Longitude</span>
-                <span id="txtLng" class="font-bold text-slate-700 dark:text-slate-300">Required...</span>
-              </div>
+          <div class="border-t pt-4 dark:border-slate-800 space-y-3">
+            <div class="flex justify-between items-center text-[11px] font-mono font-bold bg-slate-50 dark:bg-slate-800/40 p-2 rounded-lg border dark:border-slate-700">
+              <span class="text-slate-500">Lat: <span id="txtLat" class="text-slate-800 dark:text-white">0.00000</span></span>
+              <span class="text-slate-500">Lng: <span id="txtLng" class="text-slate-800 dark:text-white">0.00000</span></span>
+              <span id="gpsBadge" class="px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded uppercase tracking-wider text-[9px]">Hahanapin...</span>
             </div>
-            <div id="mapWrapper" class="w-full h-24 rounded-lg overflow-hidden border dark:border-slate-700 mt-2">
-              <div class="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-900 text-xs text-slate-400">Nag-aantay ng GPS Data...</div>
-            </div>
+            <div id="mapWrapper" class="w-full h-28 rounded-xl overflow-hidden border dark:border-slate-800 hidden"></div>
+            
+            <button type="button" id="btnSubmitAttendance" onclick="processAttendanceSubmission()" class="w-full py-3.5 bg-slate-200 text-slate-400 font-bold rounded-xl transition duration-200 cursor-not-allowed select-none text-xs" disabled>
+              <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log
+            </button>
           </div>
-          <button type="button" id="btnSubmitAttendance" onclick="processAttendanceSubmission()" class="w-full py-3.5 bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold rounded-xl cursor-not-allowed select-none text-xs" disabled>
-            <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log
-          </button>
         </div>
       </div>
 
+      <!-- Sub-Department Monitor Interface Card Viewport Shell -->
       <div id="monitorPane" class="hidden lg:flex lg:col-span-7 flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 h-[500px] lg:h-[calc(100vh-130px)] w-full transition-colors overflow-hidden">
-        <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center border-b pb-3 border-slate-100 dark:border-slate-800 mb-4 uppercase tracking-wider flex-shrink-0">
-          <i class="fa-solid fa-users text-blue-600 dark:text-blue-400 mr-2 text-base"></i> Sub-Department Monitor (Real-time Feed)
-        </h3>
+        <div class="border-b pb-3 border-slate-100 dark:border-slate-800 mb-4 flex justify-between items-center flex-shrink-0 gap-2">
+          <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center uppercase tracking-wider">
+            <i class="fa-solid fa-users text-blue-600 dark:text-blue-400 mr-2 text-base"></i> Sub-Department Monitor (Real-time Feed)
+          </h3>
+          <div class="flex items-center gap-1.5">
+            <button type="button" id="btnYourLogsFeed" onclick="triggerYourLogsFilterPrompt()" class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition-all duration-200 flex items-center gap-1 hover:scale-105 active:scale-95 outline-none animate-bounce-custom">
+              <i class="fa-solid fa-user-clock"></i> Your Logs
+            </button>
+            <button type="button" id="btnResetFeedFilter" onclick="resetFeedToRealtime()" class="px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-xs rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition hidden outline-none" title="I-reset sa Real-time Feed">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+          </div>
+        </div>
         <div id="departmentFeed" class="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
           <div class="text-center py-12 text-slate-400 text-xs"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i>Kumukuha...</div>
         </div>
@@ -284,7 +293,7 @@
             <i class="fa-solid fa-file-invoice-dollar text-amber-600 dark:text-amber-400 text-xl"></i>
             <h3 class="text-sm font-black text-slate-900 dark:text-white tracking-wider uppercase">Admin & Payroll Cut-off Summary</h3>
           </div>
-          <button type="button" id="btnBulkPostAction" onclick="executeBulkPayrollPostingPipeline()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-1.5 transition">
+          <button type="button" id="btnBulkPostAction" onclick="executeBulkPayrollPostingPipeline()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-1.5 transition duration-150">
             <i class="fa-solid fa-lock"></i> I-Post at I-Lock ang mga Piling Attendance logs
           </button>
         </div>
@@ -321,7 +330,6 @@
             </div>
             <i class="fa-solid fa-calendar-check text-slate-700 dark:text-slate-800 text-3xl"></i>
           </div>
-
           <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border dark:border-slate-800 flex items-center justify-between shadow-sm">
             <div>
               <span class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 block tracking-wider">Total Meal Allowance</span>
@@ -365,7 +373,7 @@
           <h3 class="text-sm font-black text-slate-900 dark:text-white tracking-wider uppercase">Admin Control Portal Dashboard</h3>
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 grid-rows-none xl:grid-cols-2 gap-6 items-start">
           <div class="border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 bg-slate-50/50 dark:bg-slate-800/20">
             <h4 class="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 flex items-center"><i class="fa-solid fa-hourglass-half mr-1.5"></i> Pending Approvals Queue</h4>
             <div id="adminPendingQueue" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar"></div>
@@ -376,7 +384,7 @@
             <div class="overflow-x-auto border dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 max-h-[350px] custom-scrollbar">
               <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold border-b dark:border-slate-700 sticky top-0 z-10">
+                  <tr class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold border-b dark:border-slate-700 sticky top-0 z-10 uppercase tracking-widest text-[9px]">
                     <th class="p-2.5">ID</th>
                     <th class="p-2.5">Pangalan</th>
                     <th class="p-2.5">Departamento</th>
@@ -406,7 +414,7 @@
               <span class="text-slate-500 dark:text-slate-400 font-bold">Hanggang:</span>
               <input type="date" id="filterTo" class="px-2 py-1.5 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none">
             </div>
-            <button type="button" id="btnFilterHistory" onclick="executeHistoryAndMissingPipeline()" class="px-3 py-1.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white font-bold rounded-lg transition ml-auto sm:ml-0">I-Filter History</button>
+            <button type="button" id="btnFilterHistory" onclick="executeHistoryAndMissingPipeline()" class="px-3 py-1.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white font-bold rounded-lg transition duration-150 ml-auto sm:ml-0">I-Filter History</button>
           </div>
         </div>
 
@@ -415,7 +423,6 @@
             <button type="button" id="tabBtnActualLogs" onclick="toggleHistoryViewTabs('actual')" class="px-4 py-2 text-red-600 dark:text-red-400 border-b-2 border-red-600 dark:border-red-400">Mga Nakatalang Log / Allowances (Detailed)</button>
             <button type="button" id="tabBtnMissingLogs" onclick="toggleHistoryViewTabs('missing')" class="px-4 py-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 transition">Mga Nawawalang Log (Missing Logs)</button>
           </div>
-
           <div id="missingLayoutToolbar" class="items-center space-x-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-1 self-end hidden">
             <button type="button" onclick="setMissingLayoutMode('list')" id="btnLayoutList" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">List View</button>
             <button type="button" onclick="setMissingLayoutMode('small')" id="btnLayoutSmall" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">Small Icons</button>
@@ -444,11 +451,11 @@
           <div id="missingLogsGrid" class="grid grid-cols-1 gap-4"></div>
         </div>
       </div>
-
     </div>
   </div>
 
   <script>
+    // CRITICAL SECURITY WORKER PARADIGM ROUTING PROXY
     const WEB_APP_API_URL = "https://winter-haze-4d14.pcvmailer-pandayan.workers.dev";
 
     let currentUser = null;
@@ -458,6 +465,7 @@
     let gpsIntervalReference = null; let backgroundSyncInterval = null; 
     let missingLayoutMode = "large"; let fetchedMissingLogsArrayCache = [];
     let approvedEmployeesGlobalCache = []; 
+    let activeFeedFilterData = null; // Platinum Cache Module for Real-time feed override parameters
 
     function executeServerRequest(payload, successCallback, failureCallback) {
       fetch(WEB_APP_API_URL, {
@@ -474,7 +482,7 @@
           var data = JSON.parse(text);
           if (successCallback) successCallback(data);
         } catch(jsonErr) {
-          throw new Error("Hindi JSON data ang ibinalik ng network. Ibig sabihin ay Mali o Patay ang Google Web App URL na nakasulat sa loob ng iyong Cloudflare Worker Editor.");
+          throw new Error("Hindi JSON data ang ibinalik ng network. Mali ang Google URL sa Cloudflare Worker.");
         }
       })
       .catch(function(error) {
@@ -507,6 +515,129 @@
       }
     });
 
+    function triggerYourLogsFilterPrompt() {
+      const isPayrollOrAdmin = (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin" || currentUser.department.toLowerCase() === "payroll");
+      const currentYear = new Date().getFullYear();
+      
+      let monthsOptions = '';
+      const monthsFilipino = ["Enero", "Pebrero", "Marso", "Abril", "Mayo", "Hunyo", "Hulyo", "Agosto", "Setyembre", "Oktubre", "Nobyembre", "Disyembre"];
+      monthsFilipino.forEach((m, idx) => {
+        monthsOptions += `<option value="${String(idx + 1).padStart(2, '0')}">${m}</option>`;
+      });
+
+      let yearsOptions = '';
+      for(let y = currentYear; y >= 2024; y--) {
+        yearsOptions += `<option value="${y}">${y}</option>`;
+      }
+
+      let swalHtml = '';
+
+      if (!isPayrollOrAdmin) {
+        // REGULAR USER LOGIC MODEL: Month at Year Lamang ang Ipa-prompt
+        swalHtml = `
+          <div class="text-left text-xs space-y-3 p-1 text-slate-800 dark:text-slate-200">
+            <p class="text-slate-500 mb-2">Piliin ang buwan at taon upang hilahin ang iyong personal fieldwork raw feeds na may mga larawan at mapa.</p>
+            <div>
+              <label class="font-bold text-slate-600 dark:text-slate-400 block mb-1">Buwan (Month)</label>
+              <select id="feedFilterMonth" class="w-full p-2.5 border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl outline-none font-bold">${monthsOptions}</select>
+            </div>
+            <div>
+              <label class="font-bold text-slate-600 dark:text-slate-400 block mb-1">Taon (Year)</label>
+              <select id="feedFilterYear" class="w-full p-2.5 border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl outline-none font-bold">${yearsOptions}</select>
+            </div>
+          </div>`;
+      } else {
+        // ADMIN / PAYROLL LOGIC MODEL: Cascading Department -> Employee Profile -> Month & Year
+        let deptOptions = '<option value="">-- Piliin ang Departamento --</option>';
+        const deptsElements = document.getElementById('regDept').querySelectorAll('option');
+        deptsElements.forEach(el => { deptOptions += `<option value="${el.value}">${el.textContent}</option>`; });
+
+        swalHtml = `
+          <div class="text-left text-xs space-y-3 p-1 text-slate-800 dark:text-slate-200">
+            <p class="text-slate-500 mb-2">Admin Monitor Overrides: Awtomatikong mag-a-update ang listahan ng mga Kapwa kapag pumili ka ng departamento.</p>
+            <div>
+              <label class="font-bold text-slate-600 dark:text-slate-400 block mb-1">Departamento</label>
+              <select id="feedFilterDept" class="w-full p-2.5 border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl outline-none font-bold cursor-pointer">${deptOptions}</select>
+            </div>
+            <div>
+              <label class="font-bold text-slate-600 dark:text-slate-400 block mb-1">Pangalan ng Kapwa Empleyado</label>
+              <select id="feedFilterEmp" class="w-full p-2.5 border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl outline-none font-bold cursor-pointer" disabled>
+                <option value="">-- Piliin muna ang Departamento --</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="font-bold text-slate-600 dark:text-slate-400 block mb-1">Buwan</label>
+                <select id="feedFilterMonth" class="w-full p-2.5 border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl outline-none font-bold">${monthsOptions}</select>
+              </div>
+              <div>
+                <label class="font-bold text-slate-600 dark:text-slate-400 block mb-1">Taon</label>
+                <select id="feedFilterYear" class="w-full p-2.5 border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl outline-none font-bold">${yearsOptions}</select>
+              </div>
+            </div>
+          </div>`;
+      }
+
+      Swal.fire({
+        title: 'Your Logs Filter Module',
+        html: swalHtml,
+        showCancelButton: true,
+        confirmButtonColor: '#2563eb',
+        confirmButtonText: '<i class="fa-solid fa-filter mr-1"></i> I-apply Filter',
+        focusConfirm: false,
+        didOpen: () => {
+          if (isPayrollOrAdmin) {
+            const dSelect = document.getElementById('feedFilterDept');
+            const eSelect = document.getElementById('feedFilterEmp');
+            dSelect.addEventListener('change', function() {
+              const selDept = dSelect.value;
+              eSelect.innerHTML = '<option value="">-- Lahat ng Empleyado under ' + (selDept || 'Dept') + ' --</option>';
+              if(!selDept) { eSelect.disabled = true; return; }
+              eSelect.disabled = false;
+              approvedEmployeesGlobalCache.forEach(emp => {
+                if (emp.department.toString().trim().toLowerCase() === selDept.toString().trim().toLowerCase()) {
+                  let opt = document.createElement('option');
+                  opt.value = emp.employeeId.toString().trim(); opt.textContent = emp.name; eSelect.appendChild(opt);
+                }
+              });
+            });
+          }
+        },
+        preConfirm: () => {
+          const m = document.getElementById('feedFilterMonth').value;
+          const y = document.getElementById('feedFilterYear').value;
+          if (isPayrollOrAdmin) {
+            return {
+              isTargetAdmin: true, month: m, year: y,
+              dept: document.getElementById('feedFilterDept').value,
+              empId: document.getElementById('feedFilterEmp').value
+            };
+          } else {
+            return { isTargetAdmin: false, month: m, year: y, empId: currentUser.employeeId.toString().trim() };
+          }
+        }
+      }).then((result) => {
+        if (result.isConfirmed && result.value) {
+          activeFeedFilterData = result.value;
+          const filterBtn = document.getElementById('btnYourLogsFeed');
+          filterBtn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> Filtering...';
+          filterBtn.className = "px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-xs rounded-xl shadow-md transition-all outline-none";
+          
+          document.getElementById('btnResetFeedFilter').classList.remove('hidden');
+          loadDepartmentMonitorFeed();
+        }
+      });
+    }
+
+    function resetFeedToRealtime() {
+      activeFeedFilterData = null;
+      document.getElementById('btnResetFeedFilter').classList.add('hidden');
+      const filterBtn = document.getElementById('btnYourLogsFeed');
+      filterBtn.innerHTML = '<i class="fa-solid fa-user-clock"></i> Your Logs';
+      filterBtn.className = "px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition-all duration-200 flex items-center gap-1 hover:scale-105 active:scale-95 outline-none animate-bounce-custom";
+      loadDepartmentMonitorFeed();
+    }
+
     function loadSystemDepartmentsList() {
       executeServerRequest({ action: "getDepartments" }, function(depts) {
         var dropdown = document.getElementById('regDept'); var payDropdown = document.getElementById('payDeptSelect');
@@ -526,7 +657,6 @@
       selectMenu.innerHTML = '<option value="">Naglo-load ng mga empleyado...</option>';
       executeServerRequest({ action: "getApprovedEmployees" }, function(list) {
         if (Array.isArray(list)) {
-          // GUSTONG IMPROVEMENT: Isasaayos ang listahan ng mga Kapwa mula A-Z (Alphabetical Sorting Loop)
           list.sort(function(a, b) { return a.name.localeCompare(b.name); });
           approvedEmployeesGlobalCache = list; 
           renderPayrollEmployeesDropdown(); 
@@ -538,8 +668,6 @@
       var selectMenu = document.getElementById('payEmployeeIdSelect'); if (!selectMenu) return;
       var selectedDept = document.getElementById('payDeptSelect').value;
       selectMenu.innerHTML = '<option value="">Lahat ng Empleyado</option>';
-      
-      // GUSTONG IMPROVEMENT: Dynamic Filtering base sa kasalukuyang piniling Departamento sa drop-down list
       approvedEmployeesGlobalCache.forEach(function(emp) {
         if (!selectedDept || emp.department.toString().trim().toLowerCase() === selectedDept.toString().trim().toLowerCase()) {
           var opt = document.createElement('option');
@@ -562,7 +690,7 @@
                        '<label class="font-bold text-slate-600 dark:text-slate-400">Bagong Password</label>' +
                        '<input id="swalNewPass" type="password" class="w-full p-2.5 border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl outline-none font-bold mb-1" placeholder="••••••••">' +
                        '<label class="font-bold text-slate-600 dark:text-slate-400">Kumpirmahin ang Bagong Password</label>' +
-                       '<input id="swalConfirmPass" type="password" class="w-full p-2.5 border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl outline-none font-bold animate-fadeIn" placeholder="••••••••">' +
+                       '<input id="swalConfirmPass" type="password" class="w-full p-2.5 border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl outline-none font-bold" placeholder="••••••••">' +
                      '</div>';
       Swal.fire({
         title: 'Palitan ang Password', html: formHtml, focusConfirm: false, showCancelButton: true, confirmButtonColor: '#dc2626', confirmButtonText: 'I-Save Bagong Password',
@@ -575,7 +703,7 @@
         }
       }).then(function(result) {
         if (result.value) {
-          Swal.fire({ title: 'Nag-a-update...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+          Swal.fire({ title: 'Nag-i-update...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
           executeServerRequest({ action: "changePassword", employeeId: currentUser.employeeId.toString().trim(), newPassword: result.value }, function(res) {
             if (res.success) { Swal.fire({ icon: 'success', title: 'Matagumpay!', text: res.message, timer: 2000, showConfirmButton: false }); } 
             else { Swal.fire({ icon: 'error', title: 'Kabiguan', text: res.message }); }
@@ -593,7 +721,16 @@
     }
 
     function setupGlobalKeyBindings() { document.addEventListener('keydown', function(e) { if (e.key === 'Enter') { if (!currentUser) { e.preventDefault(); document.getElementById('btnLogin').click(); } } }); }
-    function initClock() { var liveClock = document.getElementById('liveClock'); var liveDate = document.getElementById('liveDate'); setInterval(function() { var now = new Date(); liveClock.textContent = now.toLocaleTimeString(); liveDate.textContent = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); }, 1000); }
+    
+    function initClock() { 
+      var liveClock = document.getElementById('liveClock'); var liveDate = document.getElementById('liveDate'); 
+      setInterval(function() { 
+        var now = new Date(); 
+        liveClock.textContent = now.toLocaleTimeString(); 
+        liveDate.textContent = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); 
+      }, 1000); 
+    }
+    
     function switchAuth(view) { document.getElementById('loginFormSection').classList.add('hidden'); document.getElementById('registerFormSection').classList.add('hidden'); document.getElementById('forgotFormSection').classList.add('hidden'); if (view === 'login') document.getElementById('loginFormSection').classList.remove('hidden'); if (view === 'register') document.getElementById('registerFormSection').classList.remove('hidden'); if (view === 'forgot') document.getElementById('forgotFormSection').classList.remove('hidden'); }
 
     function handleLogin() {
@@ -621,7 +758,7 @@
       });
     }
 
-function bootDashboardPortal() {
+    function bootDashboardPortal() {
       document.getElementById('authContainer').classList.add('hidden'); 
       document.getElementById('dashboardContainer').classList.remove('hidden');
       document.getElementById('userDisplayName').textContent = currentUser.name; 
@@ -642,18 +779,16 @@ function bootDashboardPortal() {
       executeHistoryAndMissingPipeline();
       switchActiveViewPane(activeViewPaneMode);
       
-      // DITO MO MISMO IPAPALIT ITONG INAYOS NA SETINTERVAL BLOCK:
       if (backgroundSyncInterval) clearInterval(backgroundSyncInterval);
       backgroundSyncInterval = setInterval(function() { 
         if (currentUser) { 
           loadDepartmentMonitorFeed(); 
-          // Agresibong refresh para sa Admin at Payroll kahit anong tab ang pinapanood mo
           if (isPayrollOrAdmin) {
             loadAdminApprovalQueue(); 
             loadPlatinumPayrollReport(); 
           }
         } 
-      }, 30000); // Tumatakbo bawat 30 segundo
+      }, 30000);
     }
 
     function toggleSidebarMenuGateway(open) { var menu = document.getElementById('sidebarMenuLayoutWindow'); var overlay = document.getElementById('sidebarMenuOverlay'); if (open) { menu.classList.add('sidebar-menu-active'); overlay.classList.remove('hidden'); } else { menu.classList.remove('sidebar-menu-active'); overlay.classList.add('hidden'); } }
@@ -667,7 +802,6 @@ function bootDashboardPortal() {
         var el = document.getElementById(p + 'Pane'); if (el) el.style.display = 'none';
         var navBtn = document.getElementById('navBtn-' + p);
         if (navBtn) {
-          // GUSTONG IMPROVEMENT: Ganap na itatago (style.display = none) ang clickable text/buttons kapag HINDI admin o payroll
           if ((p === 'admin' || p === 'payroll') && !isPayrollOrAdmin) {
             navBtn.style.display = 'none';
           } else {
@@ -693,17 +827,83 @@ function bootDashboardPortal() {
     function triggerNativeMobileCamera() { document.getElementById('nativeCameraInput').click(); }
     function processNativeMobileCameraCapture(inputElement) { var file = inputElement.files[0]; if (!file) return; var img = new Image(); var reader = new FileReader(); reader.onload = function(e) { img.onload = function() { var canvas = document.createElement('canvas'); var MAX_WIDTH = 800; var MAX_HEIGHT = 800; var width = img.width; var height = img.height; if (width > height) { if (width > MAX_WIDTH) { height = Math.round(height * MAX_WIDTH / width); width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width = Math.round(width * MAX_HEIGHT / height); height = MAX_HEIGHT; } } canvas.width = width; canvas.height = height; var ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); capturedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7); document.getElementById('selfiePlaceholderText').classList.add('hidden'); var view = document.getElementById('selfieImgView'); view.src = capturedPhotoBase64; view.classList.remove('hidden'); evaluateSubmissionReadiness(); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
 
-    function initEnforcedGeolocatorTelemetry() { if (!navigator.geolocation) return; function pullGPSLocation() { navigator.geolocation.getCurrentPosition(function(pos) { currentLat = pos.coords.latitude; currentLng = pos.coords.longitude; document.getElementById('txtLat').textContent = currentLat.toFixed(5); document.getElementById('txtLng').textContent = currentLng.toFixed(5); var badge = document.getElementById('gpsBadge'); badge.textContent = "GPS Verified"; badge.className = "px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 font-black rounded text-[9px] uppercase tracking-wide"; document.getElementById('mapWrapper').innerHTML = '<iframe width="100%" height="100%" frameborder="0" src="https://maps.google.com/maps?q=' + currentLat + ',' + currentLng + '&z=15&output=embed"></iframe>'; evaluateSubmissionReadiness(); }, function(error) { Swal.fire({ icon: 'error', title: 'Naka-patay ang GPS!', text: 'Mandatory ang GPS.', allowOutsideClick: false, confirmButtonText: 'I-retry', confirmButtonColor: '#dc2626' }).then(function() { pullGPSLocation(); }); }, { enableHighAccuracy: true, timeout: 30000, maximumAge: 10000 }); } pullGPSLocation(); gpsIntervalReference = setInterval(pullGPSLocation, 20000); }
+    function initEnforcedGeolocatorTelemetry() { if (!navigator.geolocation) return; function pullGPSLocation() { navigator.geolocation.getCurrentPosition(function(pos) { currentLat = pos.coords.latitude; currentLng = pos.coords.longitude; document.getElementById('txtLat').textContent = currentLat.toFixed(5); document.getElementById('txtLng').textContent = currentLng.toFixed(5); var badge = document.getElementById('gpsBadge'); badge.textContent = "GPS Verified"; badge.className = "px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 font-black rounded text-[9px] uppercase tracking-wide"; document.getElementById('mapWrapper').innerHTML = '<iframe width="100%" height="100%" frameborder="0" src="https://maps.google.com/?q=' + currentLat + ',' + currentLng + '&z=15&output=embed"></iframe>'; evaluateSubmissionReadiness(); }, function(error) { Swal.fire({ icon: 'error', title: 'Naka-patay ang GPS!', text: 'Mandatory ang GPS.', allowOutsideClick: false, confirmButtonText: 'I-retry', confirmButtonColor: '#dc2626' }).then(function() { pullGPSLocation(); }); }, { enableHighAccuracy: true, timeout: 30000, maximumAge: 10000 }); } pullGPSLocation(); gpsIntervalReference = setInterval(pullGPSLocation, 20000); }
     function loadBranchDataset() { executeServerRequest({ action: "getBranches" }, function(branches) { var dl = document.getElementById('branchDataset'); dl.innerHTML = ""; branches.forEach(function(b) { var opt = document.createElement('option'); opt.value = b.code + " " + b.name; dl.appendChild(opt); }); }); }
     function addNewLocationPrompt() { Swal.fire({ title: 'Bagong Lokasyon', text: 'Ipasok ang pangalan:', input: 'text', showCancelButton: true, confirmButtonColor: '#0f172a', confirmButtonText: 'Idagdag' }).then(function(result) { if (result.value && result.value.trim() !== "") { document.getElementById('branchInput').value = result.value.trim(); evaluateSubmissionReadiness(); } }); }
     function selectLogType(btnElement, type) { var buttons = document.querySelectorAll('#logTypeGroup button'); buttons.forEach(function(b) { b.className = "py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 transition bg-white dark:bg-slate-800"; }); btnElement.className = "py-2.5 border border-red-600 rounded-xl font-bold text-xs text-white bg-red-600 transition shadow-md"; selectedLogType = type; evaluateSubmissionReadiness(); }
     function evaluateSubmissionReadiness() { var branch = document.getElementById('branchInput').value.trim(); var btn = document.getElementById('btnSubmitAttendance'); var isValid = selectedLogType !== "" && branch !== "" && capturedPhotoBase64 !== "" && currentLat !== ""; btn.disabled = !isValid; btn.className = isValid ? "w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition duration-200 shadow-xl cursor-pointer text-xs" : "w-full py-3.5 bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold rounded-xl transition duration-200 cursor-not-allowed select-none text-xs"; }
     document.getElementById('branchInput').addEventListener('input', evaluateSubmissionReadiness);
 
-    function loadDepartmentMonitorFeed() { executeServerRequest({ action: "getDepartmentLogs", employeeId: currentUser.employeeId.toString().trim(), department: currentUser.department }, function(logs) { var container = document.getElementById('departmentFeed'); if (!logs || logs.length === 0) { container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Wala pang nakatalang log ngayon.</div>'; return; } container.innerHTML = ""; logs.forEach(function(l) { var badgeColor = l.logType === "IN" ? "bg-emerald-600" : (l.logType === "OUT" ? "bg-rose-600" : "bg-amber-600"); var isCurrentAdmin = (currentUser.department.toLowerCase() === "admin" || currentUser.role === "ADMIN"); var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-950 px-1.5 py-0.5 rounded-md ml-1 border border-purple-200 dark:border-purple-800">(' + l.subDept + ')</span>' : ''; var imgSrc = 'https://placehold.co/150?text=No+Image'; if (l.selfie && l.selfie !== 'N/A' && l.selfie.toString().trim() !== "") { var rawUrl = l.selfie.toString().trim(); var fileIdMatch = rawUrl.match(/(?:id=|\/d\/|src=)([\w-]+)/); if (fileIdMatch && fileIdMatch[1] && fileIdMatch[1].length > 10) { imgSrc = 'https://lh3.googleusercontent.com/d/' + fileIdMatch[1] + '=s800'; } else { imgSrc = rawUrl; } } var div = document.createElement('div'); div.className = "flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100/70 transition"; div.innerHTML = '<div class="w-12 h-12 rounded-lg overflow-hidden border dark:border-slate-700 flex-shrink-0 bg-slate-200 relative cursor-zoom-in active:scale-95 transition" onclick="viewSelfieModal(\'' + imgSrc + '\', \'' + l.name + '\', \'' + l.logType + '\')"><img src="' + imgSrc + '" onerror="this.onerror=null; this.src=\'https://placehold.co/150?text=No+Image\';" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><div class="flex justify-between items-start gap-1"><h4 class="font-bold text-slate-900 dark:text-white text-xs truncate">' + l.name + subDeptIndicator + '</h4><span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase text-white tracking-wider ' + badgeColor + '">' + l.logType + '</span></div><p class="text-[11px] text-slate-600 dark:text-slate-400 truncate mt-0.5"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>' + l.branch + '</p><div class="flex justify-between items-center mt-1 flex-wrap gap-1"><a href="https://maps.google.com/?q=' + l.lat + ',' + l.lng + '" target="_blank" class="text-[10px] text-blue-600 font-medium hover:underline block"><i class="fa-solid fa-map-location-dot mr-1"></i>Google Maps</a><span class="text-[10px] md:text-xs lg:text-[13px] text-slate-500 dark:text-slate-400 font-mono font-black bg-slate-100/80 dark:bg-slate-800 px-2 py-0.5 rounded border dark:border-slate-700/80 tracking-tight">' + l.date + '</span></div></div>'; container.appendChild(div); }); }); }
+    function loadDepartmentMonitorFeed() { 
+      var container = document.getElementById('departmentFeed');
+      
+      // KUNG MAY ACTIVE ACTIVE FILTER MULA SA "YOUR LOGS":
+      if (activeFeedFilterData) {
+        container.innerHTML = '<div class="text-center py-12 text-slate-400 text-xs"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i>Hinahanap ang mga Hilaw na Logs...</div>';
+        
+        executeServerRequest({ 
+          action: "getFilteredFeedLogs", 
+          adminId: currentUser.employeeId.toString().trim(), 
+          filterEmpId: activeFeedFilterData.empId || "", 
+          filterDept: activeFeedFilterData.dept || "", 
+          year: activeFeedFilterData.year, 
+          month: activeFeedFilterData.month 
+        }, function(logs) {
+          // I-reset ang kulay at label ng filter button upang ipakita na matagumpay ang extraction
+          const filterBtn = document.getElementById('btnYourLogsFeed');
+          filterBtn.innerHTML = '<i class="fa-solid fa-user-clock"></i> Filter Active';
+          filterBtn.className = "px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-xs rounded-xl shadow-md transition-all outline-none";
+          
+          renderFeedCardsIntoContainer(container, logs);
+        });
+        return;
+      }
+
+      // DEFAULT ROUTE: Real-time Department Monitor Feed Tracker
+      executeServerRequest({ 
+        action: "getDepartmentLogs", 
+        employeeId: currentUser.employeeId.toString().trim(), 
+        department: currentUser.department 
+      }, function(logs) {
+        renderFeedCardsIntoContainer(container, logs);
+      }); 
+    }
+
+    // SHARED HIGH-FIDELITY RENDERING ENGINE PARA SA KPAREHAS NA PAGLABAS NG PICTURE AT MAPA
+    function renderFeedCardsIntoContainer(container, logs) {
+      if (!logs || logs.length === 0) { 
+        container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Walang nakatalang hilaw na log para sa parameters na ito.</div>'; 
+        return; 
+      }
+      container.innerHTML = "";
+      
+      logs.forEach(function(l) { 
+        var badgeColor = l.logType === "IN" ? "bg-emerald-600" : (l.logType === "OUT" ? "bg-rose-600" : "bg-amber-600"); 
+        var isCurrentAdmin = (currentUser.department.toLowerCase() === "admin" || currentUser.role === "ADMIN"); 
+        var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-950 px-1.5 py-0.5 rounded-md ml-1 border border-purple-200 dark:border-purple-800">(' + l.subDept + ')</span>' : ''; 
+        
+        var imgSrc = 'https://placehold.co/150?text=No+Image'; 
+        if (l.selfie && l.selfie !== 'N/A' && l.selfie.toString().trim() !== "") { 
+          var rawUrl = l.selfie.toString().trim(); 
+          var fileIdMatch = rawUrl.match(/(?:id=|\/d\/|src=)([\w-]+)/); 
+          if (fileIdMatch && fileIdMatch[1] && fileIdMatch[1].length > 10) { 
+            imgSrc = 'https://drive.google.com/thumbnail?id=' + fileIdMatch[1] + '&sz=w800'; 
+          } else { 
+            imgSrc = rawUrl; 
+          } 
+        } 
+        
+        var div = document.createElement('div'); 
+        div.className = "flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100/70 transition animate-fadeIn"; 
+        div.innerHTML = '<div class="w-12 h-12 rounded-lg overflow-hidden border dark:border-slate-700 flex-shrink-0 bg-slate-200 relative cursor-zoom-in active:scale-95 transition" onclick="viewSelfieModal(\'' + imgSrc + '\', \'' + l.name + '\', \'' + l.logType + '\')"><img src="' + imgSrc + '" onerror="this.onerror=null; this.src=\'https://placehold.co/150?text=No+Image\';\" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><div class="flex justify-between items-start gap-1"><h4 class="font-bold text-slate-900 dark:text-white text-xs truncate">' + l.name + subDeptIndicator + '</h4><span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase text-white tracking-wider ' + badgeColor + '">' + l.logType + '</span></div><p class="text-[11px] text-slate-600 dark:text-slate-400 truncate mt-0.5"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>' + l.branch + '</p><div class="flex justify-between items-center mt-1 flex-wrap gap-1"><a href="https://maps.google.com/?q=' + l.lat + ',' + l.lng + '" target="_blank" class="text-[10px] text-blue-600 font-medium hover:underline block"><i class="fa-solid fa-map-location-dot mr-1"></i>Google Maps</a><span class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 font-mono font-black bg-slate-100/80 dark:bg-slate-800 px-2 py-0.5 rounded border dark:border-slate-700/80 tracking-tight">' + l.date + '</span></div></div>'; 
+        container.appendChild(div); 
+      });
+    }
+
     function viewSelfieModal(imgUrl, employeeName, logType) { if (!imgUrl || imgUrl === 'N/A' || imgUrl.includes('text=No+Image')) { Swal.fire({ icon: 'info', title: 'Walang Larawan', text: 'Wala sa database.' }); return; } Swal.fire({ title: '<span class="text-sm font-black text-slate-900">' + employeeName + '</span>', html: '<div class="text-[11px]">Preview (' + logType + ')</div>', imageUrl: imgUrl, confirmButtonColor: '#0f172a', confirmButtonText: 'Isara' }); }
 
     function processAttendanceSubmission() { var branch = document.getElementById('branchInput').value.trim(); var payload = { employeeId: currentUser.employeeId.toString().trim(), name: currentUser.name, department: currentUser.department, logType: selectedLogType, branch: branch, lat: currentLat, lng: currentLng, selfie: capturedPhotoBase64 }; toggleButtonState('btnSubmitAttendance', true, 'Ipinapadala...'); executeServerRequest({ action: "submitAttendance", payload: payload }, function(res) { toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log'); if (res.success) { Swal.fire({ icon: 'success', title: 'Naisend na!', text: res.message, timer: 2000, showConfirmButton: false }); clearPunchConsoleInputs(); loadDepartmentMonitorFeed(); executeHistoryAndMissingPipeline(); } else { Swal.fire({ icon: 'error', title: 'Error', text: res.message }); } }); }
+    
     function clearPunchConsoleInputs() { capturedPhotoBase64 = ""; document.getElementById('selfieImgView').classList.add('hidden'); document.getElementById('selfieImgView').src = ""; document.getElementById('selfiePlaceholderText').classList.remove('hidden'); document.getElementById('nativeCameraInput').value = ""; evaluateSubmissionReadiness(); }
 
     function executeHistoryAndMissingPipeline() {
@@ -768,12 +968,9 @@ function bootDashboardPortal() {
       executeServerRequest({ action: "getPayrollReport", adminId: adminId, filterEmpId: fEmpId, filterDept: fDept, fromDate: fromD, toDate: toD }, function(res) {
         searchBtnText.innerHTML = "Suriin"; document.getElementById('btnPayrollSearchQuery').disabled = false;
         if(!res.success) { tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-red-500 font-bold">' + res.message + '</td></tr>'; return; }
-        
-        // GUSTONG IMPROVEMENT: Nilapatan ng propesyonal na comma-separator notation (.toLocaleString) ang mga dashboard widgets
         document.getElementById('lblPayTotalDays').textContent = res.summary.totalDaysPresent; 
         document.getElementById('lblPayTotalMeal').textContent = "₱" + res.summary.totalMeal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); 
         document.getElementById('lblPayTotalTranspo').textContent = "₱" + res.summary.totalTranspo.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        
         if(!res.reportRows || res.reportRows.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="p-8 text-center text-slate-400">Walang natagpuang logs.</td></tr>'; return; }
         tbody.innerHTML = ""; document.getElementById('paySelectAllRowsBox').checked = false;
         res.reportRows.forEach(function(r) { var tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800 transition border-b border-slate-100 dark:border-slate-800"; var statusBadge = r.isPosted ? '<span class="px-2 py-0.5 bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-400 font-black rounded uppercase text-[10px]"><i class="fa-solid fa-lock mr-0.5"></i>Posted</span>' : '<span class="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-400 font-black rounded uppercase text-[10px]">Active</span>'; var checkboxHtml = r.isPosted ? '<i class="fa-solid fa-circle-check text-amber-500 text-base"></i>' : '<input type="checkbox" data-rows="' + r.associatedRowIds.join(',') + '" class="pay-row-checkbox w-4 h-4 cursor-pointer">'; tr.innerHTML = '<td class="p-3 text-center">' + checkboxHtml + '</td><td class="p-3 font-mono font-bold text-slate-900 dark:text-white">' + r.empId + '</td><td class="p-3 font-medium text-slate-800 dark:text-slate-200">' + r.name + '</td><td class="p-3 text-slate-500 dark:text-slate-400">' + r.department + '</td><td class="p-3 font-mono text-slate-700 dark:text-slate-300">' + r.date + '</td><td class="p-3 font-bold text-slate-800 dark:text-slate-200">₱' + r.meal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</td><td class="p-3 font-bold text-slate-800 dark:text-slate-200">₱' + r.transpo.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</td><td class="p-3 text-center">' + statusBadge + '</td>'; tbody.appendChild(tr); });
@@ -792,4 +989,3 @@ function bootDashboardPortal() {
   </script>
 </body>
 </html>
-
