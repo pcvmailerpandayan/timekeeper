@@ -467,7 +467,7 @@
     let approvedEmployeesGlobalCache = []; 
     let activeFeedFilterData = null; // Platinum Cache Module for Real-time feed override parameters
 
-function executeServerRequest(payload, successCallback, failureCallback) {
+   function executeServerRequest(payload, successCallback, failureCallback) {
       // Tinitingnan natin kung ang request ay galing sa tahimik na background sync
       const isBackgroundRequest = payload && (payload.action === "getDepartmentLogs" || payload.action === "getPendingUsers" || payload.action === "getPayrollReport");
 
@@ -843,7 +843,48 @@ function executeServerRequest(payload, successCallback, failureCallback) {
     function triggerNativeMobileCamera() { document.getElementById('nativeCameraInput').click(); }
     function processNativeMobileCameraCapture(inputElement) { var file = inputElement.files[0]; if (!file) return; var img = new Image(); var reader = new FileReader(); reader.onload = function(e) { img.onload = function() { var canvas = document.createElement('canvas'); var MAX_WIDTH = 800; var MAX_HEIGHT = 800; var width = img.width; var height = img.height; if (width > height) { if (width > MAX_WIDTH) { height = Math.round(height * MAX_WIDTH / width); width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width = Math.round(width * MAX_HEIGHT / height); height = MAX_HEIGHT; } } canvas.width = width; canvas.height = height; var ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); capturedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7); document.getElementById('selfiePlaceholderText').classList.add('hidden'); var view = document.getElementById('selfieImgView'); view.src = capturedPhotoBase64; view.classList.remove('hidden'); evaluateSubmissionReadiness(); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
 
-    function initEnforcedGeolocatorTelemetry() { if (!navigator.geolocation) return; function pullGPSLocation() { navigator.geolocation.getCurrentPosition(function(pos) { currentLat = pos.coords.latitude; currentLng = pos.coords.longitude; document.getElementById('txtLat').textContent = currentLat.toFixed(5); document.getElementById('txtLng').textContent = currentLng.toFixed(5); var badge = document.getElementById('gpsBadge'); badge.textContent = "GPS Verified"; badge.className = "px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 font-black rounded text-[9px] uppercase tracking-wide"; document.getElementById('mapWrapper').innerHTML = '<iframe width="100%" height="100%" frameborder="0" src="https://maps.google.com/?q=' + currentLat + ',' + currentLng + '&z=15&output=embed"></iframe>'; evaluateSubmissionReadiness(); }, function(error) { Swal.fire({ icon: 'error', title: 'Naka-patay ang GPS!', text: 'Mandatory ang GPS.', allowOutsideClick: false, confirmButtonText: 'I-retry', confirmButtonColor: '#dc2626' }).then(function() { pullGPSLocation(); }); }, { enableHighAccuracy: true, timeout: 30000, maximumAge: 10000 }); } pullGPSLocation(); gpsIntervalReference = setInterval(pullGPSLocation, 20000); }
+function initEnforcedGeolocatorTelemetry() { 
+      if (!navigator.geolocation) return; 
+      
+      function pullGPSLocation() { 
+        navigator.geolocation.getCurrentPosition(function(pos) { 
+          currentLat = pos.coords.latitude; 
+          currentLng = pos.coords.longitude; 
+          
+          // 1. I-update ang text coordinates
+          document.getElementById('txtLat').textContent = currentLat.toFixed(5); 
+          document.getElementById('txtLng').textContent = currentLng.toFixed(5); 
+          
+          // 2. I-update ang status badge
+          var badge = document.getElementById('gpsBadge'); 
+          badge.textContent = "GPS Verified"; 
+          badge.className = "px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 font-black rounded text-[9px] uppercase tracking-wide"; 
+          
+          // 3. Ipakita ang map wrapper (Aalisin ang 'hidden' class)
+          var mapWrapper = document.getElementById('mapWrapper');
+          mapWrapper.classList.remove('hidden');
+          
+          // 4. I-inject ang Tumpak at Secure na Google Maps Embed Iframe
+          mapWrapper.innerHTML = '<iframe width="100%" height="100%" frameborder="0" style="border:0" src="https://maps.google.com/maps?q=' + currentLat + ',' + currentLng + '&z=15&output=embed"></iframe>'; 
+          
+          evaluateSubmissionReadiness(); 
+        }, function(error) { 
+          Swal.fire({ 
+            icon: 'error', 
+            title: 'Naka-patay ang GPS!', 
+            text: 'Mandatory ang GPS telemetry upang makapag-log sa fieldwork.', 
+            allowOutsideClick: false, 
+            confirmButtonText: 'I-retry', 
+            confirmButtonColor: '#dc2626' 
+          }).then(function() { 
+            pullGPSLocation(); 
+          }); 
+        }, { enableHighAccuracy: true, timeout: 30000, maximumAge: 10000 }); 
+      } 
+      
+      pullGPSLocation(); 
+      gpsIntervalReference = setInterval(pullGPSLocation, 20000); 
+    }
     function loadBranchDataset() { executeServerRequest({ action: "getBranches" }, function(branches) { var dl = document.getElementById('branchDataset'); dl.innerHTML = ""; branches.forEach(function(b) { var opt = document.createElement('option'); opt.value = b.code + " " + b.name; dl.appendChild(opt); }); }); }
     function addNewLocationPrompt() { Swal.fire({ title: 'Bagong Lokasyon', text: 'Ipasok ang pangalan:', input: 'text', showCancelButton: true, confirmButtonColor: '#0f172a', confirmButtonText: 'Idagdag' }).then(function(result) { if (result.value && result.value.trim() !== "") { document.getElementById('branchInput').value = result.value.trim(); evaluateSubmissionReadiness(); } }); }
     function selectLogType(btnElement, type) { var buttons = document.querySelectorAll('#logTypeGroup button'); buttons.forEach(function(b) { b.className = "py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 transition bg-white dark:bg-slate-800"; }); btnElement.className = "py-2.5 border border-red-600 rounded-xl font-bold text-xs text-white bg-red-600 transition shadow-md"; selectedLogType = type; evaluateSubmissionReadiness(); }
