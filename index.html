@@ -274,7 +274,7 @@
             </div>
             <div id="mapWrapper" class="w-full h-28 rounded-xl overflow-hidden border dark:border-slate-800 hidden"></div>
             
-            <button type="button" id="btnSubmitAttendance" onclick="processAttendanceSubmission()" class="w-full py-3.5 bg-slate-200 text-slate-400 font-bold rounded-xl transition duration-200 cursor-not-allowed select-none text-xs" disabled>
+            <button type="button" id="btnSubmitAttendance" onclick="processAttendanceSubmission()" class="w-full py-3.5 bg-red-600 text-white font-bold rounded-xl shadow-xl cursor-pointer text-xs" disabled>
               <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log
             </button>
           </div>
@@ -604,7 +604,7 @@
 
     function handleLogin() {
       var empId = document.getElementById('loginEmpId').value.trim(); var pass = document.getElementById('loginPassword').value.trim();
-      if (!empId || !pass) { Swal.fire({ icon: 'warning', title: 'Warning!', text: 'Kumpletuhin ang detalye.' }); return; }
+      if (!empId || !pass) { Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Kumpletuhin ang anyo.' }); return; }
       toggleButtonState('btnLogin', true, 'Kinukumpirma...');
       executeServerRequest({ action: "login", employeeId: empId, password: pass }, function(res) {
         toggleButtonState('btnLogin', false, '<i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In');
@@ -695,7 +695,7 @@
     }
 
     function loadBranchDataset() { executeServerRequest({ action: "getBranches" }, function(branches) { var dl = document.getElementById('branchDataset'); dl.innerHTML = ""; if(branches && Array.isArray(branches)) { branches.forEach(function(b) { var opt = document.createElement('option'); opt.value = b.code + " " + b.name; dl.appendChild(opt); }); } }); }
-    function selectLogType(btnElement, type) { var buttons = document.querySelectorAll('#logTypeGroup button'); buttons.forEach(function(b) { b.className = "py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800"; }); btnElement.className = "py-2.5 border border-red-600 rounded-xl font-bold text-xs text-white bg-red-600 shadow-md"; selectedLogType = type; evaluateSubmissionReadiness(); }
+    function selectLogType(btnElement, type) { var buttons = document.querySelectorAll('#logTypeGroup button'); buttons.forEach(function(b) { b.className = "py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 transition"; }); btnElement.className = "py-2.5 border border-red-600 rounded-xl font-bold text-xs text-white bg-red-600 shadow-md"; selectedLogType = type; evaluateSubmissionReadiness(); }
     function evaluateSubmissionReadiness() { var branch = document.getElementById('branchInput').value.trim(); var btn = document.getElementById('btnSubmitAttendance'); var isValid = selectedLogType !== "" && branch !== "" && capturedPhotoBase64 !== "" && currentLat !== ""; btn.disabled = !isValid; btn.className = isValid ? "w-full py-3.5 bg-red-600 text-white font-bold rounded-xl shadow-xl cursor-pointer text-xs" : "w-full py-3.5 bg-slate-300 text-slate-500 font-bold rounded-xl cursor-not-allowed text-xs"; }
     
     function processAttendanceSubmission() { 
@@ -863,7 +863,6 @@
       });
     }
 
-    // PLATINUM LAYOUT ENGINE GATEWAY V2: List View, Small Icons, and Large Cards Integration
     function renderMissingLogsViewLayout() {
       var grid = document.getElementById('missingLogsGrid'); 
       if (!fetchedMissingLogsArrayCache || fetchedMissingLogsArrayCache.length === 0) { 
@@ -872,7 +871,6 @@
       } 
       grid.innerHTML = ""; 
 
-      // I-set ang Tailwind layout structure batay sa napiling mode
       if (missingLayoutMode === "large") {
         grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
       } else if (missingLayoutMode === "small") {
@@ -886,7 +884,6 @@
         var div = document.createElement('div');
         var deperensyaBadgeText = m.isFutureBlank ? 'ADVANCE ENTRY / FUTURE FILING HUB' : 'Kulang ang ' + missingLabel;
 
-        // 1. LIST VIEW MODE
         if (missingLayoutMode === "list") {
           div.className = "flex justify-between items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl shadow-sm hover:border-red-500 hover:bg-slate-50/50 transition cursor-pointer font-sans";
           div.setAttribute("onclick", "triggerSplitPaneFilingModal('" + m.date + "', '" + missingLabel + "', " + m.isFutureBlank + ")");
@@ -905,7 +902,6 @@
           return;
         }
 
-        // 2. SMALL ICONS MODE
         if (missingLayoutMode === "small") {
           div.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl shadow-sm flex flex-col justify-between hover:border-red-500 hover:scale-[1.02] transition cursor-pointer text-center relative overflow-hidden";
           div.setAttribute("onclick", "triggerSplitPaneFilingModal('" + m.date + "', '" + missingLabel + "', " + m.isFutureBlank + ")");
@@ -919,7 +915,6 @@
           return;
         }
 
-        // 3. LARGE CARDS MODE (Default Inline Fields)
         div.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl space-y-3 flex flex-col justify-between shadow-md border-t-4 border-t-red-500 animate-fadeIn";
         var tabOptionsHeaderHtml = '<div class="flex border-b border-slate-200 text-[11px] font-black uppercase tracking-wider mb-2">' +
                                      '<button type="button" onclick="switchInnerFilingSubTab(\''+m.date+'\', \'CORRECTION\', this)" class="flex-1 py-1.5 text-red-600 border-b-2 border-red-600 font-bold outline-none">Log Correction</button>' +
@@ -956,7 +951,6 @@
       });
     }
 
-    // MODAL INTERACTIVE SPLIT-PANE DESK ENGINE FOR LIST VIEW & SMALL ICONS
     function triggerSplitPaneFilingModal(dateStr, missingLabel, isFutureBlank) {
       var selectOpts = "";
       if (dynamicLeavesDatasetGlobalCache && dynamicLeavesDatasetGlobalCache.length > 0) {
@@ -993,7 +987,7 @@
           '<div id="modalPane-LEAVE" class="space-y-3 hidden">' +
             '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Piliin ang Leave Type Code:</label>' +
             '<select id="modalLeaveSelect" class="w-full p-2.5 border bg-white text-slate-900 rounded-xl font-bold text-xs cursor-pointer">' + selectOpts + '</select></div>' +
-            '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Remarks / Detalye</label>' +
+            '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Remarks / Detalye (Permitted Absent)</label>' +
             '<input type="text" id="modalLeaveRemarks" placeholder="Ipasok ang detalye ng leave..." class="w-full p-2.5 border rounded-xl text-xs bg-white text-slate-900"></div>' +
           '</div>' +
           
@@ -1052,15 +1046,13 @@
             }
           });
         }
-        window.currentModalMode = "CORRECTION"; // Reset mode guard state reference
+        window.currentModalMode = "CORRECTION"; 
       });
 
-      // Initialize modal elements control nodes state parameters
       window.currentModalMode = "CORRECTION";
       if (isFutureBlank) { setModalSubPaneMode('LEAVE'); }
     }
 
-    // INTERNALS SWITCH FOR OPERATIONS DESK MODAL TAB TILES
     function setModalSubPaneMode(mode) {
       window.currentModalMode = mode;
       var paneCorrection = document.getElementById('modalPane-CORRECTION');
@@ -1289,17 +1281,33 @@
       }); 
     }
 
+    // FIXED PICTURE ASPECT RATIO MODULE ENGINE (No More Stretched Portraits)
     function renderFeedCardsIntoContainer(container, logs) {
       if (!logs || logs.length === 0) { container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Walang nakatalang physical punch logs sa kasalukuyan.</div>'; return; }
       container.innerHTML = "";
       logs.forEach(function(l) { 
         var badgeColor = l.logType === "IN" ? "bg-emerald-600" : (l.logType === "OUT" ? "bg-rose-600" : "bg-amber-600"); 
         var isCurrentAdmin = (currentUser.department.toLowerCase() === "admin" || currentUser.role === "ADMIN"); 
-        var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 font-bold bg-purple-50 px-1.5 rounded-md ml-1">((' + l.subDept + '))</span>' : ''; 
+        var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 font-bold bg-purple-50 px-1.5 rounded-md ml-1">(' + l.subDept + ')</span>' : ''; 
         var idToken = (l.selfie && l.selfie !== 'N/A' && l.selfie.match(/(?:id=|\/d\/|src=)([\w-]+)/)) ? l.selfie.match(/(?:id=|\/d\/|src=)([\w-]+)/)[1] : '';
         var imgSrc = idToken ? 'https://drive.google.com/thumbnail?id=' + idToken + '&sz=w800' : 'https://placehold.co/150?text=No+Image';
         var div = document.createElement('div'); div.className = "flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100/70 transition animate-fadeIn"; 
-        div.innerHTML = '<div class="w-12 h-12 rounded-lg overflow-hidden border dark:border-slate-700 flex-shrink-0 bg-slate-200 cursor-pointer" onclick="viewSelfieModal(\'' + imgSrc + '\')"><img src="' + imgSrc + '" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><div class="flex justify-between items-start gap-1"><h4 class="font-bold text-slate-900 dark:text-white text-xs truncate">' + l.name + subDeptIndicator + '</h4><span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase text-white tracking-wider ' + badgeColor + '">' + l.logType + '</span></div><p class="text-[11px] text-slate-600 truncate mt-0.5"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>' + l.branch + '</p><div class="flex justify-between items-center mt-1"><a href="https://maps.google.com/?q=' + l.lat + ',' + l.lng + '" target="_blank" class="text-[10px] text-blue-600 font-medium hover:underline"><i class="fa-solid fa-map-location-dot mr-1"></i>Google Maps</a><span class="text-[10px] text-slate-500 font-mono font-black tracking-tight">' + l.date + '</span></div></div>'; 
+        
+        // Pwersahang selyado ang ratio sa aspect-square, w-full, h-full, at object-cover para sa thumbnail shell element
+        div.innerHTML = '<div class="w-12 h-12 rounded-lg overflow-hidden border dark:border-slate-700 flex-shrink-0 bg-slate-200 cursor-pointer flex items-center justify-center" onclick="viewSelfieModal(\'' + imgSrc + '\')">' +
+                          '<img src="' + imgSrc + '" class="w-full h-full object-cover aspect-square block">' +
+                        '</div>' +
+                        '<div class="flex-1 min-w-0">' +
+                          '<div class="flex justify-between items-start gap-1">' +
+                            '<h4 class="font-bold text-slate-900 dark:text-white text-xs truncate">' + l.name + subDeptIndicator + '</h4>' +
+                            '<span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase text-white tracking-wider ' + badgeColor + '">' + l.logType + '</span>' +
+                          '</div>' +
+                          '<p class="text-[11px] text-slate-600 truncate mt-0.5"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>' + l.branch + '</p>' +
+                          '<div class="flex justify-between items-center mt-1">' +
+                            '<a href="https://maps.google.com/?q=' + l.lat + ',' + l.lng + '" target="_blank" class="text-[10px] text-blue-600 font-medium hover:underline"><i class="fa-solid fa-map-location-dot mr-1"></i>Google Maps</a>' +
+                            '<span class="text-[10px] text-slate-500 font-mono font-black tracking-tight">' + l.date + '</span>' +
+                          '</div>' +
+                        '</div>'; 
         container.appendChild(div); 
       });
     }
