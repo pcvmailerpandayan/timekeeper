@@ -476,7 +476,7 @@
           <div id="missingLayoutToolbar" class="items-center space-x-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-1 self-end hidden">
             <button type="button" onclick="setMissingLayoutMode('list')" id="btnLayoutList" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">List View</button>
             <button type="button" onclick="setMissingLayoutMode('small')" id="btnLayoutSmall" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">Small Icons</button>
-            <button type="button" onclick="setMissingLayoutMode('large')" id="btnLayoutLarge" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-white text-slate-900 shadow-sm">Large Cards</button>
+            <button type="button" onclick="setMissingLayoutMode('large')" id="btnLayoutLarge" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">Large Cards</button>
           </div>
         </div>
 
@@ -503,7 +503,7 @@
         </div>
 
         <div id="subViewMissingLogs" class="hidden">
-          <div id="missingLogsGrid" class="grid grid-cols-1 gap-4"></div>
+          <div id="missingLogsGrid"></div>
         </div>
       </div>
     </div>
@@ -533,7 +533,6 @@
       }, 1000); 
     }
 
-    // FIXED IMPLEMENTATION GRID: Safe Bypass Network Handling Core
     function executeServerRequest(payload, successCallback, failureCallback) {
       var isBackgroundRequest = payload && (payload.action === "getDepartmentLogs" || payload.action === "getPendingUsers" || payload.action === "getPayrollReport" || payload.action === "getApproverQueue" || payload.action === "getLeavesDataset");
       fetch(WEB_APP_API_URL, {
@@ -551,7 +550,6 @@
           if (isBackgroundRequest && data && data.success === false && data.isGoogleInternalError) return;
           if (successCallback) successCallback(data);
         } catch(jsonErr) {
-          // Automatic structural fallback deployment
           if (payload && payload.action === "getLeavesDataset") {
             if (successCallback) successCallback([]); return;
           }
@@ -560,7 +558,6 @@
           }
           if (isBackgroundRequest) { if (failureCallback) failureCallback(jsonErr); return; }
           
-          // Allow authentication response loops to bypass straight if success nodes are found
           if (text.indexOf('"success":true') !== -1) {
             var extractedCleanObj = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
             if (successCallback) successCallback(extractedCleanObj); return;
@@ -607,7 +604,7 @@
 
     function handleLogin() {
       var empId = document.getElementById('loginEmpId').value.trim(); var pass = document.getElementById('loginPassword').value.trim();
-      if (!empId || !pass) { Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Kumpletuhin ang anyo.' }); return; }
+      if (!empId || !pass) { Swal.fire({ icon: 'warning', title: 'Warning!', text: 'Kumpletuhin ang detalye.' }); return; }
       toggleButtonState('btnLogin', true, 'Kinukumpirma...');
       executeServerRequest({ action: "login", employeeId: empId, password: pass }, function(res) {
         toggleButtonState('btnLogin', false, '<i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In');
@@ -866,14 +863,64 @@
       });
     }
 
+    // PLATINUM LAYOUT ENGINE GATEWAY V2: List View, Small Icons, and Large Cards Integration
     function renderMissingLogsViewLayout() {
-      var grid = document.getElementById('missingLogsGrid'); if (!fetchedMissingLogsArrayCache || fetchedMissingLogsArrayCache.length === 0) { grid.innerHTML = '<p class="text-emerald-600 font-bold text-xs p-4 col-span-full text-center bg-emerald-50 rounded-xl w-full">Selyado ang lahat! Walang kulang o deperensya ang iyong time logs.</p>'; return; }
-      grid.innerHTML = ""; grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
+      var grid = document.getElementById('missingLogsGrid'); 
+      if (!fetchedMissingLogsArrayCache || fetchedMissingLogsArrayCache.length === 0) { 
+        grid.innerHTML = '<p class="text-emerald-600 font-bold text-xs p-4 col-span-full text-center bg-emerald-50 rounded-xl w-full">Selyado ang lahat! Walang kulang o deperensya ang iyong time logs.</p>'; 
+        return; 
+      } 
+      grid.innerHTML = ""; 
+
+      // I-set ang Tailwind layout structure batay sa napiling mode
+      if (missingLayoutMode === "large") {
+        grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
+      } else if (missingLayoutMode === "small") {
+        grid.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3";
+      } else if (missingLayoutMode === "list") {
+        grid.className = "flex flex-col space-y-2 max-w-2xl mx-auto";
+      }
 
       fetchedMissingLogsArrayCache.forEach(function(m) {
-        var missingLabel = m.missingTypes.join(", "); var div = document.createElement('div');
+        var missingLabel = m.missingTypes.join(", "); 
+        var div = document.createElement('div');
+        var deperensyaBadgeText = m.isFutureBlank ? 'ADVANCE ENTRY / FUTURE FILING HUB' : 'Kulang ang ' + missingLabel;
+
+        // 1. LIST VIEW MODE
+        if (missingLayoutMode === "list") {
+          div.className = "flex justify-between items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl shadow-sm hover:border-red-500 hover:bg-slate-50/50 transition cursor-pointer font-sans";
+          div.setAttribute("onclick", "triggerSplitPaneFilingModal('" + m.date + "', '" + missingLabel + "', " + m.isFutureBlank + ")");
+          div.innerHTML = '<div class="flex items-center space-x-3 min-w-0">' +
+                            '<div class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse flex-shrink-0"></div>' +
+                            '<div>' +
+                              '<span class="font-mono font-black text-xs text-slate-900 dark:text-white">' + m.date + '</span>' +
+                              '<span class="ml-2 text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold px-1.5 py-0.5 rounded uppercase">' + m.day + '</span>' +
+                            '</div>' +
+                          '</div>' +
+                          '<div class="text-right flex items-center space-x-2 min-w-0">' +
+                            '<span class="text-[10px] text-red-600 font-bold uppercase tracking-tight truncate">' + deperensyaBadgeText + '</span>' +
+                            '<i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>' +
+                          '</div>';
+          grid.appendChild(div);
+          return;
+        }
+
+        // 2. SMALL ICONS MODE
+        if (missingLayoutMode === "small") {
+          div.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl shadow-sm flex flex-col justify-between hover:border-red-500 hover:scale-[1.02] transition cursor-pointer text-center relative overflow-hidden";
+          div.setAttribute("onclick", "triggerSplitPaneFilingModal('" + m.date + "', '" + missingLabel + "', " + m.isFutureBlank + ")");
+          div.innerHTML = '<div class="absolute top-0 left-0 right-0 h-1 bg-red-500"></div>' +
+                          '<div class="font-mono font-black text-xs text-slate-900 dark:text-white mt-1">' + m.date + '</div>' +
+                          '<div class="text-[9px] text-slate-400 font-medium uppercase mt-0.5">' + m.day + '</div>' +
+                          '<div class="mt-2 text-[9px] text-red-600 font-black tracking-tighter uppercase line-clamp-1 bg-red-50 dark:bg-red-950/30 py-1 rounded">' +
+                            '<i class="fa-solid fa-circle-exclamation mr-0.5"></i>' + (m.isFutureBlank ? 'FUTURE' : 'MISSING LOGS') +
+                          '</div>';
+          grid.appendChild(div);
+          return;
+        }
+
+        // 3. LARGE CARDS MODE (Default Inline Fields)
         div.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl space-y-3 flex flex-col justify-between shadow-md border-t-4 border-t-red-500 animate-fadeIn";
-        
         var tabOptionsHeaderHtml = '<div class="flex border-b border-slate-200 text-[11px] font-black uppercase tracking-wider mb-2">' +
                                      '<button type="button" onclick="switchInnerFilingSubTab(\''+m.date+'\', \'CORRECTION\', this)" class="flex-1 py-1.5 text-red-600 border-b-2 border-red-600 font-bold outline-none">Log Correction</button>' +
                                      '<button type="button" onclick="switchInnerFilingSubTab(\''+m.date+'\', \'LEAVE\', this)" class="flex-1 py-1.5 text-slate-400 font-medium outline-none">File Leave Hub</button>' +
@@ -886,8 +933,6 @@
         });
         correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500">Dahilan (Reason)</label>' +
                                     '<input type="text" id="reasonInput-' + m.date + '" placeholder="Dahilan ng pag-update..." class="w-full p-2 border dark:border-slate-700 rounded-lg text-xs bg-white text-slate-900"></div></div>';
-
-        var deperensyaBadgeText = m.isFutureBlank ? 'ADVANCE ENTRY / FUTURE FILING HUB' : 'Kulang ang ' + missingLabel;
 
         div.innerHTML = '<div>' +
                           '<div class="flex justify-between items-center">' +
@@ -909,6 +954,134 @@
                         '<button type="button" onclick="submitFilingHubRequestPipeline(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1"><i class="fa-solid fa-paper-plane text-red-500"></i> Isumite ang Request</button>';
         grid.appendChild(div);
       });
+    }
+
+    // MODAL INTERACTIVE SPLIT-PANE DESK ENGINE FOR LIST VIEW & SMALL ICONS
+    function triggerSplitPaneFilingModal(dateStr, missingLabel, isFutureBlank) {
+      var selectOpts = "";
+      if (dynamicLeavesDatasetGlobalCache && dynamicLeavesDatasetGlobalCache.length > 0) {
+        dynamicLeavesDatasetGlobalCache.forEach(function(item) {
+          selectOpts += '<option value="' + item.code + '">' + item.code + ' - ' + item.description + '</option>';
+        });
+      } else {
+        var leaveCodesFallback = ["SL", "VL", "BL", "CL", "FDL", "KL", "PL", "SCCB", "WAL", "WL"];
+        leaveCodesFallback.forEach(function(c) { selectOpts += '<option value="' + c + '">' + c + ' Leave Benefit Code</option>'; });
+      }
+
+      var targetDayData = fetchedMissingLogsArrayCache.find(function(x) { return x.date === dateStr; });
+      var timesFieldsHtml = "";
+      if (targetDayData && targetDayData.missingTypes) {
+        targetDayData.missingTypes.forEach(function(t) {
+          timesFieldsHtml += '<div class="mb-2"><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">' + t + ' Target Time</label>' +
+                             '<input type="time" id="modalTime-' + t.replace(/ /g, '_') + '" class="w-full p-2.5 border rounded-xl text-xs font-mono font-bold bg-white text-slate-900"></div>';
+        });
+      }
+
+      var swalFormContentHtml = 
+        '<div class="text-left text-xs p-1 space-y-4">' +
+          '<div class="flex border-b text-xs font-black uppercase tracking-wider">' +
+            '<button type="button" id="modalTabBtn-CORRECTION" onclick="setModalSubPaneMode(\'CORRECTION\')" class="flex-1 py-2 text-red-600 border-b-2 border-red-600 font-bold outline-none">Log Correction</button>' +
+            '<button type="button" id="modalTabBtn-LEAVE" onclick="setModalSubPaneMode(\'LEAVE\')" class="flex-1 py-2 text-slate-400 font-medium outline-none">File Leave Hub</button>' +
+          '</div>' +
+          
+          '<div id="modalPane-CORRECTION" class="space-y-3">' +
+            timesFieldsHtml +
+            '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Dahilan (Reason)</label>' +
+            '<input type="text" id="modalCorrectionReason" placeholder="Isulat ang dahilan ng pag-correct..." class="w-full p-2.5 border rounded-xl text-xs bg-white text-slate-900"></div>' +
+          '</div>' +
+          
+          '<div id="modalPane-LEAVE" class="space-y-3 hidden">' +
+            '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Piliin ang Leave Type Code:</label>' +
+            '<select id="modalLeaveSelect" class="w-full p-2.5 border bg-white text-slate-900 rounded-xl font-bold text-xs cursor-pointer">' + selectOpts + '</select></div>' +
+            '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Remarks / Detalye</label>' +
+            '<input type="text" id="modalLeaveRemarks" placeholder="Ipasok ang detalye ng leave..." class="w-full p-2.5 border rounded-xl text-xs bg-white text-slate-900"></div>' +
+          '</div>' +
+          
+          '<div id="modalAllowanceWrapper" class="grid grid-cols-2 gap-2 pt-2 border-t">' +
+            '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Meal Allowance ₱</label><input type="number" id="modalMealInput" class="w-full p-2.5 border bg-white text-slate-900 text-xs font-bold rounded-xl" placeholder="0"></div>' +
+            '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Transpo Allowance ₱</label><input type="number" id="modalTranspoInput" class="w-full p-2.5 border bg-white text-slate-900 text-xs font-bold rounded-xl" placeholder="0"></div>' +
+          '</div>' +
+        '</div>';
+
+      Swal.fire({
+        title: 'Operations Desk: ' + dateStr,
+        html: swalFormContentHtml,
+        showCancelButton: true,
+        confirmButtonColor: '#0f172a',
+        confirmButtonText: '<i class="fa-solid fa-paper-plane mr-1"></i> Isumite ang Request',
+        cancelButtonText: 'Isara',
+        preConfirm: function() {
+          var activeMode = window.currentModalMode || "CORRECTION";
+          var mealVal = document.getElementById('modalMealInput').value || "0";
+          var transpoVal = document.getElementById('modalTranspoInput').value || "0";
+          var compiledPayload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, meal: mealVal, transpo: transpoVal };
+
+          if (activeMode === "CORRECTION") {
+            var manualTimesCollected = {}; 
+            var blankFound = false;
+            if (targetDayData && targetDayData.missingTypes) {
+              targetDayData.missingTypes.forEach(function(t) {
+                var val = document.getElementById('modalTime-' + t.replace(/ /g, '_')).value;
+                if (val) manualTimesCollected[t] = val; else blankFound = true;
+              });
+            }
+            var reason = document.getElementById('modalCorrectionReason').value.trim();
+            if (blankFound) { Swal.showValidationMessage('Punan ang lahat ng field ng oras!'); return false; }
+            
+            compiledPayload.missingTypeLabel = missingLabel;
+            compiledPayload.reason = reason || "Regular log correction";
+            compiledPayload.manualTimes = manualTimesCollected;
+          } else {
+            compiledPayload.missingTypeLabel = "LEAVE_REQUEST";
+            compiledPayload.reason = document.getElementById('modalLeaveSelect').value;
+            var leaveRemarks = document.getElementById('modalLeaveRemarks').value.trim();
+            compiledPayload.remarks = leaveRemarks ? leaveRemarks + " (Permitted Absent)" : "Permitted Absent";
+            compiledPayload.manualTimes = {};
+          }
+          return compiledPayload;
+        }
+      }).then(function(res) {
+        if (res.isConfirmed && res.value) {
+          Swal.fire({ title: 'Ipinapadala sa TTP Server...', didOpen: function() { Swal.showLoading(); } });
+          executeServerRequest({ action: "saveMissingLogReason", payload: res.value }, function(serverRes) {
+            if (serverRes.success) {
+              Swal.fire({ icon: 'success', title: 'Naipadala Na!', text: serverRes.message, timer: 2000, showConfirmButton: false });
+              executeHistoryAndMissingPipeline();
+            } else {
+              Swal.fire({ icon: 'error', title: 'Bigo sa System', text: serverRes.message });
+            }
+          });
+        }
+        window.currentModalMode = "CORRECTION"; // Reset mode guard state reference
+      });
+
+      // Initialize modal elements control nodes state parameters
+      window.currentModalMode = "CORRECTION";
+      if (isFutureBlank) { setModalSubPaneMode('LEAVE'); }
+    }
+
+    // INTERNALS SWITCH FOR OPERATIONS DESK MODAL TAB TILES
+    function setModalSubPaneMode(mode) {
+      window.currentModalMode = mode;
+      var paneCorrection = document.getElementById('modalPane-CORRECTION');
+      var paneLeave = document.getElementById('modalPane-LEAVE');
+      var tabBtnCorrection = document.getElementById('modalTabBtn-CORRECTION');
+      var tabBtnLeave = document.getElementById('modalTabBtn-LEAVE');
+      var allowanceWrapper = document.getElementById('modalAllowanceWrapper');
+      var mInput = document.getElementById('modalMealInput');
+      var tInput = document.getElementById('modalTranspoInput');
+
+      if (mode === "CORRECTION") {
+        paneCorrection.classList.remove('hidden'); paneLeave.classList.add('hidden');
+        tabBtnCorrection.className = "flex-1 py-2 text-red-600 border-b-2 border-red-600 font-bold outline-none";
+        tabBtnLeave.className = "flex-1 py-2 text-slate-400 font-medium outline-none";
+        mInput.disabled = false; tInput.disabled = false; allowanceWrapper.classList.remove('opacity-40', 'pointer-events-none');
+      } else {
+        paneCorrection.classList.add('hidden'); paneLeave.classList.remove('hidden');
+        tabBtnLeave.className = "flex-1 py-2 text-red-600 border-b-2 border-red-600 font-bold outline-none";
+        tabBtnCorrection.className = "flex-1 py-2 text-slate-400 font-medium outline-none";
+        mInput.value = ""; tInput.value = ""; mInput.disabled = true; tInput.disabled = true; allowanceWrapper.classList.add('opacity-40', 'pointer-events-none');
+      }
     }
 
     function switchInnerFilingSubTab(dateStr, mode, buttonElement) {
@@ -954,7 +1127,7 @@
         container.innerHTML = '<div class="space-y-1.5">' +
                                 '<div><label class="block text-[9px] font-black uppercase text-slate-500">Piliin ang Leave Type Code:</label>' +
                                 '<select id="leaveCodeSelect-' + dateStr + '" class="w-full p-2 border dark:border-slate-700 bg-white text-slate-900 rounded-lg font-bold text-xs cursor-pointer">' + selectOpts + '</select></div>' +
-                                '<div><label class="block text-[9px] font-black uppercase text-slate-500">Remarks / Detalye</label>' +
+                                '<div><label class="block text-[9px] font-black uppercase text-slate-500">Remarks / Detalye (Permitted Absent)</label>' +
                                 '<input type="text" id="leaveRemarksInput-' + dateStr + '" placeholder="Ipasok ang detalye ng leave..." class="w-full p-2 border dark:border-slate-700 rounded-lg text-xs bg-white text-slate-900"></div></div>';
       }
     }
@@ -1122,7 +1295,7 @@
       logs.forEach(function(l) { 
         var badgeColor = l.logType === "IN" ? "bg-emerald-600" : (l.logType === "OUT" ? "bg-rose-600" : "bg-amber-600"); 
         var isCurrentAdmin = (currentUser.department.toLowerCase() === "admin" || currentUser.role === "ADMIN"); 
-        var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 font-bold bg-purple-50 px-1.5 rounded-md ml-1">(' + l.subDept + ')</span>' : ''; 
+        var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 font-bold bg-purple-50 px-1.5 rounded-md ml-1">((' + l.subDept + '))</span>' : ''; 
         var idToken = (l.selfie && l.selfie !== 'N/A' && l.selfie.match(/(?:id=|\/d\/|src=)([\w-]+)/)) ? l.selfie.match(/(?:id=|\/d\/|src=)([\w-]+)/)[1] : '';
         var imgSrc = idToken ? 'https://drive.google.com/thumbnail?id=' + idToken + '&sz=w800' : 'https://placehold.co/150?text=No+Image';
         var div = document.createElement('div'); div.className = "flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100/70 transition animate-fadeIn"; 
@@ -1202,7 +1375,6 @@
     function toggleSelectAllPayrollRows(masterBox) { var checkboxes = document.querySelectorAll('.pay-row-checkbox'); checkboxes.forEach(function(cb) { cb.checked = masterBox.checked; }); }
     function executeBulkPayrollPostingPipeline() { var checkedBoxes = document.querySelectorAll('.pay-row-checkbox:checked'); if (checkedBoxes.length === 0) { Swal.fire({ icon: 'warning', title: 'Walang Napili', text: 'Mag-check ng mga active attendance logs.' }); return; } var dynamicCollectedRowIds = []; checkedBoxes.forEach(function(cb) { var ids = cb.getAttribute('data-rows').split(','); ids.forEach(function(id) { dynamicCollectedRowIds.push(parseInt(id)); }); }); Swal.fire({ title: 'I-Post ang mga Tala?', text: "Permanenteng ila-lock sa system ang mga napiling tala!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d97706', confirmButtonText: 'Oo, I-Post' }).then(function(result) { if (result.isConfirmed) { toggleButtonState('btnBulkPostAction', true, 'Locking...'); executeServerRequest({ action: "bulkPostAttendance", adminId: currentUser.employeeId, rowIds: dynamicCollectedRowIds }, function(res) { toggleButtonState('btnBulkPostAction', false, '<i class="fa-solid fa-lock"></i> I-Post at I-Lock ang mga Piling Attendance logs'); if(res && res.success) { Swal.fire({ icon: 'success', title: 'Nai-Post Na!' }); loadPlatinumPayrollReport(); executeHistoryAndMissingPipeline(); } }); } }); }
     
-    // CRITICAL SECURITY FIX: Standardized exact name function deployment
     function loadPlatinumPayrollReport() {
       var adminId = currentUser.employeeId; var fEmpId = document.getElementById('payEmployeeIdSelect').value; var fDept = document.getElementById('payDeptSelect').value; var fromD = document.getElementById('payFromDate').value; var toD = document.getElementById('payToDate').value; if (!fromD || !toD) return; var tbody = document.getElementById('payrollReportTableBody');
       var searchBtnText = document.getElementById('payrollSearchBtnText'); searchBtnText.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin text-xs"></i>'; document.getElementById('btnPayrollSearchQuery').disabled = true;
@@ -1241,8 +1413,21 @@
     function triggerNativeMobileCamera() { document.getElementById('nativeCameraInput').click(); }
     function processNativeMobileCameraCapture(inputElement) { var file = inputElement.files[0]; if (!file) return; var img = new Image(); var reader = new FileReader(); reader.onload = function(e) { img.onload = function() { var canvas = document.createElement('canvas'); var ctx = canvas.getContext('2d'); canvas.width = 600; canvas.height = 450; ctx.drawImage(img, 0, 0, 600, 450); capturedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.6); document.getElementById('selfiePlaceholderText').classList.add('hidden'); var view = document.getElementById('selfieImgView'); view.src = capturedPhotoBase64; view.classList.remove('hidden'); evaluateSubmissionReadiness(); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
     function addNewLocationPrompt() { Swal.fire({ title: 'Bagong Lokasyon', text: 'Ipasok ang pangalan:', input: 'text', showCancelButton: true }).then(function(result) { if (result.value && result.value.trim() !== "") { document.getElementById('branchInput').value = result.value.trim(); evaluateSubmissionReadiness(); } }); }
-    function setMissingLayoutMode(mode) { missingLayoutMode = mode; renderMissingLogsViewLayout(); }
-    function toggleHistoryViewTabs(view) { var btnActual = document.getElementById('tabBtnActualLogs'); var btnMissing = document.getElementById('tabBtnMissingLogs'); var paneActual = document.getElementById('subViewActualLogs'); var paneMissing = document.getElementById('subViewMissingLogs'); var missingToolbar = document.getElementById('missingLayoutToolbar'); if (view === 'actual') { paneActual.classList.remove('hidden'); paneMissing.classList.add('hidden'); missingToolbar.classList.add('hidden'); btnActual.className = "px-4 py-2 text-red-600 border-b-2 border-red-600 font-bold"; btnMissing.className = "px-4 py-2 text-slate-400"; } else { paneActual.classList.add('hidden'); paneMissing.classList.remove('hidden'); missingToolbar.classList.remove('hidden'); missingToolbar.classList.add('flex'); btnMissing.className = "px-4 py-2 text-red-600 border-b-2 border-red-600 font-bold"; btnActual.className = "px-4 py-2 text-slate-400"; } }
+    
+    function setMissingLayoutMode(mode) { 
+      missingLayoutMode = mode; 
+      var buttons = ['List', 'Small', 'Large'];
+      buttons.forEach(function(b) {
+        var btn = document.getElementById('btnLayout' + b);
+        if (btn) btn.className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition text-slate-400";
+      });
+      var activeBtn = document.getElementById('btnLayout' + mode.charAt(0).toUpperCase() + mode.slice(1));
+      if (activeBtn) activeBtn.className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-white text-slate-900 shadow-sm font-black";
+      
+      renderMissingLogsViewLayout(); 
+    }
+    
+    function toggleHistoryViewTabs(view) { var btnActual = document.getElementById('tabBtnActualLogs'); var btnMissing = document.getElementById('tabBtnMissingLogs'); var paneActual = document.getElementById('subViewActualLogs'); var paneMissing = document.getElementById('subViewMissingLogs'); var missingToolbar = document.getElementById('missingLayoutToolbar'); if (view === 'actual') { paneActual.classList.remove('hidden'); paneMissing.classList.add('hidden'); missingToolbar.classList.add('hidden'); btnActual.className = "px-4 py-2 text-red-600 border-b-2 border-red-600 font-bold"; btnMissing.className = "px-4 py-2 text-slate-400"; } else { paneActual.classList.add('hidden'); paneMissing.classList.remove('hidden'); missingToolbar.classList.remove('hidden'); missingToolbar.classList.add('flex'); btnMissing.className = "px-4 py-2 text-red-600 border-b-2 border-red-600 font-bold"; btnActual.className = "px-4 py-2 text-slate-400"; setMissingLayoutMode(missingLayoutMode); } }
     function toggleButtonState(btnId, isLoading, text) { var btn = typeof btnId === 'string' ? document.getElementById(btnId) : btnId; if (!btn) return; if (isLoading) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-1"></i>'; } else { btn.disabled = false; btn.innerHTML = text; } }
     function clearPunchConsoleInputs() { capturedPhotoBase64 = ""; document.getElementById('selfieImgView').classList.add('hidden'); document.getElementById('selfiePlaceholderText').classList.remove('hidden'); document.getElementById('nativeCameraInput').value = ""; evaluateSubmissionReadiness(); }
     function viewSelfieModal(imgUrl) { Swal.fire({ imageUrl: imgUrl, confirmButtonColor: '#0f172a' }); }
