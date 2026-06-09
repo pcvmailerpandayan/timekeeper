@@ -257,7 +257,7 @@
             <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center space-y-3">
               <div id="selfiePreviewBox" class="w-full aspect-video bg-slate-900 dark:bg-slate-950 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center relative shadow-inner">
                 <span id="selfiePlaceholderText" class="text-slate-500 text-xs text-center px-4"><i class="fa-solid fa-image-portrait text-3xl block mb-1 text-slate-400"></i>Wala pang larawan</span>
-                <img id="selfieImgView" class="w-full h-full object-cover hidden" src="">
+                <img id="selfieImgView" class="max-w-full max-h-full w-auto h-auto object-contain hidden" src="">
               </div>
               <input type="file" id="nativeCameraInput" accept="image/*" capture="user" class="hidden" onchange="processNativeMobileCameraCapture(this)">
               <button type="button" onclick="triggerNativeMobileCamera()" class="w-full py-2.5 bg-slate-900 dark:bg-slate-800 text-white text-xs font-bold rounded-xl shadow flex items-center justify-center hover:bg-slate-800 transition">
@@ -287,7 +287,7 @@
             <i class="fa-solid fa-users text-blue-600 dark:text-blue-400 mr-2 text-base"></i> Sub-Department Monitor (Real-time Feed)
           </h3>
           <div class="flex items-center gap-1.5">
-            <button type="button" id="btnYourLogsFeed" onclick="triggerYourLogsFilterPrompt()" class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1 hover:scale-105 active:scale-95 outline-none animate-bounce-custom">
+            <button type="button" id="btnYourLogsFeed" onclick="triggerYourLogsFilterPrompt()" class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1 hover:scale-105 active:scale-95 outline-none">
               <i class="fa-solid fa-user-clock"></i> Your Logs
             </button>
             <button type="button" id="btnResetFeedFilter" onclick="resetFeedToRealtime()" class="px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-xs rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition hidden outline-none">
@@ -408,6 +408,7 @@
                 <th class="p-3">Departamento</th>
                 <th class="p-3">Petsa</th>
                 <th class="p-3">Meal</th>
+                <th class="p-3">Transpo</th>
                 <th class="p-3 text-center">Status</th>
               </tr>
             </thead>
@@ -640,13 +641,13 @@
         document.getElementById('navBtn-requests').classList.add('hidden');
       }
 
-      initEnforcedGeolocatorTelemetry(); loadBranchDataset(); loadDepartmentMonitorFeed(); executeHistoryAndMissingPipeline();
+      initEnforcedGeolocatorTelemetry(); loadBranchDataset(); loadDepartmentMonitorFeed(false, false); executeHistoryAndMissingPipeline();
       switchActiveViewPane(activeViewPaneMode);
       
       if (backgroundSyncInterval) clearInterval(backgroundSyncInterval);
       backgroundSyncInterval = setInterval(function() { 
         if (currentUser) { 
-          loadDepartmentMonitorFeed(); 
+          loadDepartmentMonitorFeed(false, true); 
           if (isPayrollOrAdmin) { loadAdminApprovalQueue(); loadPlatinumPayrollReport(); }
           if (currentUser.isApprover || hasValidApproverPosition) { loadApproversRequestQueue(); }
         } 
@@ -704,7 +705,7 @@
       toggleButtonState('btnSubmitAttendance', true, 'Ipinapadala...'); 
       executeServerRequest({ action: "submitAttendance", payload: payload }, function(res) { 
         toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log'); 
-        if (res.success) { Swal.fire({ icon: 'success', title: 'Naitala Na!', text: res.message, timer: 1500, showConfirmButton: false }); clearPunchConsoleInputs(); loadDepartmentMonitorFeed(); executeHistoryAndMissingPipeline(); }
+        if (res.success) { Swal.fire({ icon: 'success', title: 'Naitala Na!', text: res.message, timer: 1500, showConfirmButton: false }); clearPunchConsoleInputs(); loadDepartmentMonitorFeed(false, false); executeHistoryAndMissingPipeline(); }
       }); 
     }
 
@@ -784,7 +785,7 @@
           iterationsCollectedRows.forEach(function(dateStr) {
             var s = dateMapData[dateStr];
             
-            if (!userTriggeredManualSearchFlag && (!s || (s.logType !== "COMPLETE" && s.logType !== "MANUAL" && s.logType.indexOf("LEAVE") === -1))) {
+            if (!userTriggeredManualSearchFlag && (!s || (s.logType !== "COMPLETE" && s.logType !== "MANUAL" && s.logType.toUpperCase().indexOf("LEAVE") === -1))) {
               return; 
             }
 
@@ -860,6 +861,69 @@
 
           renderMissingLogsViewLayout(); 
         });
+      });
+    }
+
+    function syncAllowanceToSheet(dateStr, element) {
+      var tr = element.closest('tr');
+      if (!tr) return;
+
+      var mealInput = tr.querySelectorAll('input[type="number"]')[0];
+      var transpoInput = tr.querySelectorAll('input[type="number"]')[1];
+      var detailsInput = tr.querySelector('textarea');
+
+      var mealVal = mealInput ? mealInput.value : "0";
+      var transpoVal = transpoInput ? transpoInput.value : "0";
+      var detailsVal = detailsInput ? detailsInput.value : "";
+
+      var targetedElements = [mealInput, transpoInput, detailsInput].filter(Boolean);
+      
+      targetedElements.forEach(function(el) {
+        el.classList.add('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-950/20');
+      });
+
+      executeServerRequest({
+        action: "updateAllowances",
+        employeeId: currentUser.employeeId,
+        dateStr: dateStr,
+        meal: mealVal,
+        transpo: transpoVal,
+        details: detailsVal
+      }, function(res) {
+        targetedElements.forEach(function(el) {
+          el.classList.remove('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-950/20');
+        });
+
+        if (res && res.success) {
+          targetedElements.forEach(function(el) {
+            el.classList.add('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/20');
+            setTimeout(function() {
+              el.classList.remove('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/20');
+            }, 1200);
+          });
+        } else {
+          targetedElements.forEach(function(el) {
+            el.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/20');
+            setTimeout(function() {
+              el.classList.remove('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/20');
+            }, 2500);
+          });
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Ipinagbawal ang Aksyon',
+            text: res.message || 'Hindi ma-sync ang allowance details.',
+            confirmButtonColor: '#dc2626'
+          });
+          executeHistoryAndMissingPipeline(); 
+        }
+      }, function(err) {
+        targetedElements.forEach(function(el) {
+          el.classList.remove('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-950/20');
+          el.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/20');
+        });
+        Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: 'Hindi makakonekta sa portal base.' });
+        executeHistoryAndMissingPipeline();
       });
     }
 
@@ -1232,7 +1296,7 @@
         if (res.isConfirmed && res.value) { 
           activeFeedFilterData = res.value;
           document.getElementById('btnResetFeedFilter').classList.remove('hidden'); 
-          loadDepartmentMonitorFeed(); 
+          loadDepartmentMonitorFeed(true, false); // Naka-TRUE ang manual click para lumabas ang filter animation
         } 
       }); 
     }
@@ -1267,9 +1331,17 @@
       });
     }
 
-    function loadDepartmentMonitorFeed() { 
+    function loadDepartmentMonitorFeed(isManualFilter, isSilent) { 
       var container = document.getElementById('departmentFeed'); if (!container) return; 
-      container.innerHTML = '<div class="text-center py-12 text-slate-400 text-xs"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i>Ina-apply ang filter...</div>';
+      
+      // Lamang kung hindi silent background load, dito roroot ang tamang loading text animation base sa naging trigger
+      if (!isSilent) {
+        if (isManualFilter) {
+          container.innerHTML = '<div class="text-center py-12 text-slate-400 text-xs"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i>Ina-apply ang filter...</div>';
+        } else {
+          container.innerHTML = '<div class="text-center py-12 text-slate-400 text-xs"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i>Kumukuha ng datos...</div>';
+        }
+      }
       
       var targetAction = "getDepartmentLogs"; var reqPayload = { action: targetAction, employeeId: currentUser.employeeId, department: currentUser.department };
       if (activeFeedFilterData) { targetAction = "getFilteredFeedLogs"; reqPayload = { action: targetAction, adminId: currentUser.employeeId, filterEmpId: activeFeedFilterData.empId || "", filterDept: activeFeedFilterData.dept || "", year: activeFeedFilterData.year, month: activeFeedFilterData.month }; }
@@ -1281,7 +1353,6 @@
       }); 
     }
 
-    // FIXED PICTURE ASPECT RATIO MODULE ENGINE (No More Stretched Portraits)
     function renderFeedCardsIntoContainer(container, logs) {
       if (!logs || logs.length === 0) { container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Walang nakatalang physical punch logs sa kasalukuyan.</div>'; return; }
       container.innerHTML = "";
@@ -1293,9 +1364,9 @@
         var imgSrc = idToken ? 'https://drive.google.com/thumbnail?id=' + idToken + '&sz=w800' : 'https://placehold.co/150?text=No+Image';
         var div = document.createElement('div'); div.className = "flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100/70 transition animate-fadeIn"; 
         
-        // Pwersahang pinanatiling pantay ang ratio (aspect-square) gamit ang object-cover at explicit dimensions para maiwasan ang kahit anong stretching
-        div.innerHTML = '<div class="w-12 h-12 rounded-lg overflow-hidden border dark:border-slate-700 flex-shrink-0 bg-slate-200 cursor-pointer flex items-center justify-center" onclick="viewSelfieModal(\'' + imgSrc + '\')">' +
-                        '  <img src="' + imgSrc + '" class="w-full h-full object-cover aspect-square block" style="object-fit: cover; width: 100%; height: 100%; min-width: 100%; min-height: 100%;">' +
+        // Pinanatili ang original quality at dynamic shape boundary ng device image nang walang pilit na stretching
+        div.innerHTML = '<div class="max-w-[100px] max-h-24 rounded-lg overflow-hidden border dark:border-slate-700 flex-shrink-0 bg-slate-100 dark:bg-slate-900 cursor-pointer flex items-center justify-center p-0.5" onclick="viewSelfieModal(\'' + imgSrc + '\')">' +
+                        '  <img src="' + imgSrc + '" class="w-auto h-auto max-w-full max-h-24 object-contain rounded-md block">' +
                         '</div>' +
                         '<div class="flex-1 min-w-0">' +
                           '<div class="flex justify-between items-start gap-1">' +
@@ -1366,7 +1437,7 @@
       });
     }
 
-    function resetFeedToRealtime() { activeFeedFilterData = null; document.getElementById('btnResetFeedFilter').classList.add('hidden'); loadDepartmentMonitorFeed(); }
+    function resetFeedToRealtime() { activeFeedFilterData = null; document.getElementById('btnResetFeedFilter').classList.add('hidden'); loadDepartmentMonitorFeed(false, false); }
     function loadApprovedEmployeesDropdown() { executeServerRequest({ action: "getApprovedEmployees" }, function(list) { if (Array.isArray(list)) { approvedEmployeesGlobalCache = list; renderPayrollEmployeesDropdown(); } }); }
     
     function renderPayrollEmployeesDropdown() { 
