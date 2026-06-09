@@ -706,7 +706,6 @@
       var branch = document.getElementById('branchInput').value.trim(); 
       var payload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, logType: selectedLogType, branch: branch, lat: currentLat, lng: currentLng, selfie: capturedPhotoBase64 }; 
       
-      // LATEST FIX: Ipakita agad ang full screen screen loading state engine ng SweetAlert bago ipadala ang packet stream
       Swal.fire({
         title: 'Ipinapadala ang Log...',
         text: 'Inirerehistro ang iyong attendance sa system, mangyaring maghintay.',
@@ -721,7 +720,6 @@
         if (!currentUser) return;
         toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log'); 
         
-        // I-update ang kasalukuyang active alert window base sa dynamic result response
         if (res && res.success) { 
           Swal.fire({ icon: 'success', title: 'Naitala Na!', text: res.message || 'Matagumpay na naipadala ang iyong attendance log.', timer: 2000, showConfirmButton: false }); 
           clearPunchConsoleInputs(); 
