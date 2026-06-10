@@ -14,6 +14,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     body {
       background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -168,6 +169,9 @@
             <button type="button" onclick="triggerAccountPasswordChangeModal()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 outline-none">
               <i class="fa-solid fa-key text-red-500 text-sm"></i> Baguhin ang Password
             </button>
+            <button type="button" onclick="triggerMyQRCodeModal()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 border-t dark:border-slate-800 outline-none">
+              <i class="fa-solid fa-qrcode text-red-500 text-sm"></i> Aking QR Code
+            </button>
             <button type="button" onclick="handleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-2 border-t dark:border-slate-800 outline-none lg:hidden">
               <i class="fa-solid fa-power-off text-slate-400 text-sm"></i> Log-out Portal
             </button>
@@ -216,7 +220,7 @@
         </nav>
       </div>
       <div class="border-t pt-4 text-center dark:border-slate-800">
-        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">Super Platinum v21.2</p>
+        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">Diamond Platinum v23.0</p>
       </div>
     </div>
 
@@ -245,10 +249,51 @@
             <div class="flex gap-2">
               <div class="relative flex-1">
                 <i class="fa-solid fa-store absolute left-3 top-3.5 text-slate-400"></i>
-                <input type="text" id="branchInput" list="branchDataset" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white text-xs" placeholder="I-type o piliin ang Branch">
+                <input type="text" id="branchInput" list="branchDataset" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white text-xs" placeholder="I-type o piliin ang Branch" oninput="evaluateSubmissionReadiness()">
                 <datalist id="branchDataset"></datalist>
               </div>
               <button type="button" onclick="addNewLocationPrompt()" class="px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md transition"><i class="fa-solid fa-plus text-base"></i></button>
+            </div>
+          </div>
+
+          <div id="pandayan-helper-section" class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700/80 space-y-3">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+              <i class="fa-solid fa-user-group text-red-600 mr-1.5"></i> May kasama ka bang Kapwa ngayon?
+            </label>
+            <select id="has-helper" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-xs text-slate-900 dark:text-white cursor-pointer transition" onchange="toggleHelperFields()">
+              <option value="no">❌ Wala akong kasama</option>
+              <option value="yes">🤝 Meron akong kasamang Kapwa</option>
+            </select>
+            
+            <div id="helper-fields-container" class="hidden pt-2 border-t border-slate-200 dark:border-slate-700 space-y-3">
+              <div class="space-y-1">
+                <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Employee ID ng Unang Kasama (Kapwa 1)</label>
+                <div class="flex gap-2">
+                  <input type="text" id="helper-id-1" class="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-xs text-slate-900 dark:text-white font-mono" placeholder="I-type o i-scan ang QR" oninput="verifyHelperName(1)" onchange="verifyHelperName(1)">
+                  <button type="button" id="btn-scan-qr-1" onclick="startQRScanner(1)" class="px-3 bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700 text-slate-900 dark:text-white text-xs font-bold rounded-xl shadow-md transition flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-qrcode"></i> <span>Scan 1</span>
+                  </button>
+                </div>
+                <div id="helper-name-display-1" class="text-xs font-bold min-h-[16px] px-1 transition-colors duration-150"></div>
+              </div>
+
+              <div class="space-y-1">
+                <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Employee ID ng Pangalawang Kasama (Kapwa 2 - Optional)</label>
+                <div class="flex gap-2">
+                  <input type="text" id="helper-id-2" class="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-xs text-slate-900 dark:text-white font-mono" placeholder="I-type o i-scan ang QR" oninput="verifyHelperName(2)" onchange="verifyHelperName(2)">
+                  <button type="button" id="btn-scan-qr-2" onclick="startQRScanner(2)" class="px-3 bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700 text-slate-900 dark:text-white text-xs font-bold rounded-xl shadow-md transition flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-qrcode"></i> <span>Scan 2</span>
+                  </button>
+                </div>
+                <div id="helper-name-display-2" class="text-xs font-bold min-h-[16px] px-1 transition-colors duration-150"></div>
+              </div>
+              
+              <div id="qr-reader-wrapper" class="hidden p-3 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-2 animate-fadeIn">
+                <div id="qr-reader" class="mx-auto max-w-[280px] rounded-lg overflow-hidden border-2 border-amber-500 bg-white"></div>
+                <button type="button" onclick="stopQRScanner()" class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl transition shadow-md">
+                  Ipasara ang Camera
+                </button>
+              </div>
             </div>
           </div>
 
@@ -274,7 +319,7 @@
             </div>
             <div id="mapWrapper" class="w-full h-28 rounded-xl overflow-hidden border dark:border-slate-800 hidden"></div>
             
-            <button type="button" id="btnSubmitAttendance" onclick="processAttendanceSubmission()" class="w-full py-3.5 bg-red-600 text-white font-bold rounded-xl shadow-xl cursor-pointer text-xs" disabled>
+            <button type="button" id="btnSubmitAttendance" onclick="processAttendanceSubmission()" class="w-full py-3.5 bg-slate-300 text-slate-500 font-bold rounded-xl cursor-not-allowed text-xs" disabled>
               <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log
             </button>
           </div>
@@ -523,6 +568,10 @@
     var activeFeedFilterData = null;
     var userTriggeredManualSearchFlag = false; 
     var dynamicLeavesDatasetGlobalCache = []; 
+    
+    // Global tracking parameters para sa active dual QR scanner connection route
+    let html5QrcodeScannerInstance = null;
+    var activeQRTargetField = 1;
 
     function initClock() { 
       var liveClock = document.getElementById('liveClock'); 
@@ -535,7 +584,7 @@
     }
 
     function executeServerRequest(payload, successCallback, failureCallback) {
-      var isBackgroundRequest = payload && (payload.action === "getDepartmentLogs" || payload.action === "getPendingUsers" || payload.action === "getPayrollReport" || payload.action === "getApproverQueue" || payload.action === "getLeavesDataset" || payload.action === "getFilteredFeedLogs");
+      var isBackgroundRequest = payload && (payload.action === "getDepartmentLogs" || payload.action === "getPendingUsers" || payload.action === "getPayrollReport" || payload.action === "getApproverQueue" || payload.action === "getLeavesDataset" || payload.action === "getFilteredFeedLogs" || payload.action === "getEmployeeName");
       fetch(WEB_APP_API_URL, {
         method: "POST", mode: "cors", redirect: "follow",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -605,7 +654,7 @@
 
     function handleLogin() {
       var empId = document.getElementById('loginEmpId').value.trim(); var pass = document.getElementById('loginPassword').value.trim();
-      if (!empId || !pass) { Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Kumpletuhin ang detalye.' }); return; }
+      if (!empId || !pass) { Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Kumpletuhin ang anyo.' }); return; }
       toggleButtonState('btnLogin', true, 'Kinukumpirma...');
       executeServerRequest({ action: "login", employeeId: empId, password: pass }, function(res) {
         toggleButtonState('btnLogin', false, '<i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In');
@@ -699,12 +748,42 @@
 
     function loadBranchDataset() { executeServerRequest({ action: "getBranches" }, function(branches) { var dl = document.getElementById('branchDataset'); dl.innerHTML = ""; if(branches && Array.isArray(branches)) { branches.forEach(function(b) { var opt = document.createElement('option'); opt.value = b.code + " " + b.name; dl.appendChild(opt); }); } }); }
     function selectLogType(btnElement, type) { var buttons = document.querySelectorAll('#logTypeGroup button'); buttons.forEach(function(b) { b.className = "py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 transition"; }); btnElement.className = "py-2.5 border border-red-600 rounded-xl font-bold text-xs text-white bg-red-600 shadow-md"; selectedLogType = type; evaluateSubmissionReadiness(); }
-    function evaluateSubmissionReadiness() { var branch = document.getElementById('branchInput').value.trim(); var btn = document.getElementById('btnSubmitAttendance'); var isValid = selectedLogType !== "" && branch !== "" && capturedPhotoBase64 !== "" && currentLat !== ""; btn.disabled = !isValid; btn.className = isValid ? "w-full py-3.5 bg-red-600 text-white font-bold rounded-xl shadow-xl cursor-pointer text-xs" : "w-full py-3.5 bg-slate-300 text-slate-500 font-bold rounded-xl cursor-not-allowed text-xs"; }
+    
+    function evaluateSubmissionReadiness() { 
+      var branch = document.getElementById('branchInput').value.trim(); 
+      var btn = document.getElementById('btnSubmitAttendance'); 
+      
+      var hasHelper = document.getElementById('has-helper') ? document.getElementById('has-helper').value : "no";
+      var helperId1 = document.getElementById('helper-id-1') ? document.getElementById('helper-id-1').value.trim() : "";
+      var helperId2 = document.getElementById('helper-id-2') ? document.getElementById('helper-id-2').value.trim() : "";
+      var isHelperLogicValid = (hasHelper === "no") || (hasHelper === "yes" && (helperId1 !== "" || helperId2 !== ""));
+
+      var isValid = selectedLogType !== "" && branch !== "" && capturedPhotoBase64 !== "" && currentLat !== "" && isHelperLogicValid; 
+      btn.disabled = !isValid; 
+      btn.className = isValid ? "w-full py-3.5 bg-red-600 text-white font-bold rounded-xl shadow-xl cursor-pointer text-xs animate-pulse-once" : "w-full py-3.5 bg-slate-300 text-slate-500 font-bold rounded-xl cursor-not-allowed text-xs"; 
+    }
     
     function processAttendanceSubmission() { 
       if (!currentUser) return;
       var branch = document.getElementById('branchInput').value.trim(); 
-      var payload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, logType: selectedLogType, branch: branch, lat: currentLat, lng: currentLng, selfie: capturedPhotoBase64 }; 
+      
+      var hasHelperVal = document.getElementById('has-helper') ? document.getElementById('has-helper').value : "no";
+      var helperId1Val = document.getElementById('helper-id-1') ? document.getElementById('helper-id-1').value.trim() : "";
+      var helperId2Val = document.getElementById('helper-id-2') ? document.getElementById('helper-id-2').value.trim() : "";
+
+      var payload = { 
+        employeeId: currentUser.employeeId, 
+        name: currentUser.name, 
+        department: currentUser.department, 
+        logType: selectedLogType, 
+        branch: branch, 
+        lat: currentLat, 
+        lng: currentLng, 
+        selfie: capturedPhotoBase64,
+        hasHelper: hasHelperVal,
+        helperId1: helperId1Val,
+        helperId2: helperId2Val
+      }; 
       
       Swal.fire({
         title: 'Ipinapadala ang Log...',
@@ -753,6 +832,140 @@
       var outDay = String(d).padStart(2, '0');
       return outMonth + '-' + outDay + '-' + y + ' (' + weekdayTokens[targetDateObj.getDay()] + ')';
     }
+
+    // ========================================================
+    // LOGISTICS COMPANION QR MODULE FRONTEND CONTROLLERS         
+    // ========================================================
+    function toggleHelperFields() {
+      try {
+        const hasHelper = document.getElementById("has-helper").value;
+        document.getElementById("helper-fields-container").style.display = (hasHelper === "yes") ? "block" : "none";
+        
+        if (hasHelper === "no") {
+          document.getElementById("helper-id-1").value = "";
+          document.getElementById("helper-id-2").value = "";
+          document.getElementById("helper-name-display-1").innerText = "";
+          document.getElementById("helper-name-display-2").innerText = "";
+          stopQRScanner();
+        }
+        evaluateSubmissionReadiness();
+      } catch (err) {
+        console.error("Error sa toggleHelperFields Module: ", err);
+      }
+    }
+
+    function startQRScanner(targetNum) {
+      try {
+        activeQRTargetField = targetNum;
+        document.getElementById("qr-reader-wrapper").style.display = "block";
+        document.getElementById("btn-scan-qr-1").disabled = true;
+        document.getElementById("btn-scan-qr-2").disabled = true;
+        
+        html5QrcodeScannerInstance = new Html5Qrcode("qr-reader");
+        const config = { fps: 15, qrbox: { width: 200, height: 200 } };
+        
+        html5QrcodeScannerInstance.start(
+          { facingMode: "environment" }, 
+          config,
+          (decodedText) => {
+            document.getElementById("helper-id-" + activeQRTargetField).value = decodedText.trim();
+            stopQRScanner();
+            verifyHelperName(activeQRTargetField);
+          },
+          (errorMessage) => { /* Passive template tracking tracking code scan loop */ }
+        ).catch((err) => {
+          console.error("Camera mapping trace failure:", err);
+          Swal.fire({ icon: 'error', title: 'Permiso sa Camera', text: 'Hindi mabuksan ang camera. Siguraduhing may access ang browser sa camera.' });
+          stopQRScanner();
+        });
+      } catch (e) {
+        console.error("Failsafe initiation failure on QR code engine:", e);
+        document.getElementById("btn-scan-qr-1").disabled = false;
+        document.getElementById("btn-scan-qr-2").disabled = false;
+      }
+    }
+
+    function stopQRScanner() {
+      try {
+        document.getElementById("btn-scan-qr-1").disabled = false;
+        document.getElementById("btn-scan-qr-2").disabled = false;
+        document.getElementById("qr-reader-wrapper").style.display = "none";
+        if (html5QrcodeScannerInstance) {
+          html5QrcodeScannerInstance.stop().then(() => {
+            html5QrcodeScannerInstance = null;
+          }).catch(err => console.error("Failsafe interception on stream breakdown:", err));
+        }
+      } catch (e) {
+        console.error("Failsafe tracking crash prevention: ", e);
+      }
+    }
+
+    function verifyHelperName(targetNum) {
+      try {
+        const helperId = document.getElementById("helper-id-" + targetNum).value.trim();
+        const displayDiv = document.getElementById("helper-name-display-" + targetNum);
+        
+        if (!helperId) {
+          displayDiv.innerText = "";
+          evaluateSubmissionReadiness();
+          return;
+        }
+        
+        displayDiv.className = "text-xs font-bold text-amber-500 animate-pulse";
+        displayDiv.innerText = "🔍 Sinusuri ang ID sa Masterlist...";
+        
+        executeServerRequest({ action: "getEmployeeName", employeeId: helperId }, function(res) {
+          if (res && res.success && res.name) {
+            displayDiv.className = "text-xs font-bold text-emerald-600 dark:text-emerald-400";
+            displayDiv.innerText = "✓ Kasamang Kapwa " + targetNum + ": " + res.name;
+          } else {
+            displayDiv.className = "text-xs font-bold text-rose-600 dark:text-rose-400";
+            displayDiv.innerText = "✗ Kamalian: Ang ID ay wala sa Employees list.";
+          }
+          evaluateSubmissionReadiness();
+        }, function(err) {
+          displayDiv.className = "text-xs font-bold text-slate-400";
+          displayDiv.innerText = "⚠️ Hindi ma-verify sa ngayon.";
+          evaluateSubmissionReadiness();
+        });
+      } catch (e) {
+        console.error("Failsafe engine protection on verification connection:", e);
+      }
+    }
+
+    // ========================================================
+    // PERSONAL IDENTITY DYNAMIC QR MODAL ENHANCEMENT 
+    // ========================================================
+    function triggerMyQRCodeModal() {
+      if (!currentUser) return;
+      var qrGeneratorUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(currentUser.employeeId);
+      
+      var cardTemplateHtml = 
+        '<div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border-2 border-red-600 flex flex-col items-center space-y-4 shadow-xl text-center font-sans transition-colors duration-150">' +
+        '  <div class="bg-red-600 text-white font-black text-[10px] px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1 shadow-sm"><i class="fa-solid fa-shield-halved"></i> Pandayan Identity Token</div>' +
+        '  <div class="w-48 h-48 bg-white p-2 rounded-xl border border-slate-200 shadow-inner flex items-center justify-center relative group">' +
+        '    <img src="' + qrGeneratorUrl + '" class="w-full h-full object-contain block" alt="QR Identity Link">' +
+        '  </div>' +
+        '  <div class="space-y-0.5">' +
+        '    <h4 class="text-base font-black text-slate-950 dark:text-white tracking-tight">' + currentUser.name + '</h4>' +
+        '    <p class="text-xs font-black text-red-600 font-mono tracking-wider">ID: ' + currentUser.employeeId + '</p>' +
+        '    <p class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md mt-1">' + (currentUser.position || "KAPWA") + ' | ' + currentUser.department + '</p>' +
+        '  </div>' +
+        '  <p class="text-[10px] text-slate-400 dark:text-slate-500 italic font-medium pt-2 border-t dark:border-slate-800 w-full"><i class="fa-solid fa-camera"></i> Pwedeng i-screenshot o i-print para sa mabilis na attendance code scanning.</p>' +
+        '</div>';
+
+      Swal.fire({
+        title: 'Aking QR Code Card',
+        html: cardTemplateHtml,
+        showConfirmButton: true,
+        confirmButtonColor: '#dc2626',
+        confirmButtonText: '<i class="fa-solid fa-circle-check mr-1"></i> Sige, Maayos',
+        background: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff'
+      });
+    }
+    // ========================================================
+    // END OF ENHANCEMENTS SECTIONS                            
+    // ========================================================
 
     function executeHistoryAndMissingPipeline() {
       if (!currentUser) return;
@@ -1063,7 +1276,7 @@
       if (targetDayData && targetDayData.missingTypes) {
         targetDayData.missingTypes.forEach(function(t) {
           timesFieldsHtml += '<div class="mb-2"><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">' + t + ' Target Time</label>' +
-                             '<input type="time" id="modalTime-' + t.replace(/ /g, '_') + '" class="w-full p-2.5 border rounded-xl text-xs font-mono font-bold bg-white text-slate-900"></div>';
+                               '<input type="time" id="modalTime-' + t.replace(/ /g, '_') + '" class="w-full p-2.5 border rounded-xl text-xs font-mono font-bold bg-white text-slate-900"></div>';
         });
       }
 
@@ -1077,7 +1290,7 @@
           '<div id="modalPane-CORRECTION" class="space-y-3">' +
             timesFieldsHtml +
             '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Dahilan (Reason)</label>' +
-            '<input type="text" id="modalCorrectionReason" placeholder="Isulat ang dahilan ng pag-correct..." class="w-full p-2.5 border rounded-xl text-xs bg-white text-slate-900"></div>' +
+            '<input type="text" id="modalCorrectionReason" placeholder="Dahilan ng pag-correct..." class="w-full p-2.5 border rounded-xl text-xs bg-white text-slate-900"></div>' +
           '</div>' +
           
           '<div id="modalPane-LEAVE" class="space-y-3 hidden">' +
@@ -1134,6 +1347,7 @@
       }).then(function(res) {
         if (res.isConfirmed && res.value) {
           Swal.fire({ title: 'Ipinapadala sa TTP Server...', didOpen: function() { Swal.showLoading(); } });
+          document.getElementById('subViewActualLogs').innerHTML = ""; 
           executeServerRequest({ action: "saveMissingLogReason", payload: res.value }, function(serverRes) {
             if (!currentUser) return;
             if (serverRes.success) {
@@ -1207,7 +1421,7 @@
         var selectOpts = "";
         if (dynamicLeavesDatasetGlobalCache && dynamicLeavesDatasetGlobalCache.length > 0) {
           dynamicLeavesDatasetGlobalCache.forEach(function(item) {
-            selectOpts += '<option value="' + item.code + '">' + item.code + ' - ' + item.description;
+            selectOpts += '<option value="' + item.code + '">' + item.code + ' - ' + item.description + '</option>';
           });
         } else {
           var leaveCodesFallback = ["SL", "VL", "BL", "CL", "FDL", "KL", "PL", "SCCB", "WAL", "WL"];
@@ -1586,7 +1800,24 @@
     
     function toggleHistoryViewTabs(view) { var btnActual = document.getElementById('tabBtnActualLogs'); var btnMissing = document.getElementById('tabBtnMissingLogs'); var paneActual = document.getElementById('subViewActualLogs'); var paneMissing = document.getElementById('subViewMissingLogs'); var missingToolbar = document.getElementById('missingLayoutToolbar'); if (view === 'actual') { paneActual.classList.remove('hidden'); paneMissing.classList.add('hidden'); missingToolbar.classList.add('hidden'); btnActual.className = "px-4 py-2 text-red-600 border-b-2 border-red-600 font-bold"; btnMissing.className = "px-4 py-2 text-slate-400"; } else { paneActual.classList.add('hidden'); paneMissing.classList.remove('hidden'); missingToolbar.classList.remove('hidden'); missingToolbar.classList.add('flex'); btnMissing.className = "px-4 py-2 text-red-600 border-b-2 border-red-600 font-bold"; btnActual.className = "px-4 py-2 text-slate-400"; setMissingLayoutMode(missingLayoutMode); } }
     function toggleButtonState(btnId, isLoading, text) { var btn = typeof btnId === 'string' ? document.getElementById(btnId) : btnId; if (!btn) return; if (isLoading) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-1"></i>'; } else { btn.disabled = false; btn.innerHTML = text; } }
-    function clearPunchConsoleInputs() { capturedPhotoBase64 = ""; document.getElementById('selfieImgView').classList.add('hidden'); document.getElementById('selfiePlaceholderText').classList.remove('hidden'); document.getElementById('nativeCameraInput').value = ""; evaluateSubmissionReadiness(); }
+    
+    function clearPunchConsoleInputs() { 
+      capturedPhotoBase64 = ""; 
+      document.getElementById('selfieImgView').classList.add('hidden'); 
+      document.getElementById('selfiePlaceholderText').classList.remove('hidden'); 
+      document.getElementById('nativeCameraInput').value = ""; 
+      
+      if(document.getElementById('has-helper')) {
+        document.getElementById('has-helper').value = "no";
+        document.getElementById('helper-id-1').value = "";
+        document.getElementById('helper-id-2').value = "";
+        document.getElementById('helper-name-display-1').innerText = "";
+        document.getElementById('helper-name-display-2').innerText = "";
+        toggleHelperFields();
+      }
+      evaluateSubmissionReadiness(); 
+    }
+    
     function viewSelfieModal(imgUrl) { Swal.fire({ imageUrl: imgUrl, customClass: { image: 'max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl' }, confirmButtonColor: '#0f172a' }); }
     function setupGlobalKeyBindings() { document.addEventListener('keydown', function(e) { if (e.key === 'Enter' && !currentUser) { e.preventDefault(); document.getElementById('btnLogin').click(); } }); }
     function switchAuth(v) { document.getElementById('loginFormSection').classList.add('hidden'); document.getElementById('registerFormSection').classList.add('hidden'); document.getElementById('forgotFormSection').classList.add('hidden'); if(v==='login')document.getElementById('loginFormSection').classList.remove('hidden'); if(v==='register')document.getElementById('registerFormSection').classList.remove('hidden'); if(v==='forgot')document.getElementById('forgotFormSection').classList.remove('hidden'); }
