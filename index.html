@@ -190,7 +190,7 @@
       </div>
     </div>
 
-    <div id="sidebarMenuOverlay" onclick="toggleSidebarMenuGateway(false)" class="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
+    <div id="sidebarMenuOverlay" onclick="toggleSidebarMenuGateway(false)" class="fixed inset-0 bg-slate-900/60 dark:bg-slate-955/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
     <div id="sidebarMenuLayoutWindow" class="fixed top-0 left-0 bottom-0 h-screen w-72 bg-white dark:bg-slate-900 z-40 p-6 shadow-2xl lg:shadow-none transform -translate-x-full transition duration-300 ease-in-out lg:translate-x-0 lg:border-r lg:border-slate-200/80 lg:dark:border-slate-800 flex flex-col justify-between transition-colors">
       <div class="space-y-6">
         <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4">
@@ -531,7 +531,7 @@
             <thead>
               <tr class="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
                 <th class="p-3 w-40">Petsa</th>
-                <th class="p-3 text-center bg-emerald-50/40 dark:bg-emerald-950/20 text-emerald-700">IN</th>
+                <th class="p-3 text-center bg-emerald-50/40 dark:bg-emerald-955/20 text-emerald-700">IN</th>
                 <th class="p-3 text-center bg-amber-50/40 dark:bg-amber-955/20 text-amber-700">LB OUT</th>
                 <th class="p-3 text-center bg-amber-50/40 dark:bg-amber-955/20 text-amber-700">LB IN</th>
                 <th class="p-3 text-center bg-blue-50/40 dark:bg-blue-955/20 text-blue-700">CB OUT</th>
@@ -1283,7 +1283,7 @@
         var correctionBodyFieldsHtml = '<div class="space-y-1.5">';
         m.missingTypes.forEach(function(t) {
           correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500">' + t + ' Target Time</label>' +
-                                      '<input type="time" id="timeInput-' + t.replace(/ /g, '_') + '-' + m.date + '" class="w-full p-2 border dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white text-slate-900"></div>';
+                                        '<input type="time" id="timeInput-' + t.replace(/ /g, '_') + '-' + m.date + '" class="w-full p-2 border dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white text-slate-900"></div>';
         });
         correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500">Dahilan (Reason)</label>' +
                 '<input type="text" id="reasonInput-' + m.date + '" placeholder="Dahilan ng pag-update..." class="w-full p-2 border dark:border-slate-700 rounded-lg text-xs bg-white text-slate-900"></div></div>';
