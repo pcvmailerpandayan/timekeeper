@@ -166,7 +166,7 @@
 
           <div class="absolute left-0 mt-1 w-52 rounded-xl shadow-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hidden z-50 dropdown-menu-pane overflow-hidden">
             <div class="bg-slate-50 dark:bg-slate-800/50 p-2 border-b dark:border-slate-800 text-[10px] uppercase tracking-widest font-black text-slate-400">Pamahalaan ang Account</div>
-            <button type="button" onclick="triggerAccountPasswordChangeModal()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 outline-none">
+            <button type="button" onclick="triggerAccountPasswordChangeModal()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-955/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 outline-none">
               <i class="fa-solid fa-key text-red-500 text-sm"></i> Baguhin ang Password
             </button>
             <button type="button" onclick="triggerMyQRCodeModal()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-955/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 border-t dark:border-slate-800 outline-none">
@@ -1173,7 +1173,7 @@
       var targetedElements = [mealInput, transpoInput, detailsInput].filter(Boolean);
       
       targetedElements.forEach(function(el) {
-        el.classList.add('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-950/20');
+        el.classList.add('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-955/20');
       });
 
       executeServerRequest({
@@ -1283,7 +1283,7 @@
         var correctionBodyFieldsHtml = '<div class="space-y-1.5">';
         m.missingTypes.forEach(function(t) {
           correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500">' + t + ' Target Time</label>' +
-                                        '<input type="time" id="timeInput-' + t.replace(/ /g, '_') + '-' + m.date + '" class="w-full p-2 border dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white text-slate-900"></div>';
+                                      '<input type="time" id="timeInput-' + t.replace(/ /g, '_') + '-' + m.date + '" class="w-full p-2 border dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white text-slate-900"></div>';
         });
         correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500">Dahilan (Reason)</label>' +
                 '<input type="text" id="reasonInput-' + m.date + '" placeholder="Dahilan ng pag-update..." class="w-full p-2 border dark:border-slate-700 rounded-lg text-xs bg-white text-slate-900"></div></div>';
@@ -1337,20 +1337,20 @@
             '<button type="button" id="modalTabBtn-CORRECTION" onclick="setModalSubPaneMode(\'CORRECTION\')" class="flex-1 py-2 text-red-600 border-b-2 border-red-600 font-bold outline-none">Log Correction</button>' +
             '<button type="button" id="modalTabBtn-LEAVE" onclick="setModalSubPaneMode(\'LEAVE\')" class="flex-1 py-2 text-slate-400 font-medium outline-none">File Leave Hub</button>' +
           '</div>' +
-          
+          '  ' +
           '<div id="modalPane-CORRECTION" class="space-y-3">' +
             timesFieldsHtml +
             '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Dahilan (Reason)</label>' +
             '<input type="text" id="modalCorrectionReason" placeholder="Dahilan ng pag-correct..." class="w-full p-2.5 border rounded-xl text-xs bg-white text-slate-900"></div>' +
           '</div>' +
-          
+          '  ' +
           '<div id="modalPane-LEAVE" class="space-y-3 hidden">' +
             '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Piliin ang Leave Type Code:</label>' +
             '<select id="modalLeaveSelect" class="w-full p-2.5 border bg-white text-slate-900 rounded-xl font-bold text-xs cursor-pointer">' + selectOpts + '</select></div>' +
             '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Remarks / Detalye (Permitted Absent)</label>' +
             '<input type="text" id="modalLeaveRemarks" placeholder="Ipasok ang detalye ng leave..." class="w-full p-2.5 border rounded-xl text-xs bg-white text-slate-900"></div>' +
           '</div>' +
-          
+          '  ' +
           '<div id="modalAllowanceWrapper" class="grid grid-cols-2 gap-2 pt-2 border-t">' +
             '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Meal Allowance ₱</label><input type="number" id="modalMealInput" class="w-full p-2.5 border bg-white text-slate-900 text-xs font-bold rounded-xl" placeholder="0"></div>' +
             '<div><label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Transpo Allowance ₱</label><input type="number" id="modalTranspoInput" class="w-full p-2.5 border bg-white text-slate-900 text-xs font-bold rounded-xl" placeholder="0"></div>' +
@@ -1398,6 +1398,7 @@
       }).then(function(res) {
         if (res.isConfirmed && res.value) {
           Swal.fire({ title: 'Ipinapadala sa TTP Server...', didOpen: function() { Swal.showLoading(); } });
+          document.getElementById('subViewActualLogs').innerHTML = ""; 
           document.getElementById('subViewActualLogs').innerHTML = ""; 
           executeServerRequest({ action: "saveMissingLogReason", payload: res.value }, function(serverRes) {
             if (!currentUser) return;
@@ -1802,7 +1803,22 @@
       }); 
     }
 
-    function executeAccountApproval(empId, statusString, btn) { if (!currentUser) return; executeServerRequest({ action: "processApproval", adminId: currentUser.employeeId, targetEmpId: empId, statusStatus: statusString }, function() { loadAdminApprovalQueue(); }); }
+    function executeAccountApproval(empId, statusString, btn) { 
+      if (!currentUser) return; 
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin mr-1"></i> Loading...';
+      }
+      executeServerRequest({ action: "processApproval", adminId: currentUser.employeeId, targetEmpId: empId, statusStatus: statusString }, function() { 
+        loadAdminApprovalQueue(); 
+      }, function() {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = 'Approve';
+        }
+      }); 
+    }
+    
     function togglePasswordDisplay(inputId, buttonElement) { var input = document.getElementById(inputId); if (input.type === "password") { input.type = "text"; buttonElement.innerHTML = '<i class="fa-solid fa-eye-slash"></i>'; } else { input.type = "password"; buttonElement.innerHTML = '<i class="fa-solid fa-eye"></i>'; } }
     function toggleSidebarMenuGateway(open) { var menu = document.getElementById('sidebarMenuLayoutWindow'); var overlay = document.getElementById('sidebarMenuOverlay'); if (open) { menu.classList.add('sidebar-menu-active'); overlay.classList.remove('hidden'); } else { menu.classList.remove('sidebar-menu-active'); overlay.classList.add('hidden'); } }
     function triggerNativeMobileCamera() { document.getElementById('nativeCameraInput').click(); }
