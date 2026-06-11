@@ -670,7 +670,7 @@
 
     function handleLogin() {
       var empId = document.getElementById('loginEmpId').value.trim(); var pass = document.getElementById('loginPassword').value.trim();
-      if (!empId || !pass) { Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Kumpletuhin ang anyo.' }); return; }
+      if (!empId || !pass) { Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Kumpletuhin ang detalye.' }); return; }
       toggleButtonState('btnLogin', true, 'Kinukumpirma...');
       executeServerRequest({ action: "login", employeeId: empId, password: pass }, function(res) {
         toggleButtonState('btnLogin', false, '<i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In');
