@@ -54,6 +54,22 @@
     .animate-bounce-custom {
       animation: pulse-bounce 2s infinite ease-in-out;
     }
+
+    /* LIGHT TO DARK SOLID STYLES PARA SA LOG TYPES (DEFAULT ACTIVE) */
+    .btn-log-in     { background-color: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
+    .btn-log-lbout  { background-color: #e2e8f0; color: #0f172a; border-color: #94a3b8; }
+    .btn-log-lbin   { background-color: #cbd5e1; color: #0f172a; border-color: #64748b; }
+    .btn-log-cbout  { background-color: #94a3b8; color: #ffffff; border-color: #475569; }
+    .btn-log-cbin   { background-color: #64748b; color: #ffffff; border-color: #334155; }
+    .btn-log-out    { background-color: #334155; color: #ffffff; border-color: #1e293b; }
+
+    /* HOVER EFFECTS PARA SA MGA SELECTION BUTTONS */
+    .btn-log-in:hover    { background-color: #e2e8f0; }
+    .btn-log-lbout:hover { background-color: #cbd5e1; }
+    .btn-log-lbin:hover  { background-color: #94a3b8; color: #ffffff; }
+    .btn-log-cbout:hover { background-color: #64748b; }
+    .btn-log-cbin:hover  { background-color: #475569; }
+    .btn-log-out:hover   { background-color: #1e293b; }
   </style>
 </head>
 <body class="text-slate-800 dark:text-slate-100 font-sans antialiased p-0 transition-colors duration-200">
@@ -220,7 +236,7 @@
         </nav>
       </div>
       <div class="border-t pt-4 text-center dark:border-slate-800">
-        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">Developed by : FE Jemar Jimena</p>
+        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">Diamond Platinum v23.0</p>
       </div>
     </div>
 
@@ -235,12 +251,12 @@
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">1. Uri ng Log</label>
             <div class="grid grid-cols-3 gap-2" id="logTypeGroup">
-              <button type="button" onclick="selectLogType(this, 'IN')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 transition">IN</button>
-              <button type="button" onclick="selectLogType(this, 'LB OUT')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 transition">LB OUT</button>
-              <button type="button" onclick="selectLogType(this, 'LB IN')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 transition">LB IN</button>
-              <button type="button" onclick="selectLogType(this, 'CB OUT')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 transition">CB OUT</button>
-              <button type="button" onclick="selectLogType(this, 'CB IN')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 transition">CB IN</button>
-              <button type="button" onclick="selectLogType(this, 'OUT')" class="py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 transition">OUT</button>
+              <button type="button" onclick="selectLogType(this, 'IN')" class="py-2.5 border rounded-xl font-bold text-xs btn-log-in transition">IN</button>
+              <button type="button" onclick="selectLogType(this, 'LB OUT')" class="py-2.5 border rounded-xl font-bold text-xs btn-log-lbout transition">LB OUT</button>
+              <button type="button" onclick="selectLogType(this, 'LB IN')" class="py-2.5 border rounded-xl font-bold text-xs btn-log-lbin transition">LB IN</button>
+              <button type="button" onclick="selectLogType(this, 'CB OUT')" class="py-2.5 border rounded-xl font-bold text-xs btn-log-cbout transition">CB OUT</button>
+              <button type="button" onclick="selectLogType(this, 'CB IN')" class="py-2.5 border rounded-xl font-bold text-xs btn-log-cbin transition">CB IN</button>
+              <button type="button" onclick="selectLogType(this, 'OUT')" class="py-2.5 border rounded-xl font-bold text-xs btn-log-out transition">OUT</button>
             </div>
           </div>
 
@@ -288,7 +304,7 @@
                 <div id="helper-name-display-2" class="text-xs font-bold min-h-[16px] px-1 transition-colors duration-150"></div>
               </div>
               
-              <div id="qr-reader-wrapper" class="hidden p-3 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-2 animate-fadeIn">
+              <div id="qr-reader-wrapper" class="hidden p-3 bg-slate-100 dark:bg-slate-955 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-2 animate-fadeIn">
                 <div id="qr-reader" class="mx-auto max-w-[280px] rounded-lg overflow-hidden border-2 border-amber-500 bg-white"></div>
                 <button type="button" onclick="stopQRScanner()" class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl transition shadow-md">
                   Ipasara ang Camera
@@ -300,7 +316,7 @@
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">3. Required Verification Selfie</label>
             <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center space-y-3">
-              <div id="selfiePreviewBox" class="w-full aspect-video bg-slate-900 dark:bg-slate-950 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center relative shadow-inner">
+              <div id="selfiePreviewBox" class="w-full aspect-video bg-slate-900 dark:bg-slate-955 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center relative shadow-inner">
                 <span id="selfiePlaceholderText" class="text-slate-500 text-xs text-center px-4"><i class="fa-solid fa-image-portrait text-3xl block mb-1 text-slate-400"></i>Wala pang larawan</span>
                 <img id="selfieImgView" class="max-w-full max-h-full w-auto h-auto object-contain hidden" src="">
               </div>
@@ -420,7 +436,7 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div class="bg-slate-900 dark:bg-slate-950 text-white p-4 rounded-xl flex items-center justify-between shadow-inner">
+          <div class="bg-slate-900 dark:bg-slate-955 text-white p-4 rounded-xl flex items-center justify-between shadow-inner">
             <div>
               <span class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 block tracking-wider">Total Days Present</span>
               <span id="lblPayTotalDays" class="text-2xl font-black">0</span>
@@ -654,7 +670,7 @@
 
     function handleLogin() {
       var empId = document.getElementById('loginEmpId').value.trim(); var pass = document.getElementById('loginPassword').value.trim();
-      if (!empId || !pass) { Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Kumpletuhin ang detalye.' }); return; }
+      if (!empId || !pass) { Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Kumpletuhin ang anyo.' }); return; }
       toggleButtonState('btnLogin', true, 'Kinukumpirma...');
       executeServerRequest({ action: "login", employeeId: empId, password: pass }, function(res) {
         toggleButtonState('btnLogin', false, '<i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In');
@@ -793,7 +809,123 @@
     }
 
     function loadBranchDataset() { executeServerRequest({ action: "getBranches" }, function(branches) { var dl = document.getElementById('branchDataset'); dl.innerHTML = ""; if(branches && Array.isArray(branches)) { branches.forEach(function(b) { var opt = document.createElement('option'); opt.value = b.code + " " + b.name; dl.appendChild(opt); }); } }); }
-    function selectLogType(btnElement, type) { var buttons = document.querySelectorAll('#logTypeGroup button'); buttons.forEach(function(b) { b.className = "py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 transition"; }); btnElement.className = "py-2.5 border border-red-600 rounded-xl font-bold text-xs text-white bg-red-600 shadow-md"; selectedLogType = type; evaluateSubmissionReadiness(); }
+    
+    function selectLogType(btnElement, type) {
+      if (!currentUser) return;
+
+      var feedContainer = document.getElementById('departmentFeed');
+      var latestLogToday = "";
+      var todayStr = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(new Date().getDate()).padStart(2, '0');
+
+      if (feedContainer) {
+        var userCards = Array.from(feedContainer.querySelectorAll('.animate-fadeIn')).filter(function(card) {
+          var cardName = card.querySelector('h4') ? card.querySelector('h4').textContent : "";
+          var cardDate = card.querySelector('span.font-mono') ? card.querySelector('span.font-mono').textContent : "";
+          // Ginamit ang startsWith dahil may kasamang Oras (HH:mm) ang l.date mula sa server
+          return cardName.includes(currentUser.name) && cardDate.trim().startsWith(todayStr);
+        });
+
+        if (userCards.length > 0) {
+          var badgeEl = userCards[0].querySelector('span.uppercase');
+          if (badgeEl) latestLogToday = badgeEl.textContent.trim();
+        }
+      }
+
+      // PATTERN VALIDATION ENGINE: Paalala lamang kapag lumihis sa normal sequence, hindi haharangan ang console
+      var isOutSequence = false;
+      var reasonText = "";
+
+      if (latestLogToday === "") {
+        if (type !== "IN") {
+          isOutSequence = true;
+          reasonText = "Wala ka pang naitalang log para sa araw na ito. Karaniwang dapat magsimula sa <strong>IN</strong> log.";
+        }
+      } else if (latestLogToday === type) {
+        isOutSequence = true;
+        reasonText = "Ang iyong huling naitalang log ngayon ay kaparehong <strong>" + latestLogToday + "</strong>.";
+      } else {
+        switch (latestLogToday) {
+          case "IN":
+            if (type === "LB IN" || type === "CB IN") {
+              isOutSequence = true;
+              reasonText = "Ang huli mong log ay <strong>IN</strong>. Hindi ka pwedeng mag-IN sa break nang hindi muna nag-o-OUT sa break.";
+            }
+            break;
+          case "LB OUT":
+            if (type !== "LB IN") {
+              isOutSequence = true;
+              reasonText = "Ang huli mong log ay <strong>LB OUT</strong>. Inaasahang magpapasok ka muna ng <strong>LB IN</strong> bago magtala ng ibang log.";
+            }
+            break;
+          case "LB IN":
+            if (type === "LB IN" || type === "CB IN" || type === "LB OUT") {
+              isOutSequence = true;
+              reasonText = "Ang huli mong log ay <strong>LB IN</strong>. Ang susunod na inaasahang hakbang ay <strong>CB OUT</strong> o <strong>OUT</strong>.";
+            }
+            break;
+          case "CB OUT":
+            if (type !== "CB IN") {
+              isOutSequence = true;
+              reasonText = "Ang huli mong log ay <strong>CB OUT</strong>. Inaasahang magpapasok ka muna ng <strong>CB IN</strong> bago magtala ng ibang log.";
+            }
+            break;
+          case "CB IN":
+            if (type === "LB IN" || type === "CB IN" || type === "CB OUT") {
+              isOutSequence = true;
+              reasonText = "Ang huli mong log ay <strong>CB IN</strong>. Ang susunod na inaasahang hakbang ay <strong>LB OUT</strong> o <strong>OUT</strong>.";
+            }
+            break;
+          case "OUT":
+            if (type !== "IN") {
+              isOutSequence = true;
+              reasonText = "Naka-<strong>OUT</strong> ka na sa iyong huling shift. Upang magsimula ng bagong shift o pabalik-balik na log pattern, mangyaring mag-<strong>IN</strong> muna.";
+            }
+            break;
+        }
+      }
+
+      if (isOutSequence) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Paalala sa Log Sequence',
+          html: '<div class="text-left text-xs space-y-2">' +
+                  '<p>' + reasonText + '</p>' +
+                  '<p>Siguraduhing tama ang pinili mong log type bago ipadala upang maiwasan ang deperensya sa payroll computation.</p>' +
+                  '<p class="font-bold text-slate-500">Nais mo bang ituloy ang pagpili sa log na ito?</p>' +
+                '</div>',
+          showCancelButton: true,
+          confirmButtonColor: '#dc2626',
+          cancelButtonColor: '#475569',
+          confirmButtonText: 'Oo, I-apply',
+          cancelButtonText: 'Huwag muna'
+        }).then(function(result) {
+          if (result.isConfirmed) {
+            proceedWithUISelection(btnElement, type);
+          }
+        });
+        return;
+      }
+
+      proceedWithUISelection(btnElement, type);
+    }
+
+    function proceedWithUISelection(btnElement, type) {
+      var buttons = document.querySelectorAll('#logTypeGroup button');
+      buttons.forEach(function(b) {
+        b.classList.remove('bg-red-600', 'text-white', 'border-red-600', 'shadow-md');
+        var bText = b.textContent.trim();
+        if (bText === "IN") b.className = "py-2.5 border rounded-xl font-bold text-xs btn-log-in transition";
+        if (bText === "LB OUT") b.className = "py-2.5 border rounded-xl font-bold text-xs btn-log-lbout transition";
+        if (bText === "LB IN") b.className = "py-2.5 border rounded-xl font-bold text-xs btn-log-lbin transition";
+        if (bText === "CB OUT") b.className = "py-2.5 border rounded-xl font-bold text-xs btn-log-cbout transition";
+        if (bText === "CB IN") b.className = "py-2.5 border rounded-xl font-bold text-xs btn-log-cbin transition";
+        if (bText === "OUT") b.className = "py-2.5 border rounded-xl font-bold text-xs btn-log-out transition";
+      });
+
+      btnElement.className = "py-2.5 border border-red-600 rounded-xl font-bold text-xs text-white bg-red-600 shadow-md";
+      selectedLogType = type;
+      evaluateSubmissionReadiness();
+    }
     
     function evaluateSubmissionReadiness() { 
       var branch = document.getElementById('branchInput').value.trim(); 
@@ -1064,7 +1196,6 @@
           iterationsCollectedRows.forEach(function(dateStr) {
             var s = dateMapData[dateStr];
             
-            // Ligtas na pagsasala upang huwag maitago ang "For Approval Leave" at "APPROVED leave"
             if (!userTriggeredManualSearchFlag && (!s || (s.logType !== "COMPLETE" && s.logType !== "MANUAL" && s.logType !== "APPROVED leave" && s.logType !== "For Approval Leave"))) {
               return; 
             }
@@ -1099,7 +1230,6 @@
               return;
             }
 
-            // Lockout Conditions para sa Leave application detections
             var isLeaveTypeEncountered = resolvedStatusCode.toString().toUpperCase().indexOf("LEAVE") !== -1;
             
             var isEditable = !s.isLocked && s.allowAllowance && !isLeaveTypeEncountered; 
@@ -1121,7 +1251,6 @@
               finalRemarksLabelText = "Approved-" + s.leaveCodeApplied + (s.details ? " | " + s.details : "");
             }
 
-            // Strict Remarks Mapping batay sa Rules (Leave Code o Manual Log)
             var remarksColumnText = "PUNCH_LOG";
             if (resolvedStatusCode === "APPROVED leave") {
               remarksColumnText = s.leaveCodeApplied ? "Approved-" + s.leaveCodeApplied : "APPROVED leave";
@@ -1310,6 +1439,8 @@
       });
     }
 
+    var currentModalMode = "CORRECTION";
+
     function triggerSplitPaneFilingModal(dateStr, missingLabel, isFutureBlank) {
       if (!currentUser) return;
       var selectOpts = "";
@@ -1366,7 +1497,7 @@
         cancelButtonText: 'Isara',
         preConfirm: function() {
           if (!currentUser) return false;
-          var activeMode = window.currentModalMode || "CORRECTION";
+          var activeMode = currentModalMode || "CORRECTION";
           var mealVal = document.getElementById('modalMealInput').value || "0";
           var transpoVal = document.getElementById('modalTranspoInput').value || "0";
           var compiledPayload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, meal: mealVal, transpo: transpoVal };
@@ -1399,7 +1530,6 @@
         if (res.isConfirmed && res.value) {
           Swal.fire({ title: 'Ipinapadala sa TTP Server...', didOpen: function() { Swal.showLoading(); } });
           document.getElementById('subViewActualLogs').innerHTML = ""; 
-          document.getElementById('subViewActualLogs').innerHTML = ""; 
           executeServerRequest({ action: "saveMissingLogReason", payload: res.value }, function(serverRes) {
             if (!currentUser) return;
             if (serverRes.success) {
@@ -1410,15 +1540,15 @@
             }
           });
         }
-        window.currentModalMode = "CORRECTION"; 
+        currentModalMode = "CORRECTION"; 
       });
 
-      window.currentModalMode = "CORRECTION";
+      currentModalMode = "CORRECTION";
       if (isFutureBlank) { setModalSubPaneMode('LEAVE'); }
     }
 
     function setModalSubPaneMode(mode) {
-      window.currentModalMode = mode;
+      currentModalMode = mode;
       var paneCorrection = document.getElementById('modalPane-CORRECTION');
       var paneLeave = document.getElementById('modalPane-LEAVE');
       var tabBtnCorrection = document.getElementById('modalTabBtn-CORRECTION');
@@ -1639,6 +1769,7 @@
       });
     }
 
+    UX_REALTIME_CACHE_DEPT = null;
     function loadDepartmentMonitorFeed(isManualFilter, isSilent) { 
       if (!currentUser) return;
       var container = document.getElementById('departmentFeed'); if (!container) return; 
@@ -1876,6 +2007,20 @@
       document.getElementById('selfiePlaceholderText').classList.remove('hidden'); 
       document.getElementById('nativeCameraInput').value = ""; 
       
+      // IBALIK SA FRESH/CLEAN STATE ANG LOG TYPE BUTTONS
+      selectedLogType = "";
+      var buttons = document.querySelectorAll('#logTypeGroup button');
+      buttons.forEach(function(b) {
+        b.classList.remove('bg-red-600', 'text-white', 'border-red-600', 'shadow-md');
+        var bText = b.textContent.trim();
+        if (bText === "IN") b.className = "py-2.5 border rounded-xl font-bold text-xs btn-log-in transition";
+        if (bText === "LB OUT") b.className = "py-2.5 border rounded-xl font-bold text-xs btn-log-lbout transition";
+        if (bText === "LB IN") b.className = "py-2.5 border rounded-xl font-bold text-xs btn-log-lbin transition";
+        if (bText === "CB OUT") b.className = "py-2.5 border rounded-xl font-bold text-xs btn-log-cbout transition";
+        if (bText === "CB IN") b.className = "py-2.5 border rounded-xl font-bold text-xs btn-log-cbin transition";
+        if (bText === "OUT") b.className = "py-2.5 border rounded-xl font-bold text-xs btn-log-out transition";
+      });
+
       if(document.getElementById('has-helper')) {
         document.getElementById('has-helper').value = "no";
         document.getElementById('helper-id-1').value = "";
