@@ -111,20 +111,28 @@
       <button type="button" id="btnLogin" onclick="handleLogin()" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition shadow-lg active:scale-[0.98]">
         <i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In
       </button>
+
+      <a href="https://drive.google.com/file/d/1DBABqA4XwPUeHFQQb-kZAEgAu41iqdSM/view?usp=drive_link" target="_blank" class="w-full py-2.5 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition border border-slate-200 dark:border-slate-700 shadow-sm">
+        <i class="fa-solid fa-book text-red-600 dark:text-red-500"></i> Gabay sa Paggamit ng App (How To Use)
+      </a>
       
-      <div class="flex justify-between text-xs font-medium text-slate-600 dark:text-slate-400 pt-2">
-        <button type="button" onclick="switchAuth('forgot')" class="hover:text-red-600 transition bg-transparent cursor-pointer outline-none">Nakalimutan ang Password?</button>
-        <button type="button" onclick="switchAuth('register')" class="hover:text-red-600 transition bg-transparent cursor-pointer outline-none">Gumawa ng Account</button>
+      <div class="grid grid-cols-2 gap-3 pt-1">
+        <button type="button" onclick="switchAuth('forgot')" class="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition text-[11px] font-bold border border-slate-200/40 dark:border-slate-700/40 outline-none cursor-pointer">
+          <i class="fa-solid fa-circle-question text-slate-400 text-xs"></i> Nakalimutan ang Password?
+        </button>
+        <button type="button" onclick="switchAuth('register')" class="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-red-50/50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100/70 dark:hover:bg-red-900/30 rounded-xl transition text-[11px] font-bold border border-red-100/30 dark:border-red-900/20 outline-none cursor-pointer">
+          <i class="fa-solid fa-user-plus text-red-500 text-xs"></i> Gumawa ng Account
+        </button>
       </div>
     </div>
 
     <div id="registerFormSection" class="space-y-4 hidden">
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">9-digit Employee ID (Add (1) sa unahan)</label>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Employee ID</label>
         <input type="text" id="regEmpId" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white" placeholder="Hal. 114030062">
       </div>
       <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Buong Pangalan (Last Name,(space)First Name(space) Middle Initial)</label>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Buong Pangalan</label>
         <input type="text" id="regName" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white" placeholder="Jimena, Jemar G.">
       </div>
       <div>
@@ -182,12 +190,19 @@
 
           <div class="absolute left-0 mt-1 w-52 rounded-xl shadow-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hidden z-50 dropdown-menu-pane overflow-hidden">
             <div class="bg-slate-50 dark:bg-slate-800/50 p-2 border-b dark:border-slate-800 text-[10px] uppercase tracking-widest font-black text-slate-400">Pamahalaan ang Account</div>
+            
             <button type="button" onclick="triggerAccountPasswordChangeModal()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 outline-none">
               <i class="fa-solid fa-key text-red-500 text-sm"></i> Baguhin ang Password
             </button>
+            
             <button type="button" onclick="triggerMyQRCodeModal()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 border-t dark:border-slate-800 outline-none">
               <i class="fa-solid fa-qrcode text-red-500 text-sm"></i> Aking QR Code
             </button>
+
+            <a href="https://drive.google.com/file/d/1DBABqA4XwPUeHFQQb-kZAEgAu41iqdSM/view?usp=drive_link" target="_blank" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 border-t dark:border-slate-800 outline-none">
+              <i class="fa-solid fa-book text-red-500 text-sm"></i> How To Use App?
+            </a>
+
             <button type="button" onclick="handleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-2 border-t dark:border-slate-800 outline-none lg:hidden">
               <i class="fa-solid fa-power-off text-slate-400 text-sm"></i> Log-out Portal
             </button>
@@ -640,7 +655,7 @@
       });
     }
 
-    window.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
       initClock(); setupGlobalKeyBindings(); setDefaultFilterDates(); loadSystemDepartmentsList(); 
       var activeSession = sessionStorage.getItem("pandayan_active_session") || localStorage.getItem("pandayan_remembered_user");
       if (activeSession) {
@@ -1217,15 +1232,15 @@
             if (s) {
               resolvedStatusCode = s.logType;
               if (s.logType === "COMPLETE") { statusStyle = "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400"; }
-              else if (s.logType === "MANUAL") { statusStyle = "bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-400"; }
+              else if (s.logType === "MANUAL") { statusStyle = "bg-purple-100 text-purple-800 dark:bg-purple-955/60 dark:text-purple-400"; }
               else if (s.logType === "APPROVED leave") { statusStyle = "bg-blue-100 text-blue-800 font-bold dark:bg-blue-950/60 dark:text-blue-400"; }
-              else if (s.logType === "For Approval Leave") { statusStyle = "bg-amber-100 text-amber-800 font-bold animate-pulse dark:bg-amber-950/60 dark:text-amber-400"; }
+              else if (s.logType === "For Approval Leave") { statusStyle = "bg-amber-100 text-amber-800 font-bold animate-pulse dark:bg-amber-955/60 dark:text-amber-400"; }
               else if (s.logType === "INCOMPLETE" || s.logType === "MISSING") { resolvedStatusCode = "MISSING LOG"; statusStyle = "bg-red-100 text-red-800 dark:bg-red-955/60 dark:text-red-400"; }
             }
             
             if (missingDataMap[dateStr] && !missingDataMap[dateStr].isFutureBlank && resolvedStatusCode !== "APPROVED leave" && resolvedStatusCode !== "For Approval Leave") {
               resolvedStatusCode = "W/ MISSING LOGS";
-              statusStyle = "bg-amber-100 text-amber-800 font-bold dark:bg-amber-950/60 dark:text-amber-400";
+              statusStyle = "bg-amber-100 text-amber-800 font-bold dark:bg-amber-955/60 dark:text-amber-400";
             }
 
             if (!s) {
@@ -1309,7 +1324,7 @@
       var targetedElements = [mealInput, transpoInput, detailsInput].filter(Boolean);
       
       targetedElements.forEach(function(el) {
-        el.classList.add('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-950/40');
+        el.classList.add('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-955/40');
       });
 
       executeServerRequest({
@@ -1322,7 +1337,7 @@
       }, function(res) {
         if (!currentUser) return;
         targetedElements.forEach(function(el) {
-          el.classList.remove('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-950/40');
+          el.classList.remove('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-955/40');
         });
 
         if (res && res.success) {
@@ -1353,7 +1368,7 @@
         }
       }, function(err) {
         targetedElements.forEach(function(el) {
-          el.classList.remove('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-950/40');
+          el.classList.remove('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-955/40');
           el.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-955/40');
         });
         var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
@@ -1431,7 +1446,7 @@
         div.innerHTML = '<div>' +
                           '<div class="flex justify-between items-center">' +
                             '<span class="font-mono font-black text-sm text-slate-900 dark:text-white">' + m.date + '</span>' +
-                            '<span class="text-[9px] bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-400 font-black px-1.5 py-0.5 rounded uppercase tracking-wider">' + m.day + '</span>' +
+                            '<span class="text-[9px] bg-red-100 text-red-800 dark:bg-red-955/60 dark:text-red-400 font-black px-1.5 py-0.5 rounded uppercase tracking-wider">' + m.day + '</span>' +
                           '</div>' +
                           '<p class="text-[11px] text-red-600 dark:text-red-400 font-black mt-1 uppercase tracking-tight"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Deperensya: ' + deperensyaBadgeText + '</p>' +
                         '</div>' +
@@ -1828,7 +1843,7 @@
       logs.forEach(function(l) { 
         var badgeColor = l.logType === "IN" ? "bg-emerald-600" : (l.logType === "OUT" ? "bg-rose-600" : "bg-amber-600"); 
         var isCurrentAdmin = (currentUser.department.toLowerCase() === "admin" || currentUser.role === "ADMIN"); 
-        var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-950/50 px-1.5 rounded-md ml-1">(' + l.subDept + ')</span>' : ''; 
+        var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-955/50 px-1.5 rounded-md ml-1">(' + l.subDept + ')</span>' : ''; 
         var idToken = (l.selfie && l.selfie !== 'N/A' && l.selfie.match(/(?:id=|\/d\/|src=)([\w-]+)/)) ? l.selfie.match(/(?:id=|\/d\/|src=)([\w-]+)/)[1] : '';
         var imgSrc = idToken ? 'https://drive.google.com/thumbnail?id=' + idToken + '&sz=w800' : 'https://placehold.co/150?text=No+Image';
         var div = document.createElement('div'); div.className = "flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100/70 dark:hover:bg-slate-800/80 transition animate-fadeIn"; 
