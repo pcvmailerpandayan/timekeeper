@@ -120,7 +120,7 @@
         <button type="button" onclick="switchAuth('forgot')" class="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition text-[11px] font-bold border border-slate-200/40 dark:border-slate-700/40 outline-none cursor-pointer">
           <i class="fa-solid fa-circle-question text-slate-400 text-xs"></i> Nakalimutan ang Password?
         </button>
-        <button type="button" onclick="switchAuth('register')" class="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-red-50/50 dark:bg-red-955/20 text-red-600 dark:text-red-400 hover:bg-red-100/70 dark:hover:bg-red-900/30 rounded-xl transition text-[11px] font-bold border border-red-100/30 dark:border-red-900/20 outline-none cursor-pointer">
+        <button type="button" onclick="switchAuth('register')" class="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-red-50/50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100/70 dark:hover:bg-red-900/30 rounded-xl transition text-[11px] font-bold border border-red-100/30 dark:border-red-900/20 outline-none cursor-pointer">
           <i class="fa-solid fa-user-plus text-red-500 text-xs"></i> Gumawa ng Account
         </button>
       </div>
@@ -330,7 +330,7 @@
 
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">3. Required Verification Selfie</label>
-            <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 border-slate-800 flex flex-col items-center justify-center space-y-3">
+            <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center space-y-3">
               <div id="selfiePreviewBox" class="w-full aspect-video bg-slate-900 dark:bg-slate-950 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center relative shadow-inner">
                 <span id="selfiePlaceholderText" class="text-slate-500 text-xs text-center px-4"><i class="fa-solid fa-image-portrait text-3xl block mb-1 text-slate-400"></i>Wala pang larawan</span>
                 <img id="selfieImgView" class="max-w-full max-h-full w-auto h-auto object-contain hidden" src="">
@@ -650,7 +650,7 @@
       })
       .catch(function(error) {
         if (isBackgroundRequest) { if (failureCallback) failureCallback(error); return; }
-        Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: error.message, confirmButtonColor: '#sound2626' });
+        Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: error.message, confirmButtonColor: '#dc2626' });
         if (failureCallback) failureCallback(error);
       });
     }
@@ -828,14 +828,21 @@
     function selectLogType(btnElement, type) {
       if (!currentUser) return;
 
-      // DITO NA TITINGIN ANG SYSTEM (BULLETPROOF KAHIT MATABUNAN SA FEED)
-      var ngayonStr = new Date().toLocaleDateString('en-CA');
-      var naisave_naPetsa = localStorage.getItem("ttp_huling_log_petsa_" + currentUser.employeeId);
+      var feedContainer = document.getElementById('departmentFeed');
       var latestLogToday = "";
+      var todayStr = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(new Date().getDate()).padStart(2, '0');
 
-      // Kung ang huling log na nasa device ay ginawa ngayong araw, iyon ang magiging batayan
-      if (naisave_naPetsa === ngayonStr) {
-        latestLogToday = localStorage.getItem("ttp_huling_log_type_" + currentUser.employeeId) || "";
+      if (feedContainer) {
+        var userCards = Array.from(feedContainer.querySelectorAll('.animate-fadeIn')).filter(function(card) {
+          var cardName = card.querySelector('h4') ? card.querySelector('h4').textContent : "";
+          var cardDate = card.querySelector('span.font-mono') ? card.querySelector('span.font-mono').textContent : "";
+          return cardName.includes(currentUser.name) && cardDate.trim().startsWith(todayStr);
+        });
+
+        if (userCards.length > 0) {
+          var badgeEl = userCards[0].querySelector('span.uppercase');
+          if (badgeEl) latestLogToday = badgeEl.textContent.trim();
+        }
       }
 
       var isOutSequence = false;
@@ -990,11 +997,6 @@
         toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log'); 
         
         if (res && res.success) { 
-          // DITO NATIN I-SAVE ANG STATUS SA KANIYANG DEVICE (SUCCESS TRACKER)
-          var ngayon = new Date().toLocaleDateString('en-CA'); // Pormat: YYYY-MM-DD
-          localStorage.setItem("ttp_huling_log_type_" + currentUser.employeeId, selectedLogType);
-          localStorage.setItem("ttp_huling_log_petsa_" + currentUser.employeeId, ngayon);
-
           Swal.fire({ icon: 'success', title: 'Naitala Na!', text: res.message || 'Matagumpay na naipadala ang iyong attendance log.', timer: 2000, showConfirmButton: false, background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
           clearPunchConsoleInputs(); 
           loadDepartmentMonitorFeed(false, false); 
@@ -1420,7 +1422,7 @@
           div.innerHTML = '<div class="absolute top-0 left-0 right-0 h-1 bg-red-500"></div>' +
                           '<div class="font-mono font-black text-xs text-slate-900 dark:text-white mt-1">' + m.date + '</div>' +
                           '<div class="text-[9px] text-slate-400 dark:text-slate-500 font-medium uppercase mt-0.5">' + m.day + '</div>' +
-                          '<div class="mt-2 text-[9px] text-red-600 dark:text-red-400 font-black tracking-tighter uppercase line-clamp-1 bg-red-50 dark:bg-red-955/30 py-1 rounded">' +
+                          '<div class="mt-2 text-[9px] text-red-600 dark:text-red-400 font-black tracking-tighter uppercase line-clamp-1 bg-red-50 dark:bg-red-950/30 py-1 rounded">' +
                             '<i class="fa-solid fa-circle-exclamation mr-0.5"></i>' + (m.isFutureBlank ? 'FUTURE' : 'MISSING LOGS') +
                           '</div>';
           grid.appendChild(div);
@@ -1959,7 +1961,7 @@
         text: "Permanenteng ila-lock sa system ang mga napiling tala!", 
         icon: 'warning', 
         showCancelButton: true, 
-        confirmButtonColor: '#sound7706', 
+        confirmButtonColor: '#d97706', 
         confirmButtonText: 'Oo, I-Post',
         background: isDarkModeActive ? '#0f172a' : '#ffffff',
         color: isDarkModeActive ? '#ffffff' : '#1e293b'
