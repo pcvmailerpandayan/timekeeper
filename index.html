@@ -1940,43 +1940,47 @@
 
     function toggleSelectAllPayrollRows(masterBox) { var checkboxes = document.querySelectorAll('.pay-row-checkbox'); checkboxes.forEach(function(cb) { cb.checked = masterBox.checked; }); }
     
-    function executeBulkPayrollPostingPipeline() { 
-      if (!currentUser) return; 
-      var checkedBoxes = document.querySelectorAll('.pay-row-checkbox:checked'); 
-      if (checkedBoxes.length === 0) { 
-        var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
-        Swal.fire({ icon: 'warning', title: 'Walang Napili', text: 'Mag-check ng mga active attendance logs.', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
-        return; 
-      } 
-      var dynamicCollectedRowIds = []; 
-      checkedBoxes.forEach(function(cb) { 
-        var ids = cb.getAttribute('data-rows').split(','); 
-        ids.forEach(function(id) { dynamicCollectedRowIds.push(parseInt(id)); }); 
-      }); 
-      var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
-      Swal.fire({ 
-        title: 'I-Post ang mga Tala?', 
-        text: "Permanenteng ila-lock sa system ang mga napiling tala!", 
-        icon: 'warning', 
-        showCancelButton: true, 
-        confirmButtonColor: '#sound7706', 
-        confirmButtonText: 'Oo, I-Post',
-        background: isDarkModeActive ? '#0f172a' : '#ffffff',
-        color: isDarkModeActive ? '#ffffff' : '#1e293b'
-      }).then(function(result) { 
-        if (result.isConfirmed) { 
-          toggleButtonState('btnBulkPostAction', true, 'Locking...'); 
-          executeServerRequest({ action: "bulkPostAttendance", adminId: currentUser.employeeId, rowIds: dynamicCollectedRowIds }, function(res) { 
-            toggleButtonState('btnBulkPostAction', false, '<i class="fa-solid fa-lock"></i> I-Post at I-Lock ang mga Piling Attendance logs'); 
-            if(res && res.success) { 
-              Swal.fire({ icon: 'success', title: 'Nai-Post Na!', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
-              loadPlatinumPayrollReport(); 
-              executeHistoryAndMissingPipeline(); 
-            } 
-          }); 
+    // ✔️ TAMANG BERSYON (Naka-Amber o Pula para litaw na litaw ang button)
+function executeBulkPayrollPostingPipeline() { 
+  if (!currentUser) return; 
+  var checkedBoxes = document.querySelectorAll('.pay-row-checkbox:checked'); 
+  if (checkedBoxes.length === 0) { 
+    var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
+    Swal.fire({ icon: 'warning', title: 'Walang Napili', text: 'Mag-check ng mga active attendance logs.', confirmButtonColor: '#dc2626', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
+    return; 
+  } 
+  var dynamicCollectedRowIds = []; 
+  checkedBoxes.forEach(function(cb) { 
+    var ids = cb.getAttribute('data-rows').split(','); 
+    ids.forEach(function(id) { dynamicCollectedRowIds.push(parseInt(id)); }); 
+  } ); 
+  var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
+  
+  Swal.fire({ 
+    title: 'I-Post ang mga Tala?', 
+    text: "Permanenteng ila-lock sa system ang mga napiling tala!", 
+    icon: 'warning', 
+    showCancelButton: true, 
+    confirmButtonColor: '#d97706', // ✔️ Itinama sa Amber-600 para sa Payroll summary profile theme
+    cancelButtonColor: '#475569',
+    confirmButtonText: '<i class="fa-solid fa-lock mr-1"></i> Oo, I-Post',
+    cancelButtonText: 'Cancel',
+    background: isDarkModeActive ? '#0f172a' : '#ffffff', 
+    color: isDarkModeActive ? '#ffffff' : '#1e293b'
+  }).then(function(result) { 
+    if (result.isConfirmed) { 
+      toggleButtonState('btnBulkPostAction', true, 'Locking...'); 
+      executeServerRequest({ action: "bulkPostAttendance", adminId: currentUser.employeeId, rowIds: dynamicCollectedRowIds }, function(res) { 
+        toggleButtonState('btnBulkPostAction', false, '<i class="fa-solid fa-lock"></i> I-Post at I-Lock ang mga Piling Attendance logs'); 
+        if(res && res.success) { 
+          Swal.fire({ icon: 'success', title: 'Nai-Post Na!', confirmButtonColor: '#d97706', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
+          loadPlatinumPayrollReport(); 
+          executeHistoryAndMissingPipeline(); 
         } 
       }); 
-    }
+    } 
+  }); 
+}
     
     function loadPlatinumPayrollReport() {
       if (!currentUser) return;
