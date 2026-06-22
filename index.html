@@ -1806,7 +1806,10 @@
       var monthsOptions = ''; 
       var monthsFilipino = ["Enero", "Pebrero", "Marso", "Abril", "Mayo", "Hunyo", "Hulyo", "Agosto", "Setyembre", "Oktubre", "Nobyembre", "Disyembre"];
       monthsFilipino.forEach(function(m, idx) { monthsOptions += '<option value="' + String(idx + 1).padStart(2, '0') + '">' + m + '</option>'; });
-      var yearsOptions = ''; for(var y = currentYear; y >= 2024; y--) { yearsOptions += '<option value="' + y + '">' + y + '</option>'; }
+      var yearsOptions = ''; 
+for (var y = 2026; y <= currentYear + 2; y++) { 
+  yearsOptions += '<option value="' + y + '">' + y + '</option>'; 
+}
       
       var swalHtml = '';
       var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
