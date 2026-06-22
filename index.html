@@ -330,7 +330,7 @@
 
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">3. Required Verification Selfie</label>
-            <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 border-slate-800 flex flex-col items-center justify-center space-y-3">
+            <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 flex flex-col items-center justify-center space-y-3">
               <div id="selfiePreviewBox" class="w-full aspect-video bg-slate-900 dark:bg-slate-950 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center relative shadow-inner">
                 <span id="selfiePlaceholderText" class="text-slate-500 text-xs text-center px-4"><i class="fa-solid fa-image-portrait text-3xl block mb-1 text-slate-400"></i>Wala pang larawan</span>
                 <img id="selfieImgView" class="max-w-full max-h-full w-auto h-auto object-contain hidden" src="">
@@ -357,7 +357,7 @@
         </div>
       </div>
 
-      <div id="monitorPane" class="hidden lg:hidden lg:col-span-7 flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 h-[500px] lg:h-[calc(100vh-130px)] w-full transition-colors overflow-hidden">
+      <div id="monitorPane" class="hidden lg:hidden lg:col-span-7 flex-col bg-white dark:bg-slate-900 p-6 h-[500px] lg:h-[calc(100vh-130px)] w-full transition-colors overflow-hidden rounded-2xl shadow-md border border-slate-200 dark:border-slate-800">
         <div class="border-b pb-3 border-slate-100 dark:border-slate-800 mb-4 flex justify-between items-center flex-shrink-0 gap-2">
           <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center uppercase tracking-wider">
             <i class="fa-solid fa-users text-blue-600 dark:text-blue-400 mr-2 text-base"></i> Sub-Department Monitor (Real-time Feed)
@@ -415,7 +415,7 @@
         </div>
       </div>
 
-      <div id="payrollPane" class="hidden lg:col-span-12 flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 space-y-6 w-full transition-colors">
+      <div id="payrollPane" class="hidden lg:col-span-12 flex-col bg-white dark:bg-slate-900 p-6 space-y-6 w-full transition-colors rounded-2xl shadow-md border border-slate-200 dark:border-slate-800">
         <div class="border-b pb-3 border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div class="flex items-center space-x-2">
             <i class="fa-solid fa-file-invoice-dollar text-amber-600 dark:text-amber-400 text-xl"></i>
@@ -600,6 +600,9 @@
     var userTriggeredManualSearchFlag = false; 
     var dynamicLeavesDatasetGlobalCache = []; 
     
+    // Na-upgrade na Structured Multiple Attachment Tracker mapping via [dateStr][logType] structure
+    var logbookImagesCache = {}; 
+
     // Global tracking parameters para sa active dual QR scanner connection route
     let html5QrcodeScannerInstance = null;
     var activeQRTargetField = 1;
@@ -828,12 +831,10 @@
     function selectLogType(btnElement, type) {
       if (!currentUser) return;
 
-      // DITO NA TITINGIN ANG SYSTEM (BULLETPROOF KAHIT MATABUNAN SA FEED)
       var ngayonStr = new Date().toLocaleDateString('en-CA');
       var naisave_naPetsa = localStorage.getItem("ttp_huling_log_petsa_" + currentUser.employeeId);
       var latestLogToday = "";
 
-      // Kung ang huling log na nasa device ay ginawa ngayong araw, iyon ang magiging batayan
       if (naisave_naPetsa === ngayonStr) {
         latestLogToday = localStorage.getItem("ttp_huling_log_type_" + currentUser.employeeId) || "";
       }
@@ -990,8 +991,7 @@
         toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log'); 
         
         if (res && res.success) { 
-          // DITO NATIN I-SAVE ANG STATUS SA KANIYANG DEVICE (SUCCESS TRACKER)
-          var ngayon = new Date().toLocaleDateString('en-CA'); // Pormat: YYYY-MM-DD
+          var ngayon = new Date().toLocaleDateString('en-CA'); 
           localStorage.setItem("ttp_huling_log_type_" + currentUser.employeeId, selectedLogType);
           localStorage.setItem("ttp_huling_log_petsa_" + currentUser.employeeId, ngayon);
 
@@ -1255,7 +1255,7 @@
             var isEditable = !s.isLocked && s.allowAllowance && !isLeaveTypeEncountered; 
             var isLockedAttr = isEditable ? '' : 'disabled';
             var lockClass = isEditable ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-600' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 font-mono cursor-not-allowed border-slate-200 dark:border-slate-800';
-            var postBadge = s.isLocked ? ' <span class="px-1 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400 rounded text-[8px] font-black uppercase block mt-1"><i class="fa-solid fa-lock"></i> Posted</span>' : '';
+            var postBadge = s.isLocked ? ' <span class="px-1 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-955/60 dark:text-amber-400 rounded text-[8px] font-black uppercase block mt-1"><i class="fa-solid fa-lock"></i> Posted</span>' : '';
 
             var timeMap = { "IN": "--:--", "LB OUT": "--:--", "LB IN": "--:--", "CB OUT": "--:--", "CB IN": "--:--", "OUT": "--:--" };
             if (s.time && (s.time.indexOf("→") !== -1 || s.time.indexOf("(") !== -1)) {
@@ -1433,13 +1433,28 @@
                                      '<button type="button" onclick="switchInnerFilingSubTab(\''+m.date+'\', \'LEAVE\', this)" class="flex-1 py-1.5 text-slate-400 dark:text-slate-500 font-medium outline-none">File Leave Hub</button>' +
                                    '</div>';
 
-        var correctionBodyFieldsHtml = '<div class="space-y-1.5">';
+        // INTEGRATION UPDATE: Card design dynamically loads specific photo attachments for every sub-log type!
+        var correctionBodyFieldsHtml = '<div class="space-y-3">';
         m.missingTypes.forEach(function(t) {
-          correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400">' + t + ' Target Time</label>' +
-                                      '<input type="time" id="timeInput-' + t.replace(/ /g, '_') + '-' + m.date + '" class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div>';
+          var cleanTypeKey = t.replace(/ /g, '_');
+          correctionBodyFieldsHtml += '<div class="border border-slate-100 dark:border-slate-800 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60 space-y-2">' +
+            '  <span class="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1"><i class="fa-solid fa-clock-pulse text-red-500"></i> entry block for: ' + t + '</span>' +
+            '  <div class="grid grid-cols-2 gap-2 items-center">' +
+            '    <div>' +
+            '      <label class="block text-[8px] uppercase font-bold text-slate-400">Target Time</label>' +
+            '      <input type="time" id="timeInput-' + cleanTypeKey + '-' + m.date + '" class="w-full p-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none">' +
+            '    </div>' +
+            '    <div class="text-center">' +
+            '      <input type="file" id="camInput-' + cleanTypeKey + '-' + m.date + '" accept="image/*" capture="user" class="hidden" onchange="processTypeSpecificFile(this, \'' + m.date + '\', \'' + t + '\', \'card\')">' +
+            '      <button type="button" onclick="document.getElementById(\'camInput-' + cleanTypeKey + '-' + m.date + '\').click()" id="camBtn-' + cleanTypeKey + '-' + m.date + '" class="w-full py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1 outline-none transition-all"><i class="fa-solid fa-camera"></i> Take (' + t + ')</button>' +
+            '      <div id="previewBox-' + cleanTypeKey + '-' + m.date + '" class="mt-1 hidden w-8 h-8 mx-auto border rounded overflow-hidden bg-slate-200 shadow-inner"><img id="previewImg-' + cleanTypeKey + '-' + m.date + '" class="w-full h-full object-cover"></div>' +
+            '    </div>' +
+            '  </div>' +
+            '</div>';
         });
-        correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400">Dahilan (Reason)</label>' +
-                '<input type="text" id="reasonInput-' + m.date + '" placeholder="Dahilan ng pag-update..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div></div>';
+        
+        correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 mb-0.5">Dahilan (Reason)</label>' +
+                                    '<input type="text" id="reasonInput-' + m.date + '" placeholder="Dahilan ng pag-update..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div></div>';
 
         div.innerHTML = '<div>' +
                           '<div class="flex justify-between items-center">' +
@@ -1458,15 +1473,64 @@
                           '<input type="number" id="mealAllowanceInput-' + m.date + '" class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none" placeholder="Meal ₱">' +
                           '<input type="number" id="transpoAllowanceInput-' + m.date + '" class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none" placeholder="Transpo ₱">' +
                         '</div>' +
-                        '<button type="button" onclick="submitFilingHubRequestPipeline(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="w-full py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-black rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1"><i class="fa-solid fa-paper-plane text-red-500"></i> Isumite ang Request</button>';
+                        '<div class="flex gap-2">' +
+                          '<button type="button" onclick="submitFilingHubRequestPipeline(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="w-full py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-black rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1"><i class="fa-solid fa-paper-plane text-red-500"></i> Isumite ang Request sa System</button>' +
+                        '</div>';
         grid.appendChild(div);
       });
+    }
+
+    // INTERACTION MECHANISM: Central logic to map base64 blobs strictly per missing row item type context
+    function processTypeSpecificFile(inputElement, dateStr, logType, targetScope) {
+      var file = inputElement.files[0];
+      if (!file) return;
+      if (!logbookImagesCache[dateStr]) logbookImagesCache[dateStr] = {};
+
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var max_boundary = 600;
+          var w = img.width; var h = img.height;
+          
+          if (w > h) { if (w > max_boundary) { h *= max_boundary / w; w = max_boundary; } }
+          else { if (h > max_boundary) { w *= max_boundary / h; h = max_boundary; } }
+          
+          canvas.width = w; canvas.height = h;
+          ctx.drawImage(img, 0, 0, w, h);
+          var base64Data = canvas.toDataURL('image/jpeg', 0.65);
+
+          // I-save sa centralized global block object
+          logbookImagesCache[dateStr][logType] = base64Data;
+          var cleanKey = logType.replace(/ /g, '_');
+
+          if (targetScope === 'card') {
+            document.getElementById('previewImg-' + cleanKey + '-' + dateStr).src = base64Data;
+            document.getElementById('previewBox-' + cleanKey + '-' + dateStr).classList.remove('hidden');
+            var btn = document.getElementById('camBtn-' + cleanKey + '-' + dateStr);
+            btn.className = "w-full py-1.5 bg-emerald-600 text-white text-[10px] font-black rounded-md flex items-center justify-center gap-1 border-none outline-none animate-pulse-once";
+            btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Connected';
+          } else {
+            document.getElementById('modalPreviewImg-' + cleanKey).src = base64Data;
+            document.getElementById('modalPreviewBox-' + cleanKey).classList.remove('hidden');
+            var btn = document.getElementById('modalCamBtn-' + cleanKey);
+            btn.className = "w-full py-2 bg-emerald-600 text-white text-[10px] font-black rounded-lg flex items-center justify-center gap-1 border-none outline-none";
+            btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Photo Saved';
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
     var currentModalMode = "CORRECTION";
 
     function triggerSplitPaneFilingModal(dateStr, missingLabel, isFutureBlank) {
       if (!currentUser) return;
+      if (!logbookImagesCache[dateStr]) logbookImagesCache[dateStr] = {};
+      
       var selectOpts = "";
       if (dynamicLeavesDatasetGlobalCache && dynamicLeavesDatasetGlobalCache.length > 0) {
         dynamicLeavesDatasetGlobalCache.forEach(function(item) {
@@ -1479,10 +1543,25 @@
 
       var targetDayData = fetchedMissingLogsArrayCache.find(function(x) { return x.date === dateStr; });
       var timesFieldsHtml = "";
+      
+      // INTEGRATION UPDATE: Modal configuration structures unique image buttons per missing block link
       if (targetDayData && targetDayData.missingTypes) {
         targetDayData.missingTypes.forEach(function(t) {
-          timesFieldsHtml += '<div class="mb-2"><label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">' + t + ' Target Time</label>' +
-                               '<input type="time" id="modalTime-' + t.replace(/ /g, '_') + '" class="w-full p-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div>';
+          var cleanTypeKey = t.replace(/ /g, '_');
+          timesFieldsHtml += '<div class="border border-slate-200 dark:border-slate-800 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 space-y-2 mb-2">' +
+            '  <span class="text-[10px] font-black text-red-600 dark:text-red-400 uppercase tracking-wide block flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> KULANG NA SHIFT LOG: (' + t + ')</span>' +
+            '  <div class="grid grid-cols-2 gap-2 items-center">' +
+            '    <div>' +
+            '      <label class="block text-[8px] uppercase text-slate-400 font-bold mb-0.5">Ipasok ang Oras</label>' +
+            '      <input type="time" id="modalTime-' + cleanTypeKey + '" class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none">' +
+            '    </div>' +
+            '    <div class="text-center">' +
+            '      <input type="file" id="modalCamInput-' + cleanTypeKey + '" accept="image/*" capture="user" class="hidden" onchange="processTypeSpecificFile(this, \'' + dateStr + '\', \'' + t + '\', \'modal\')">' +
+            '      <button type="button" onclick="document.getElementById(\'modalCamInput-' + cleanTypeKey + '\').click()" id="modalCamBtn-' + cleanTypeKey + '" class="w-full py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1 outline-none"><i class="fa-solid fa-camera"></i> Attach Image</button>' +
+            '      <div id="modalPreviewBox-' + cleanTypeKey + '" class="mt-1 hidden w-8 h-8 mx-auto border rounded overflow-hidden bg-slate-900 shadow-inner"><img id="modalPreviewImg-' + cleanTypeKey + '" class="w-full h-full object-cover"></div>' +
+            '    </div>' +
+            '  </div>' +
+            '</div>';
         });
       }
 
@@ -1528,7 +1607,10 @@
           var activeMode = currentModalMode || "CORRECTION";
           var mealVal = document.getElementById('modalMealInput').value || "0";
           var transpoVal = document.getElementById('modalTranspoInput').value || "0";
-          var compiledPayload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, meal: mealVal, transpo: transpoVal };
+          var compiledPayload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, meal: mealVal, transpo: transpoVal, imageBlobs: logbookImagesCache[dateStr] || {} };
+
+          // Fallback primary selector injection
+          compiledPayload.selfie = Object.values(compiledPayload.imageBlobs)[0] || "N/A";
 
           if (activeMode === "CORRECTION") {
             var manualTimesCollected = {}; 
@@ -1617,10 +1699,23 @@
 
         var targetLog = fetchedMissingLogsArrayCache.find(function(x){return x.date === dateStr;});
         var missingTypesArray = targetLog ? targetLog.missingTypes : [];
-        var html = '<div class="space-y-1.5">';
+        
+        var html = '<div class="space-y-3">';
         missingTypesArray.forEach(function(t) {
-          html += '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400">' + t + ' Target Time</label>' +
-                  '<input type="time" id="timeInput-' + t.replace(/ /g, '_') + '-' + dateStr + '" class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div>';
+          var cleanTypeKey = t.replace(/ /g, '_');
+          html += '<div class="border border-slate-100 dark:border-slate-800 p-2 rounded-xl bg-white dark:bg-slate-900/60 space-y-2">' +
+                  '  <span class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wide block">Linya para sa: ' + t + '</span>' +
+                  '  <div class="grid grid-cols-2 gap-2 items-center">' +
+                  '    <div>' +
+                  '      <input type="time" id="timeInput-' + cleanTypeKey + '-' + dateStr + '" class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none">' +
+                  '    </div>' +
+                  '    <div class="text-center">' +
+                  '      <input type="file" id="camInput-' + cleanTypeKey + '-' + dateStr + '" accept="image/*" capture="user" class="hidden" onchange="processTypeSpecificFile(this, \'' + dateStr + '\', \'' + t + '\', \'card\')">' +
+                  '      <button type="button" onclick="document.getElementById(\'camInput-' + cleanTypeKey + '-' + dateStr + '\').click()" id="camBtn-' + cleanTypeKey + '-' + dateStr + '" class="w-full py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1"><i class="fa-solid fa-camera"></i> Photo</button>' +
+                  '      <div id="previewBox-' + cleanTypeKey + '-' + dateStr + '" class="mt-1 hidden w-8 h-8 mx-auto border rounded overflow-hidden bg-slate-200"><img id="previewImg-' + cleanTypeKey + '-' + dateStr + '" class="w-full h-full object-cover"></div>' +
+                  '    </div>' +
+                  '  </div>' +
+                  '</div>';
         });
         html += '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400">Dahilan (Reason)</label>' +
                 '<input type="text" id="reasonInput-' + dateStr + '" placeholder="Dahilan ng pag-update..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div></div>';
@@ -1656,7 +1751,11 @@
       var mealVal = rootBox.querySelector('#mealAllowanceInput-' + dateStr).value || "0";
       var transpoVal = rootBox.querySelector('#transpoAllowanceInput-' + dateStr).value || "0";
       
-      var payload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, meal: mealVal, transpo: transpoVal };
+      // I-package ang na-cache na dynamic images dictionary per missing log context
+      var attachedImageBlobs = logbookImagesCache[dateStr] || {};
+
+      var payload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, meal: mealVal, transpo: transpoVal, imageBlobs: attachedImageBlobs };
+      payload.selfie = Object.values(attachedImageBlobs)[0] || "N/A"; // main root fallback logic
 
       if (currentActiveMode === "CORRECTION") {
         var targetLog = fetchedMissingLogsArrayCache.find(function(x){return x.date === dateStr;});
@@ -1688,6 +1787,7 @@
         if (res.success) {
           var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
           Swal.fire({ icon: 'success', title: 'Naipadala Na!', text: res.message, timer: 2000, showConfirmButton: false, background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' });
+          if(logbookImagesCache[dateStr]) delete logbookImagesCache[dateStr]; // clear data track cache memory map
           executeHistoryAndMissingPipeline();
         } else {
           var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
@@ -1827,10 +1927,7 @@
       if (activeFeedFilterData) { targetAction = "getFilteredFeedLogs"; reqPayload = { action: targetAction, adminId: currentUser.employeeId, filterEmpId: activeFeedFilterData.empId || "", filterDept: activeFeedFilterData.dept || "", year: activeFeedFilterData.year, month: activeFeedFilterData.month }; }
       executeServerRequest(reqPayload, function(logs) { 
         if (!currentUser) return;
-        var filteredPunchConsoleOnlyLogs = (logs && Array.isArray(logs)) ? logs.filter(function(item) {
-          return item.logType === "IN" || item.logType === "LB OUT" || item.logType === "LB IN" || item.logType === "CB OUT" || item.logType === "CB IN" || item.logType === "OUT";
-        }) : [];
-        renderFeedCardsIntoContainer(container, filteredPunchConsoleOnlyLogs); 
+        renderFeedCardsIntoContainer(container, logs); 
       }); 
     }
 
@@ -1839,27 +1936,56 @@
       if (!logs || logs.length === 0) { container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Walang nakatalang physical punch logs sa kasalukuyan.</div>'; return; }
       container.innerHTML = "";
       logs.forEach(function(l) { 
-        var badgeColor = l.logType === "IN" ? "bg-emerald-600" : (l.logType === "OUT" ? "bg-rose-600" : "bg-amber-600"); 
+        var isMissingLogEntry = (l.logType === "MISSING LOG REASON" || l.logType === "ATTENDANCE REQUEST PENDING" || l.logType.indexOf("MANUAL") !== -1 || l.logType.indexOf("LEAVE") !== -1);
+        
+        var badgeColor = "bg-amber-600";
+        if (l.logType === "IN" || l.logType === "APPROVED:IN") badgeColor = "bg-emerald-600";
+        else if (l.logType === "OUT" || l.logType === "APPROVED:OUT") badgeColor = "bg-rose-600";
+        else if (isMissingLogEntry) badgeColor = "bg-purple-600";
+
         var isCurrentAdmin = (currentUser.department.toLowerCase() === "admin" || currentUser.role === "ADMIN"); 
         var subDeptIndicator = isCurrentAdmin ? ' <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-955/50 px-1.5 rounded-md ml-1">(' + l.subDept + ')</span>' : ''; 
         var idToken = (l.selfie && l.selfie !== 'N/A' && l.selfie.match(/(?:id=|\/d\/|src=)([\w-]+)/)) ? l.selfie.match(/(?:id=|\/d\/|src=)([\w-]+)/)[1] : '';
-        var imgSrc = idToken ? 'https://drive.google.com/thumbnail?id=' + idToken + '&sz=w800' : 'https://placehold.co/150?text=No+Image';
-        var div = document.createElement('div'); div.className = "flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100/70 dark:hover:bg-slate-800/80 transition animate-fadeIn"; 
+        var imgSrc = idToken ? 'https://drive.google.com/thumbnail?id=' + idToken + '&sz=w800' : 'https://placehold.co/150?text=No+Selfie';
         
-        div.innerHTML = '<div class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border dark:border-slate-700 flex-shrink-0 bg-slate-955 cursor-pointer flex items-center justify-center p-0.5" onclick="viewSelfieModal(\'' + imgSrc + '\')">' +
-                        '  <img src="' + imgSrc + '" class="w-full h-full object-contain block">' +
-                        '</div>' +
-                        '<div class="flex-1 min-w-0">' +
-                          '<div class="flex justify-between items-start gap-1">' +
-                            '<h4 class="font-bold text-slate-900 dark:text-white text-xs truncate">' + l.name + subDeptIndicator + '</h4>' +
-                            '<span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase text-white tracking-wider ' + badgeColor + '">' + l.logType + '</span>' +
-                          '</div>' +
-                          '<p class="text-[11px] text-slate-600 dark:text-slate-400 truncate mt-0.5"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>' + l.branch + '</p>' +
-                          '<div class="flex justify-between items-center mt-1">' +
-                            '<a href="https://www.google.com/maps?q=' + l.lat + ',' + l.lng + '" target="_blank" class="text-[10px] text-blue-600 dark:text-blue-400 font-medium hover:underline"><i class="fa-solid fa-map-location-dot mr-1"></i>Google Maps</a>' +
-                            '<span class="text-[10px] text-slate-500 font-mono font-black tracking-tight">' + l.date + '</span>' +
-                          '</div>' +
-                        '</div>'; 
+        // Multi-image verification rendering framework for feed logs module layout
+        var logbookProofHtml = "";
+        if (l.logbookPhotos && l.logbookPhotos !== "N/A" && l.logbookPhotos !== "") {
+          var photoUrls = Array.isArray(l.logbookPhotos) ? l.logbookPhotos : l.logbookPhotos.split(",");
+          logbookProofHtml = '<div class="flex flex-wrap gap-1 mt-2 pt-1.5 border-t border-slate-200 dark:border-slate-800/80 w-full">' +
+                             '<span class="text-[9px] font-black text-amber-600 dark:text-amber-400 block w-full uppercase tracking-wider"><i class="fa-solid fa-file-shield mr-1"></i> Custom Multi-Photo Links (' + photoUrls.length + '):</span>';
+          photoUrls.forEach(function(url) {
+            var cleanUrl = url.trim();
+            if (cleanUrl) {
+              var driveTokenMatch = cleanUrl.match(/(?:id=|\/d\/|src=)([\w-]+)/);
+              var thumbSrc = driveTokenMatch ? 'https://drive.google.com/thumbnail?id=' + driveTokenMatch[1] + '&sz=w200' : cleanUrl;
+              logbookProofHtml += '<div class="w-9 h-9 rounded border border-slate-300 dark:border-slate-700 overflow-hidden bg-slate-900 cursor-pointer shadow-sm hover:scale-105 transition" onclick="viewSelfieModal(\'' + cleanUrl + '\')">' +
+                                  '  <img src="' + thumbSrc + '" class="w-full h-full object-cover block">' +
+                                  '</div>';
+            }
+          });
+          logbookProofHtml += '</div>';
+        }
+
+        var div = document.createElement('div'); div.className = "flex flex-col p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100/70 dark:hover:bg-slate-800/80 transition animate-fadeIn"; 
+        
+        div.innerHTML = '<div class="flex items-center gap-4 w-full">' +
+                        '  <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border dark:border-slate-700 flex-shrink-0 bg-slate-955 cursor-pointer flex items-center justify-center p-0.5" onclick="viewSelfieModal(\'' + imgSrc + '\')">' +
+                        '    <img src="' + imgSrc + '" class="w-full h-full object-contain block">' +
+                        '  </div>' +
+                        '  <div class="flex-1 min-w-0">' +
+                        '    <div class="flex justify-between items-start gap-1">' +
+                        '      <h4 class="font-bold text-slate-900 dark:text-white text-xs truncate">' + l.name + subDeptIndicator + '</h4>' +
+                        '      <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase text-white tracking-wider ' + badgeColor + '">' + l.logType.replace("APPROVED:", "") + '</span>' +
+                        '    </div>' +
+                        '    <p class="text-[11px] text-slate-600 dark:text-slate-400 truncate mt-0.5"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>' + l.branch + '</p>' +
+                        '    <div class="flex justify-between items-center mt-1">' +
+                        '      <a href="https://www.google.com/maps?q=' + l.lat + ',' + l.lng + '" target="_blank" class="text-[10px] text-blue-600 dark:text-blue-400 font-medium hover:underline"><i class="fa-solid fa-map-location-dot mr-1"></i>Google Maps</a>' +
+                        '      <span class="text-[10px] text-slate-500 font-mono font-black tracking-tight">' + l.date + '</span>' +
+                        '    </div>' +
+                        '  </div>' +
+                        '</div>' + 
+                        logbookProofHtml;
         container.appendChild(div); 
       });
     }
@@ -1940,48 +2066,47 @@
 
     function toggleSelectAllPayrollRows(masterBox) { var checkboxes = document.querySelectorAll('.pay-row-checkbox'); checkboxes.forEach(function(cb) { cb.checked = masterBox.checked; }); }
     
-    // ✔️ TAMANG BERSYON (Naka-Amber o Pula para litaw na litaw ang button)
-function executeBulkPayrollPostingPipeline() { 
-  if (!currentUser) return; 
-  var checkedBoxes = document.querySelectorAll('.pay-row-checkbox:checked'); 
-  if (checkedBoxes.length === 0) { 
-    var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
-    Swal.fire({ icon: 'warning', title: 'Walang Napili', text: 'Mag-check ng mga active attendance logs.', confirmButtonColor: '#dc2626', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
-    return; 
-  } 
-  var dynamicCollectedRowIds = []; 
-  checkedBoxes.forEach(function(cb) { 
-    var ids = cb.getAttribute('data-rows').split(','); 
-    ids.forEach(function(id) { dynamicCollectedRowIds.push(parseInt(id)); }); 
-  } ); 
-  var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
-  
-  Swal.fire({ 
-    title: 'I-Post ang mga Tala?', 
-    text: "Permanenteng ila-lock sa system ang mga napiling tala!", 
-    icon: 'warning', 
-    showCancelButton: true, 
-    confirmButtonColor: '#d97706', // ✔️ Itinama sa Amber-600 para sa Payroll summary profile theme
-    cancelButtonColor: '#475569',
-    confirmButtonText: '<i class="fa-solid fa-lock mr-1"></i> Oo, I-Post',
-    cancelButtonText: 'Cancel',
-    background: isDarkModeActive ? '#0f172a' : '#ffffff', 
-    color: isDarkModeActive ? '#ffffff' : '#1e293b'
-  }).then(function(result) { 
-    if (result.isConfirmed) { 
-      toggleButtonState('btnBulkPostAction', true, 'Locking...'); 
-      executeServerRequest({ action: "bulkPostAttendance", adminId: currentUser.employeeId, rowIds: dynamicCollectedRowIds }, function(res) { 
-        toggleButtonState('btnBulkPostAction', false, '<i class="fa-solid fa-lock"></i> I-Post at I-Lock ang mga Piling Attendance logs'); 
-        if(res && res.success) { 
-          Swal.fire({ icon: 'success', title: 'Nai-Post Na!', confirmButtonColor: '#d97706', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
-          loadPlatinumPayrollReport(); 
-          executeHistoryAndMissingPipeline(); 
+    function executeBulkPayrollPostingPipeline() { 
+      if (!currentUser) return; 
+      var checkedBoxes = document.querySelectorAll('.pay-row-checkbox:checked'); 
+      if (checkedBoxes.length === 0) { 
+        var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
+        Swal.fire({ icon: 'warning', title: 'Walang Napili', text: 'Mag-check ng mga active attendance logs.', confirmButtonColor: '#dc2626', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
+        return; 
+      } 
+      var dynamicCollectedRowIds = []; 
+      checkedBoxes.forEach(function(cb) { 
+        var ids = cb.getAttribute('data-rows').split(','); 
+        ids.forEach(function(id) { dynamicCollectedRowIds.push(parseInt(id)); }); 
+      } ); 
+      var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
+      
+      Swal.fire({ 
+        title: 'I-Post ang mga Tala?', 
+        text: "Permanenteng ila-lock sa system ang mga napiling tala!", 
+        icon: 'warning', 
+        showCancelButton: true, 
+        confirmButtonColor: '#d97706', 
+        cancelButtonColor: '#475569',
+        confirmButtonText: '<i class="fa-solid fa-lock mr-1"></i> Oo, I-Post',
+        cancelButtonText: 'Cancel',
+        background: isDarkModeActive ? '#0f172a' : '#ffffff', 
+        color: isDarkModeActive ? '#ffffff' : '#1e293b'
+      }).then(function(result) { 
+        if (result.isConfirmed) { 
+          toggleButtonState('btnBulkPostAction', true, 'Locking...'); 
+          executeServerRequest({ action: "bulkPostAttendance", adminId: currentUser.employeeId, rowIds: dynamicCollectedRowIds }, function(res) { 
+            toggleButtonState('btnBulkPostAction', false, '<i class="fa-solid fa-lock"></i> I-Post at I-Lock ang mga Piling Attendance logs'); 
+            if(res && res.success) { 
+              Swal.fire({ icon: 'success', title: 'Nai-Post Na!', confirmButtonColor: '#d97706', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
+              loadPlatinumPayrollReport(); 
+              executeHistoryAndMissingPipeline(); 
+            } 
+          }); 
         } 
       }); 
-    } 
-  }); 
-}
-    
+    }
+        
     function loadPlatinumPayrollReport() {
       if (!currentUser) return;
       var adminId = currentUser.employeeId; var fEmpId = document.getElementById('payEmployeeIdSelect').value; var fDept = document.getElementById('payDeptSelect').value; var fromD = document.getElementById('payFromDate').value; var toD = document.getElementById('payToDate').value; if (!fromD || !toD) return; var tbody = document.getElementById('payrollReportTableBody');
@@ -2072,6 +2197,13 @@ function executeBulkPayrollPostingPipeline() {
       reader.readAsDataURL(file); 
     }
 
+    document.getElementById('nativeCameraInput').addEventListener('click', function(e) {
+      if(!selectedLogType || !document.getElementById('branchInput').value.trim()) {
+        e.preventDefault();
+        Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Pumili muna ng Uri ng Log at Lokasyon bago mag-selfie.', confirmButtonColor: '#dc2626' });
+      }
+    });
+
     function addNewLocationPrompt() { var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)); Swal.fire({ title: 'Bagong Lokasyon', text: 'Ipasok ang pangalan:', input: 'text', showCancelButton: true, confirmButtonColor: '#0f172a', cancelButtonColor: '#dc2626', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }).then(function(result) { if (result.value && result.value.trim() !== "") { document.getElementById('branchInput').value = result.value.trim(); evaluateSubmissionReadiness(); } }); }
     
     function setMissingLayoutMode(mode) { 
@@ -2097,7 +2229,6 @@ function executeBulkPayrollPostingPipeline() {
       document.getElementById('selfiePlaceholderText').classList.remove('hidden'); 
       document.getElementById('nativeCameraInput').value = ""; 
       
-      // IBALIK SA FRESH/CLEAN STATE ANG LOG TYPE BUTTONS
       selectedLogType = "";
       var buttons = document.querySelectorAll('#logTypeGroup button');
       buttons.forEach(function(b) {
