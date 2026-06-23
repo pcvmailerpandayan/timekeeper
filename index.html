@@ -562,7 +562,7 @@
             <thead>
               <tr class="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
                 <th class="p-3 w-40">Petsa</th>
-                <th class="p-3 text-center bg-emerald-50/40 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400">IN</th>
+                <th class="p-3 text-center bg-emerald-50/40 dark:bg-emerald-955/20 text-emerald-700 dark:text-emerald-400">IN</th>
                 <th class="p-3 text-center bg-amber-50/40 dark:bg-amber-955/20 text-amber-700 dark:text-amber-400">LB OUT</th>
                 <th class="p-3 text-center bg-amber-50/40 dark:bg-amber-955/20 text-amber-700 dark:text-amber-400">LB IN</th>
                 <th class="p-3 text-center bg-blue-50/40 dark:bg-blue-955/20 text-blue-700 dark:text-blue-400">CB OUT</th>
@@ -1187,6 +1187,11 @@
 
         executeServerRequest({ action: "getMissingLogs", employeeId: currentUser.employeeId, fromDate: fromDateStr, toDate: toDateStr }, function(missing) { 
           if (!currentUser) return;
+          
+          // Tukuyin ang petsa ngayong araw para sa paghahambing ng Remarks
+          var todayObj = new Date();
+          var realTodayStr = todayObj.getFullYear() + '-' + String(todayObj.getMonth() + 1).padStart(2, '0') + '-' + String(todayObj.getDate()).padStart(2, '0');
+
           var incomingCache = (missing && Array.isArray(missing)) ? missing : [];
           var missingDataMap = {};
           incomingCache.forEach(function(item) { missingDataMap[item.date] = item; });
@@ -1244,11 +1249,19 @@
               statusStyle = "bg-amber-100 text-amber-800 font-bold dark:bg-amber-955/60 dark:text-amber-400";
             }
 
+            // BUG FIX ROUTE PARA SA MGA LUMLIPAS NA ARAW NA WALANG DATA ENTRY SHIFT
             if (!s) {
+              var emptyRemarks = "Hindi pa tapos ang araw.";
+              if (dateStr < realTodayStr) {
+                emptyRemarks = (resolvedStatusCode === "W/ MISSING LOGS") ? "Kulang ang Naitalang Log (Missing Punch)" : "Walang Naitalang Log";
+              } else if (dateStr > realTodayStr) {
+                emptyRemarks = "Advance Entry / Future Date";
+              }
+
               tr.innerHTML = '<td class="p-3 font-bold text-left text-slate-400">' + fancyFormattedDateLabel + '</td>' +
                              '<td class="p-3 text-slate-300 dark:text-slate-600">--:--</td><td class="p-3 text-slate-300 dark:text-slate-600">--:--</td><td class="p-3 text-slate-300 dark:text-slate-600">--:--</td><td class="p-3 text-slate-300 dark:text-slate-600">--:--</td><td class="p-3 text-slate-300 dark:text-slate-600">--:--</td><td class="p-3 text-slate-300 dark:text-slate-600">--:--</td>' +
                              '<td><span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase ' + statusStyle + '">' + resolvedStatusCode + '</span></td>' +
-                             '<td class="p-3 text-slate-400 dark:text-slate-500 italic text-[11px]">Hindi pa tapos ang araw.</td><td class="p-2">-</td><td class="p-2">-</td><td class="p-2">-</td>';
+                             '<td class="p-3 text-slate-400 dark:text-slate-500 italic text-[11px]">' + emptyRemarks + '</td><td class="p-2">-</td><td class="p-2">-</td><td class="p-2">-</td>';
               tbody.appendChild(tr);
               return;
             }
@@ -1343,9 +1356,9 @@
 
         if (res && res.success) {
           targetedElements.forEach(function(el) {
-            el.classList.add('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/40');
+            el.classList.add('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-955/40');
             setTimeout(function() {
-              el.classList.remove('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/40');
+              el.classList.remove('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-955/40');
             }, 1200);
           });
         } else {
@@ -1381,7 +1394,7 @@
     function renderMissingLogsViewLayout() {
       var grid = document.getElementById('missingLogsGrid'); 
       if (!fetchedMissingLogsArrayCache || fetchedMissingLogsArrayCache.length === 0) { 
-        grid.innerHTML = '<p class="text-emerald-600 font-bold text-xs p-4 col-span-full text-center bg-emerald-50 dark:bg-emerald-950/30 rounded-xl w-full">Selyado ang lahat! Walang kulang o deperensya ang iyong time logs.</p>'; 
+        grid.innerHTML = '<p class="text-emerald-600 font-bold text-xs p-4 col-span-full text-center bg-emerald-50 dark:bg-emerald-955/30 rounded-xl w-full">Selyado ang lahat! Walang kulang o deperensya ang iyong time logs.</p>'; 
         return; 
       } 
       grid.innerHTML = ""; 
@@ -2049,7 +2062,7 @@
           container.innerHTML = "";
           res.pending.forEach(function(r) {
             var box = document.createElement('div'); box.className = "bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2 text-xs relative animate-fadeIn text-slate-800 dark:text-slate-200";
-            box.innerHTML = '<div><span class="font-bold text-slate-900 dark:text-white text-sm">' + r.name + '</span> (' + r.employeeId + ')<br><span class="text-[11px] text-slate-500 font-medium">' + r.department + '</span></div><div class="p-2 bg-emerald-50 dark:bg-emerald-950/40 rounded-lg border border-slate-200 dark:border-emerald-900"><span class="font-bold text-emerald-700 dark:text-emerald-400">Request: ' + r.leaveType + '</span><br><span class="font-mono text-slate-600 dark:text-slate-400 font-bold">Target Date: ' + r.dateTarget + '</span></div><div class="text-[10px] text-slate-400 font-mono"><i class="fa-regular fa-clock"></i> Filed: ' + r.filedTime + '</div><div class="flex gap-2 pt-1"><button type="button" onclick="processFilingAction(' + r.rowId + ', \'APPROVED\', this)" class="approver-action-btn flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-sm">Approve</button><button type="button" onclick="processFilingAction(' + r.rowId + ', \'DENIED\', this)" class="approver-action-btn flex-1 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition shadow-sm">Deny</button></div>';
+            box.innerHTML = '<div><span class="font-bold text-slate-900 dark:text-white text-sm">' + r.name + '</span> (' + r.employeeId + ')<br><span class="text-[11px] text-slate-500 font-medium">' + r.department + '</span></div><div class="p-2 bg-emerald-50 dark:bg-emerald-955/40 rounded-lg border border-slate-200 dark:border-emerald-900"><span class="font-bold text-emerald-700 dark:text-emerald-400">Request: ' + r.leaveType + '</span><br><span class="font-mono text-slate-600 dark:text-slate-400 font-bold">Target Date: ' + r.dateTarget + '</span></div><div class="text-[10px] text-slate-400 font-mono"><i class="fa-regular fa-clock"></i> Filed: ' + r.filedTime + '</div><div class="flex gap-2 pt-1"><button type="button" onclick="processFilingAction(' + r.rowId + ', \'APPROVED\', this)" class="approver-action-btn flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-sm">Approve</button><button type="button" onclick="processFilingAction(' + r.rowId + ', \'DENIED\', this)" class="approver-action-btn flex-1 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition shadow-sm">Deny</button></div>';
             container.appendChild(box);
           });
         }
@@ -2060,7 +2073,7 @@
           historyBody.innerHTML = "";
           res.history.forEach(function(h) {
             var tr = document.createElement('tr'); tr.className = "border-b border-slate-100 dark:border-slate-800 text-[11px] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition text-slate-800 dark:text-slate-300";
-            var badgeClass = h.decision === "APPROVED" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-400" : "bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-400";
+            var badgeClass = h.decision === "APPROVED" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-955/50 dark:text-emerald-400" : "bg-rose-100 text-rose-800 dark:bg-rose-955/50 dark:text-rose-400";
             tr.innerHTML = '<td class="p-2.5 font-bold">' + h.name + ' <span class="text-[10px] text-slate-400 block font-normal">ID: ' + h.employeeId + '</span></td>' +
                            '<td class="p-2.5 font-mono">' + h.leaveType + ' <span class="text-[10px] text-slate-400 block font-normal">' + h.dateTarget + '</span></td>' +
                            '<td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ' + badgeClass + '">' + h.decision + '</span></td>';
@@ -2168,7 +2181,7 @@
         tbody.innerHTML = ""; document.getElementById('paySelectAllRowsBox').checked = false;
         res.reportRows.forEach(function(r) { 
           var tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800 text-center text-slate-800 dark:text-slate-300"; 
-          var statusBadge = r.isPosted ? '<span class="px-2 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-400 font-black rounded text-[10px]"><i class="fa-solid fa-lock"></i> Posted</span>' : '<span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 font-black rounded text-[10px]">Active</span>'; 
+          var statusBadge = r.isPosted ? '<span class="px-2 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-400 font-black rounded text-[10px]"><i class="fa-solid fa-lock"></i> Posted</span>' : '<span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-955 dark:text-emerald-400 font-black rounded text-[10px]">Active</span>'; 
           var checkboxHtml = r.isPosted ? '<i class="fa-solid fa-circle-check text-amber-500 text-base"></i>' : '<input type="checkbox" data-rows="' + r.associatedRowIds.join(',') + '" class="pay-row-checkbox w-4 h-4 cursor-pointer">'; 
           tr.innerHTML = '<td class="p-3 text-center">' + checkboxHtml + '</td><td class="p-3 font-mono font-bold text-left">' + r.empId + '</td><td class="p-3 text-left font-medium">' + r.name + '</td><td class="p-3 text-left text-slate-500 dark:text-slate-400">' + r.department + '</td><td class="p-3 font-mono">' + r.date + '</td><td class="p-3 font-bold">₱' + r.meal.toFixed(2) + '</td><td class="p-3 font-bold">₱' + r.transpo.toFixed(2) + '</td><td class="p-3">' + statusBadge + '</td>'; tbody.appendChild(tr); 
         });
@@ -2180,7 +2193,7 @@
       var queueContainer = document.getElementById('adminPendingQueue'); var historyTableBody = document.getElementById('adminHistoryLogTable'); 
       executeServerRequest({ action: "getPendingUsers", adminId: currentUser.employeeId }, function(data) { 
         if (!currentUser) return;
-        if (!data || !data.pending || data.pending.length === 0) { queueContainer.innerHTML = '<div class="text-xs text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-xl border dark:border-emerald-900">Walang nag-aantay na approval.</div>'; } 
+        if (!data || !data.pending || data.pending.length === 0) { queueContainer.innerHTML = '<div class="text-xs text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-955/40 p-3 rounded-xl border dark:border-emerald-900">Walang nag-aantay na approval.</div>'; } 
         else { queueContainer.innerHTML = ""; data.pending.forEach(function(u) { var item = document.createElement('div'); item.className = "flex justify-between items-center bg-white dark:bg-slate-900 p-3 border border-slate-200 dark:border-slate-800 rounded-xl text-xs shadow-sm gap-2 text-slate-800 dark:text-slate-200"; item.innerHTML = '<div><span class="font-bold">' + u.name + '</span> (' + u.employeeId + ')<br><span class="text-[10px] text-slate-500">' + u.department + '</span></div><div class="flex gap-1"><button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', \'APPROVED\', this)" class="px-2 py-1 bg-emerald-600 text-white rounded text-[11px] font-bold">Approve</button></div>'; queueContainer.appendChild(item); }); } 
         if (data && data.history) { 
           historyTableBody.innerHTML = ""; 
