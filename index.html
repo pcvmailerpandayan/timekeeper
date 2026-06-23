@@ -939,7 +939,42 @@
       selectedLogType = type;
       evaluateSubmissionReadiness();
     }
-    
+
+    function evaluateCardFilingReadiness(dateStr) {
+      var btn = document.getElementById('btnSubmitFiling-' + dateStr);
+      if (!btn) return;
+
+      var container = document.getElementById('innerFilingPayloadArea-' + dateStr);
+      var currentActiveMode = container ? container.getAttribute('data-active-mode') : "CORRECTION";
+
+      // TIER 1 RULE: Kung naka-File Leave Hub mode, pwedeng mag-submit kahit walang picture attachment
+      if (currentActiveMode === "LEAVE") {
+        btn.disabled = false;
+        btn.className = "w-full py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-black rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1 cursor-pointer";
+        return;
+      }
+
+      // TTP VALIDATION ROUTE: Kung Log Correction, dapat kumpleto ang attachment kada missing log block type
+      var attachedImages = logbookImagesCache[dateStr] || {};
+      var targetLog = fetchedMissingLogsArrayCache.find(function(x) { return x.date === dateStr; });
+      var missingTypesArray = targetLog ? targetLog.missingTypes : [];
+
+      var hasAllRequiredImages = true;
+      missingTypesArray.forEach(function(t) {
+        if (!attachedImages[t]) {
+          hasAllRequiredImages = false;
+        }
+      });
+
+      if (hasAllRequiredImages && missingTypesArray.length > 0) {
+        btn.disabled = false;
+        btn.className = "w-full py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-black rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1 cursor-pointer";
+      } else {
+        btn.disabled = true;
+        btn.className = "w-full py-2.5 bg-slate-300 text-slate-500 font-black rounded-xl text-xs cursor-not-allowed flex items-center justify-center gap-1";
+      }
+    }
+
     function evaluateSubmissionReadiness() { 
       var branch = document.getElementById('branchInput').value.trim(); 
       var btn = document.getElementById('btnSubmitAttendance'); 
@@ -1239,7 +1274,7 @@
               resolvedStatusCode = s.logType;
               if (s.logType === "COMPLETE") { statusStyle = "bg-emerald-100 text-emerald-800 dark:bg-emerald-955/60 dark:text-emerald-400"; }
               else if (s.logType === "MANUAL") { statusStyle = "bg-purple-100 text-purple-800 dark:bg-purple-955/60 dark:text-purple-400"; }
-              else if (s.logType === "APPROVED leave") { statusStyle = "bg-blue-100 text-blue-800 font-bold dark:bg-blue-950/60 dark:text-blue-400"; }
+              else if (s.logType === "APPROVED leave") { statusStyle = "bg-blue-100 text-blue-800 font-bold dark:bg-blue-955/60 dark:text-blue-400"; }
               else if (s.logType === "For Approval Leave") { statusStyle = "bg-amber-100 text-amber-800 font-bold animate-pulse dark:bg-amber-955/60 dark:text-amber-400"; }
               else if (s.logType === "INCOMPLETE" || s.logType === "MISSING") { resolvedStatusCode = "MISSING LOG"; statusStyle = "bg-red-100 text-red-800 dark:bg-red-955/60 dark:text-red-400"; }
             }
@@ -1489,7 +1524,7 @@
                           '<input type="number" id="transpoAllowanceInput-' + m.date + '" class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none" placeholder="Transpo ₱">' +
                         '</div>' +
                         '<div class="flex gap-2">' +
-                          '<button type="button" onclick="submitFilingHubRequestPipeline(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="w-full py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-black rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1"><i class="fa-solid fa-paper-plane text-red-500"></i> Isumite ang Request sa System</button>' +
+                          '<button type="button" id="btnSubmitFiling-' + m.date + '" onclick="submitFilingHubRequestPipeline(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="w-full py-2.5 bg-slate-300 text-slate-500 font-black rounded-xl text-xs cursor-not-allowed flex items-center justify-center gap-1" disabled><i class="fa-solid fa-paper-plane text-red-500"></i> Isumite ang Request sa System</button>' +
                         '</div>';
         grid.appendChild(div);
       });
@@ -1525,6 +1560,8 @@
             var btn = document.getElementById('camBtn-' + cleanKey + '-' + dateStr);
             btn.className = "w-full py-1.5 bg-emerald-600 text-white text-[10px] font-black rounded-md flex items-center justify-center gap-1 border-none outline-none";
             btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Connected';
+            
+            evaluateCardFilingReadiness(dateStr);
           } else {
             document.getElementById('modalPreviewImg-' + cleanKey).src = base64Data;
             document.getElementById('modalPreviewBox-' + cleanKey).classList.remove('hidden');
@@ -1617,6 +1654,15 @@
         preConfirm: function() {
           if (!currentUser) return false;
           var activeMode = currentModalMode || "CORRECTION";
+
+          if (activeMode === "CORRECTION") {
+            var attachedImagesCount = Object.keys(logbookImagesCache[dateStr] || {}).length;
+            if (attachedImagesCount === 0) {
+              Swal.showValidationMessage('Hinarang ng TTP: Kinakailangan mag-Attach ng Image bago mag-submit!');
+              return false;
+            }
+          }
+
           var mealVal = document.getElementById('modalMealInput').value || "0";
           var transpoVal = document.getElementById('modalTranspoInput').value || "0";
           var compiledPayload = { employeeId: currentUser.employeeId, name: currentUser.name, department: currentUser.department, targetDate: dateStr, meal: mealVal, transpo: transpoVal, imageBlobs: logbookImagesCache[dateStr] || {} };
@@ -1750,6 +1796,10 @@
                                 '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400">Remarks / Detalye (Permitted Absent)</label>' +
                                 '<input type="text" id="leaveRemarksInput-' + dateStr + '" placeholder="Ipasok ang detalye ng leave..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div></div>';
       }
+      
+      setTimeout(function() { 
+        evaluateCardFilingReadiness(dateStr); 
+      }, 50);
     }
 
     function submitFilingHubRequestPipeline(dateStr, missingLabel, btnElement) {
