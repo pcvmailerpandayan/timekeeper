@@ -319,7 +319,7 @@
                 <div id="helper-name-display-2" class="text-xs font-bold min-h-[16px] px-1 transition-colors duration-150"></div>
               </div>
               
-              <div id="qr-reader-wrapper" class="hidden p-3 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-2 animate-fadeIn">
+              <div id="qr-reader-wrapper" class="hidden p-3 bg-slate-100 dark:bg-slate-955 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-2 animate-fadeIn">
                 <div id="qr-reader" class="mx-auto max-w-[280px] rounded-lg overflow-hidden border-2 border-amber-500 bg-white"></div>
                 <button type="button" onclick="stopQRScanner()" class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl transition shadow-md">
                   Ipasara ang Camera
@@ -501,7 +501,7 @@
           <h3 class="text-sm font-black text-slate-900 dark:text-white tracking-wider uppercase">Admin Control Portal Dashboard</h3>
         </div>
 
-        <div class="grid grid-cols-1 grid-cols-2 gap-6 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           <div class="border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 bg-slate-50/50 dark:bg-slate-800/20">
             <h4 class="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 flex items-center"><i class="fa-solid fa-hourglass-half mr-1.5"></i> Pending Approvals Queue</h4>
             <div id="adminPendingQueue" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar"></div>
@@ -562,7 +562,7 @@
             <thead>
               <tr class="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
                 <th class="p-3 w-40">Petsa</th>
-                <th class="p-3 text-center bg-emerald-50/40 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400">IN</th>
+                <th class="p-3 text-center bg-emerald-50/40 dark:bg-emerald-955/20 text-emerald-700 dark:text-emerald-400">IN</th>
                 <th class="p-3 text-center bg-amber-50/40 dark:bg-amber-955/20 text-amber-700 dark:text-amber-400">LB OUT</th>
                 <th class="p-3 text-center bg-amber-50/40 dark:bg-amber-955/20 text-amber-700 dark:text-amber-400">LB IN</th>
                 <th class="p-3 text-center bg-blue-50/40 dark:bg-blue-955/20 text-blue-700 dark:text-blue-400">CB OUT</th>
@@ -653,7 +653,7 @@
       })
       .catch(function(error) {
         if (isBackgroundRequest) { if (failureCallback) failureCallback(error); return; }
-        Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: error.message, confirmButtonColor: '#dc2626' });
+        Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: error.message, confirmButtonColor: '#doc2626' });
         if (failureCallback) failureCallback(error);
       });
     }
@@ -1220,7 +1220,9 @@
           iterationsCollectedRows.forEach(function(dateStr) {
             var s = dateMapData[dateStr];
             
-            if (!userTriggeredManualSearchFlag && (!s || (s.logType !== "COMPLETE" && s.logType !== "MANUAL" && s.logType !== "APPROVED leave" && s.logType !== "For Approval Leave"))) {
+            // FIXED HANDSHAKE LOGIC: Kung may record (s) sa database para sa petsang ito, huwag i-skip!
+            // I-render ang row para makita agad ng Kapwa ang kanilang logs at allowances kahit ito ay INCOMPLETE o may MULTIPLE OUTS.
+            if (!userTriggeredManualSearchFlag && !s) {
               return; 
             }
 
@@ -1248,7 +1250,7 @@
             if (!s) {
               tr.innerHTML = '<td class="p-3 font-bold text-left text-slate-400">' + fancyFormattedDateLabel + '</td>' +
                              '<td class="p-3 text-slate-300 dark:text-slate-600">--:--</td><td class="p-3 text-slate-300 dark:text-slate-600">--:--</td><td class="p-3 text-slate-300 dark:text-slate-600">--:--</td><td class="p-3 text-slate-300 dark:text-slate-600">--:--</td><td class="p-3 text-slate-300 dark:text-slate-600">--:--</td><td class="p-3 text-slate-300 dark:text-slate-600">--:--</td>' +
-                             '<td class="p-3"><span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase ' + statusStyle + '">' + resolvedStatusCode + '</span></td>' +
+                             '<td><span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase ' + statusStyle + '">' + resolvedStatusCode + '</span></td>' +
                              '<td class="p-3 text-slate-400 dark:text-slate-500 italic text-[11px]">Hindi pa tapos ang araw.</td><td class="p-2">-</td><td class="p-2">-</td><td class="p-2">-</td>';
               tbody.appendChild(tr);
               return;
@@ -1295,7 +1297,7 @@
                            '<td class="p-3 font-mono text-blue-600 dark:text-blue-400">' + timeMap["CB OUT"] + '</td>' +
                            '<td class="p-3 font-mono text-blue-500 dark:text-blue-300">' + timeMap["CB IN"] + '</td>' +
                            '<td class="p-3 font-mono font-bold text-rose-600 dark:text-rose-400">' + timeMap["OUT"] + '</td>' +
-                           '<td class="p-3"><span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase ' + statusStyle + '">' + resolvedStatusCode + '</span></td>' +
+                           '<td><span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase ' + statusStyle + '">' + resolvedStatusCode + '</span></td>' +
                            '<td class="p-3 font-bold text-center text-indigo-600 dark:text-indigo-400 text-[11px]">' + remarksColumnText + '</td>' +
                            '<td class="p-2">' + mealInputHtml + '</td><td class="p-2">' + transpoInputHtml + '</td><td class="p-2 text-left">' + detailsInputHtml + '</td>';
             tbody.appendChild(tr);
@@ -1807,9 +1809,9 @@
       var monthsFilipino = ["Enero", "Pebrero", "Marso", "Abril", "Mayo", "Hunyo", "Hulyo", "Agosto", "Setyembre", "Oktubre", "Nobyembre", "Disyembre"];
       monthsFilipino.forEach(function(m, idx) { monthsOptions += '<option value="' + String(idx + 1).padStart(2, '0') + '">' + m + '</option>'; });
       var yearsOptions = ''; 
-for (var y = 2026; y <= currentYear + 2; y++) { 
-  yearsOptions += '<option value="' + y + '">' + y + '</option>'; 
-}
+      for (var y = 2026; y <= currentYear + 2; y++) { 
+        yearsOptions += '<option value="' + y + '">' + y + '</option>'; 
+      }
       
       var swalHtml = '';
       var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
@@ -1969,7 +1971,7 @@ for (var y = 2026; y <= currentYear + 2; y++) {
       var container = document.getElementById('departmentFeed'); if (!container) return; 
       
       if (!isSilent) {
-        container.innerHTML = '<div class="text-center py-12 text-slate-400 text-xs"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i>Kumukuha ng data feed base sa Matrix...</div>';
+        container.innerHTML = '<div class="text-center py-12 text-slate-400 text-xs"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i>Komukuha ng data feed base sa Matrix...</div>';
       }
       
       var targetAction = "getDepartmentLogs"; 
@@ -2139,7 +2141,7 @@ for (var y = 2026; y <= currentYear + 2; y++) {
         text: "Permanenteng ila-lock sa system ang mga napiling tala!", 
         icon: 'warning', 
         showCancelButton: true, 
-        confirmButtonColor: '#d97706', 
+        confirmButtonColor: '#y10506', 
         cancelButtonColor: '#475569',
         confirmButtonText: '<i class="fa-solid fa-lock mr-1"></i> Oo, I-Post',
         cancelButtonText: 'Cancel',
@@ -2320,6 +2322,7 @@ for (var y = 2026; y <= currentYear + 2; y++) {
       document.getElementById('payToDate').value = toStr; 
     }
 
+    // Siguraduhing malinis at handa ang lahat kapag mag-logout
     function handleLogout() { 
       if (backgroundSyncInterval) { clearInterval(backgroundSyncInterval); backgroundSyncInterval = null; }
       if (gpsIntervalReference) { clearInterval(gpsIntervalReference); gpsIntervalReference = null; }
