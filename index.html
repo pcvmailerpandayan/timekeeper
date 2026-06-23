@@ -120,7 +120,7 @@
         <button type="button" onclick="switchAuth('forgot')" class="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition text-[11px] font-bold border border-slate-200/40 dark:border-slate-700/40 outline-none cursor-pointer">
           <i class="fa-solid fa-circle-question text-slate-400 text-xs"></i> Nakalimutan ang Password?
         </button>
-        <button type="button" onclick="switchAuth('register')" class="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-red-50/50 dark:bg-red-955/20 text-red-600 dark:text-red-400 hover:bg-red-100/70 dark:hover:bg-red-900/30 rounded-xl transition text-[11px] font-bold border border-red-100/30 dark:border-red-900/20 outline-none cursor-pointer">
+        <button type="button" onclick="switchAuth('register')" class="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-red-50/50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100/70 dark:hover:bg-red-900/30 rounded-xl transition text-[11px] font-bold border border-red-100/30 dark:border-red-900/20 outline-none cursor-pointer">
           <i class="fa-solid fa-user-plus text-red-500 text-xs"></i> Gumawa ng Account
         </button>
       </div>
@@ -221,7 +221,7 @@
       </div>
     </div>
 
-    <div id="sidebarMenuOverlay" onclick="toggleSidebarMenuGateway(false)" class="fixed inset-0 bg-slate-900/60 dark:bg-slate-955/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
+    <div id="sidebarMenuOverlay" onclick="toggleSidebarMenuGateway(false)" class="fixed inset-0 bg-slate-900/60 dark:bg-slate-900/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
     <div id="sidebarMenuLayoutWindow" class="fixed top-0 left-0 bottom-0 h-screen w-72 bg-white dark:bg-slate-900 z-40 p-6 shadow-2xl lg:shadow-none transform -translate-x-full transition duration-300 ease-in-out lg:translate-x-0 lg:border-r lg:border-slate-200/80 lg:dark:border-slate-800 flex flex-col justify-between transition-colors">
       <div class="space-y-6">
         <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4">
@@ -319,7 +319,7 @@
                 <div id="helper-name-display-2" class="text-xs font-bold min-h-[16px] px-1 transition-colors duration-150"></div>
               </div>
               
-              <div id="qr-reader-wrapper" class="hidden p-3 bg-slate-100 dark:bg-slate-955 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-2 animate-fadeIn">
+              <div id="qr-reader-wrapper" class="hidden p-3 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-2 animate-fadeIn">
                 <div id="qr-reader" class="mx-auto max-w-[280px] rounded-lg overflow-hidden border-2 border-amber-500 bg-white"></div>
                 <button type="button" onclick="stopQRScanner()" class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl transition shadow-md">
                   Ipasara ang Camera
@@ -331,7 +331,7 @@
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">3. Required Verification Selfie</label>
             <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 flex flex-col items-center justify-center space-y-3">
-              <div id="selfiePreviewBox" class="w-full aspect-video bg-slate-900 dark:bg-slate-955 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center relative shadow-inner">
+              <div id="selfiePreviewBox" class="w-full aspect-video bg-slate-900 dark:bg-slate-950 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center relative shadow-inner">
                 <span id="selfiePlaceholderText" class="text-slate-500 text-xs text-center px-4"><i class="fa-solid fa-image-portrait text-3xl block mb-1 text-slate-400"></i>Wala pang larawan</span>
                 <img id="selfieImgView" class="max-w-full max-h-full w-auto h-auto object-contain hidden" src="">
               </div>
@@ -451,9 +451,9 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div class="bg-slate-900 dark:bg-slate-955 text-white p-4 rounded-xl flex items-center justify-between shadow-inner">
+          <div class="bg-slate-900 dark:bg-slate-950 text-white p-4 rounded-xl flex items-center justify-between shadow-inner">
             <div>
-              <span class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 block tracking-wider">Total Days Present</span>
+              <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Total Days Present</span>
               <span id="lblPayTotalDays" class="text-2xl font-black">0</span>
             </div>
             <i class="fa-solid fa-calendar-check text-slate-700 dark:text-slate-800 text-3xl"></i>
@@ -562,7 +562,7 @@
             <thead>
               <tr class="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
                 <th class="p-3 w-40">Petsa</th>
-                <th class="p-3 text-center bg-emerald-50/40 dark:bg-emerald-955/20 text-emerald-700 dark:text-emerald-400">IN</th>
+                <th class="p-3 text-center bg-emerald-50/40 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400">IN</th>
                 <th class="p-3 text-center bg-amber-50/40 dark:bg-amber-955/20 text-amber-700 dark:text-amber-400">LB OUT</th>
                 <th class="p-3 text-center bg-amber-50/40 dark:bg-amber-955/20 text-amber-700 dark:text-amber-400">LB IN</th>
                 <th class="p-3 text-center bg-blue-50/40 dark:bg-blue-955/20 text-blue-700 dark:text-blue-400">CB OUT</th>
@@ -653,7 +653,7 @@
       })
       .catch(function(error) {
         if (isBackgroundRequest) { if (failureCallback) failureCallback(error); return; }
-        Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: error.message, confirmButtonColor: '#doc2626' });
+        Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: error.message, confirmButtonColor: '#dc2626' });
         if (failureCallback) failureCallback(error);
       });
     }
@@ -763,7 +763,6 @@
         loadAdminApprovalQueue(); loadPlatinumPayrollReport();
       }
       
-      // I-cache ang listahan ng mga empleyado para sa dynamic matrix filters (Tiers 2, 3, at 4)
       if (isPayrollOrAdmin || isFEorGE || isSEorCE) {
         loadApprovedEmployeesDropdown();
       }
@@ -1220,8 +1219,6 @@
           iterationsCollectedRows.forEach(function(dateStr) {
             var s = dateMapData[dateStr];
             
-            // FIXED HANDSHAKE LOGIC: Kung may record (s) sa database para sa petsang ito, huwag i-skip!
-            // I-render ang row para makita agad ng Kapwa ang kanilang logs at allowances kahit ito ay INCOMPLETE o may MULTIPLE OUTS.
             if (!userTriggeredManualSearchFlag && !s) {
               return; 
             }
@@ -1328,7 +1325,7 @@
       var targetedElements = [mealInput, transpoInput, detailsInput].filter(Boolean);
       
       targetedElements.forEach(function(el) {
-        el.classList.add('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-955/40');
+        el.classList.add('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-900/40');
       });
 
       executeServerRequest({
@@ -1341,7 +1338,7 @@
       }, function(res) {
         if (!currentUser) return;
         targetedElements.forEach(function(el) {
-          el.classList.remove('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-955/40');
+          el.classList.remove('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-900/40');
         });
 
         if (res && res.success) {
@@ -1354,9 +1351,9 @@
         } else {
           var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
           targetedElements.forEach(function(el) {
-            el.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-955/40');
+            el.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/40');
             setTimeout(function() {
-              el.classList.remove('border-rose-500', 'bg-rose-50', 'dark:bg-rose-955/40');
+              el.classList.remove('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/40');
             }, 2500);
           });
 
@@ -1372,8 +1369,8 @@
         }
       }, function(err) {
         targetedElements.forEach(function(el) {
-          el.classList.remove('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-955/40');
-          el.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-955/40');
+          el.classList.remove('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-900/40');
+          el.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/40');
         });
         var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
         Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: 'Hindi makakonekta sa portal base.', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' });
@@ -1426,7 +1423,7 @@
           div.innerHTML = '<div class="absolute top-0 left-0 right-0 h-1 bg-red-500"></div>' +
                           '<div class="font-mono font-black text-xs text-slate-900 dark:text-white mt-1">' + m.date + '</div>' +
                           '<div class="text-[9px] text-slate-400 dark:text-slate-500 font-medium uppercase mt-0.5">' + m.day + '</div>' +
-                          '<div class="mt-2 text-[9px] text-red-600 dark:text-red-400 font-black tracking-tighter uppercase line-clamp-1 bg-red-50 dark:bg-red-955/30 py-1 rounded">' +
+                          '<div class="mt-2 text-[9px] text-red-600 dark:text-red-400 font-black tracking-tighter uppercase line-clamp-1 bg-red-50 dark:bg-red-900/30 py-1 rounded">' +
                             '<i class="fa-solid fa-circle-exclamation mr-0.5"></i>' + (m.isFutureBlank ? 'FUTURE' : 'MISSING LOGS') +
                           '</div>';
           grid.appendChild(div);
@@ -1464,7 +1461,7 @@
         div.innerHTML = '<div>' +
                           '<div class="flex justify-between items-center">' +
                             '<span class="font-mono font-black text-sm text-slate-900 dark:text-white">' + m.date + '</span>' +
-                            '<span class="text-[9px] bg-red-100 text-red-800 dark:bg-red-955/60 dark:text-red-400 font-black px-1.5 py-0.5 rounded uppercase tracking-wider">' + m.day + '</span>' +
+                            '<span class="text-[9px] bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-400 font-black px-1.5 py-0.5 rounded uppercase tracking-wider">' + m.day + '</span>' +
                           '</div>' +
                           '<p class="text-[11px] text-red-600 dark:text-red-400 font-black mt-1 uppercase tracking-tight"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Deperensya: ' + deperensyaBadgeText + '</p>' +
                         '</div>' +
@@ -1554,7 +1551,7 @@
             '  <span class="text-[10px] font-black text-red-600 dark:text-red-400 uppercase tracking-wide block flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> KULANG NA SHIFT LOG: (' + t + ')</span>' +
             '  <div class="grid grid-cols-2 gap-2 items-center">' +
             '    <div>' +
-            '      <label class="block text-[8px] uppercase font-bold text-slate-400 font-bold mb-0.5">Ipasok ang Oras</label>' +
+            '      <label class="block text-[8px] uppercase font-bold text-slate-400 mb-0.5">Ipasok ang Oras</label>' +
             '      <input type="time" id="modalTime-' + cleanTypeKey + '" class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none">' +
             '    </div>' +
             '    <div class="text-center">' +
@@ -1796,7 +1793,6 @@
       });
     }
 
-    /* 4-TIER ACCESS MATRIX FOR REAL-TIME MONITOR FEED MODAL IMPLEMENTATION */
     function triggerYourLogsFilterPrompt() { 
       if (!currentUser) return;
       var userPosTrimmed = (currentUser.position || "").toLowerCase().trim();
@@ -1819,7 +1815,6 @@
       var inputSelectClass = 'w-full p-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl font-bold outline-none';
 
       if (isPayrollOrAdmin) {
-        // Tier 4: Admin / Payroll View
         var deptOptions = '<option value="">-- Lahat ng Departamento --</option>';
         var deptsElements = document.getElementById('regDept').querySelectorAll('option');
         deptsElements.forEach(function(el) { deptOptions += '<option value="' + el.value + '">' + el.textContent + '</option>'; });
@@ -1834,7 +1829,6 @@
                      '</div>' +
                    '</div>';
       } else if (isFEorGE) {
-        // Tier 3: FE and GE View
         var deptOptions = '<option value="">-- Piliin ang Departamento --</option>';
         var deptsElements = document.getElementById('regDept').querySelectorAll('option');
         deptsElements.forEach(function(el) { deptOptions += '<option value="' + el.value + '">' + el.textContent + '</option>'; });
@@ -1849,7 +1843,6 @@
                      '</div>' +
                    '</div>';
       } else if (isSEorCE) {
-        // Tier 2: SE and CE View
         swalHtml = '<div class="text-left text-xs space-y-3 p-1">' +
                      '<p class="text-slate-400 mb-2"><strong>Tier 2 Access (SE/CE Mode):</strong> Makikita ang buong departamento ngunit mapi-filter mo ang lahat ng Kapwa na under ng departamento mo.</p>' +
                      '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Departamento</label><input type="text" class="' + inputSelectClass + ' opacity-60" value="' + currentUser.department + '" disabled id="feedFilterDept"></div>' +
@@ -1860,7 +1853,6 @@
                      '</div>' +
                    '</div>';
       } else {
-        // Tier 1: Normal Employee View
         swalHtml = '<div class="text-left text-xs space-y-3 p-1">' +
                      '<p class="text-slate-400 mb-2"><strong>Tier 1 Access (Normal Employee Mode):</strong> Makikita ang lahat ng kasamahan sa departamento, ngunit ang sariling logs lamang ang mapi-filter mo.</p>' +
                      '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Empleyado</label><input type="text" class="' + inputSelectClass + ' opacity-60" value="' + currentUser.name + '" disabled><input type="hidden" id="feedFilterEmp" value="' + currentUser.employeeId + '"><input type="hidden" id="feedFilterDept" value="' + currentUser.department + '"></div>' +
@@ -1927,7 +1919,6 @@
       }); 
     }
 
-    /* MATATAG NA PASSWORD MANAGEMENT ENGINE VIA SECURE DATABASE UPDATES */
     function triggerAccountPasswordChangeModal() {
       if (!currentUser) return;
       var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
@@ -2000,7 +1991,7 @@
         else if (l.logType === "OUT" || l.logType === "APPROVED:OUT") badgeColor = "bg-rose-600";
         else if (isMissingLogEntry) badgeColor = "bg-purple-600";
 
-        var subDeptIndicator = ' <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-955/50 px-1.5 rounded-md ml-1">(' + l.subDept + ')</span>'; 
+        var subDeptIndicator = ' <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-900/50 px-1.5 rounded-md ml-1">( ' + l.subDept + ' )</span>'; 
         var idToken = (l.selfie && l.selfie !== 'N/A' && l.selfie.match(/(?:id=|\/d\/|src=)([\w-]+)/)) ? l.selfie.match(/(?:id=|\/d\/|src=)([\w-]+)/)[1] : '';
         var imgSrc = idToken ? 'https://drive.google.com/thumbnail?id=' + idToken + '&sz=w800' : 'https://placehold.co/150?text=No+Selfie';
         
@@ -2025,7 +2016,7 @@
         var div = document.createElement('div'); div.className = "flex flex-col p-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-100/70 dark:hover:bg-slate-800/80 transition animate-fadeIn"; 
         
         div.innerHTML = '<div class="flex items-center gap-4 w-full">' +
-                        '  <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border dark:border-slate-700 flex-shrink-0 bg-slate-955 cursor-pointer flex items-center justify-center p-0.5" onclick="viewSelfieModal(\'' + imgSrc + '\')">' +
+                        '  <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border dark:border-slate-700 flex-shrink-0 bg-slate-900 cursor-pointer flex items-center justify-center p-0.5" onclick="viewSelfieModal(\'' + imgSrc + '\')">' +
                         '    <img src="' + imgSrc + '" class="w-full h-full object-contain block">' +
                         '  </div>' +
                         '  <div class="flex-1 min-w-0">' +
@@ -2069,7 +2060,7 @@
           historyBody.innerHTML = "";
           res.history.forEach(function(h) {
             var tr = document.createElement('tr'); tr.className = "border-b border-slate-100 dark:border-slate-800 text-[11px] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition text-slate-800 dark:text-slate-300";
-            var badgeClass = h.decision === "APPROVED" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-955/50 dark:text-emerald-400" : "bg-rose-100 text-rose-800 dark:bg-rose-955/50 dark:text-rose-400";
+            var badgeClass = h.decision === "APPROVED" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-400" : "bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-400";
             tr.innerHTML = '<td class="p-2.5 font-bold">' + h.name + ' <span class="text-[10px] text-slate-400 block font-normal">ID: ' + h.employeeId + '</span></td>' +
                            '<td class="p-2.5 font-mono">' + h.leaveType + ' <span class="text-[10px] text-slate-400 block font-normal">' + h.dateTarget + '</span></td>' +
                            '<td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ' + badgeClass + '">' + h.decision + '</span></td>';
@@ -2141,7 +2132,7 @@
         text: "Permanenteng ila-lock sa system ang mga napiling tala!", 
         icon: 'warning', 
         showCancelButton: true, 
-        confirmButtonColor: '#y10506', 
+        confirmButtonColor: '#dc2626', 
         cancelButtonColor: '#475569',
         confirmButtonText: '<i class="fa-solid fa-lock mr-1"></i> Oo, I-Post',
         cancelButtonText: 'Cancel',
@@ -2177,7 +2168,7 @@
         tbody.innerHTML = ""; document.getElementById('paySelectAllRowsBox').checked = false;
         res.reportRows.forEach(function(r) { 
           var tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800 text-center text-slate-800 dark:text-slate-300"; 
-          var statusBadge = r.isPosted ? '<span class="px-2 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-955 dark:text-amber-400 font-black rounded text-[10px]"><i class="fa-solid fa-lock"></i> Posted</span>' : '<span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 font-black rounded text-[10px]">Active</span>'; 
+          var statusBadge = r.isPosted ? '<span class="px-2 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-400 font-black rounded text-[10px]"><i class="fa-solid fa-lock"></i> Posted</span>' : '<span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 font-black rounded text-[10px]">Active</span>'; 
           var checkboxHtml = r.isPosted ? '<i class="fa-solid fa-circle-check text-amber-500 text-base"></i>' : '<input type="checkbox" data-rows="' + r.associatedRowIds.join(',') + '" class="pay-row-checkbox w-4 h-4 cursor-pointer">'; 
           tr.innerHTML = '<td class="p-3 text-center">' + checkboxHtml + '</td><td class="p-3 font-mono font-bold text-left">' + r.empId + '</td><td class="p-3 text-left font-medium">' + r.name + '</td><td class="p-3 text-left text-slate-500 dark:text-slate-400">' + r.department + '</td><td class="p-3 font-mono">' + r.date + '</td><td class="p-3 font-bold">₱' + r.meal.toFixed(2) + '</td><td class="p-3 font-bold">₱' + r.transpo.toFixed(2) + '</td><td class="p-3">' + statusBadge + '</td>'; tbody.appendChild(tr); 
         });
@@ -2195,7 +2186,7 @@
           historyTableBody.innerHTML = ""; 
           data.history.forEach(function(h) { 
             var tr = document.createElement('tr'); tr.className = "border-b border-slate-100 dark:border-slate-800 text-[11px] font-medium text-slate-800 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition"; 
-            var badgeStatusClass = h.status === "APPROVED" ? "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/50" : "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-955/50";
+            var badgeStatusClass = h.status === "APPROVED" ? "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-955/50" : "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-950/50";
             tr.innerHTML = '<td class="p-2.5 truncate font-bold text-left">' + h.employeeId + '</td><td class="p-2.5 truncate text-slate-600 dark:text-slate-400 text-left">' + h.name + '</td><td class="p-2.5 text-center"><span class="px-1.5 py-0.5 rounded font-black text-[9px] uppercase ' + badgeStatusClass + '">' + h.status + '</span></td>'; 
             historyTableBody.appendChild(tr); 
           }); 
@@ -2322,7 +2313,6 @@
       document.getElementById('payToDate').value = toStr; 
     }
 
-    // Siguraduhing malinis at handa ang lahat kapag mag-logout
     function handleLogout() { 
       if (backgroundSyncInterval) { clearInterval(backgroundSyncInterval); backgroundSyncInterval = null; }
       if (gpsIntervalReference) { clearInterval(gpsIntervalReference); gpsIntervalReference = null; }
