@@ -120,7 +120,7 @@
         <button type="button" onclick="switchAuth('forgot')" class="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition text-[11px] font-bold border border-slate-200/40 dark:border-slate-700/40 outline-none cursor-pointer">
           <i class="fa-solid fa-circle-question text-slate-400 text-xs"></i> Nakalimutan ang Password?
         </button>
-        <button type="button" onclick="switchAuth('register')" class="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-red-50/50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100/70 dark:hover:bg-red-900/30 rounded-xl transition text-[11px] font-bold border border-red-100/30 dark:border-red-900/20 outline-none cursor-pointer">
+        <button type="button" onclick="switchAuth('register')" class="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-red-50/50 dark:bg-red-955/20 text-red-600 dark:text-red-400 hover:bg-red-100/70 dark:hover:bg-red-900/30 rounded-xl transition text-[11px] font-bold border border-red-100/30 dark:border-red-900/20 outline-none cursor-pointer">
           <i class="fa-solid fa-user-plus text-red-500 text-xs"></i> Gumawa ng Account
         </button>
       </div>
@@ -258,7 +258,7 @@
     <div class="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full flex-1">
       
       <div id="punchPane" class="block lg:col-span-5 space-y-6 w-full lg:max-h-[calc(100vh-130px)] lg:overflow-y-auto pr-1 custom-scrollbar">
-        <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800/80 space-y-5 transition-colors">
+        <div class="bg-white dark:bg-slate-990 p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800/80 space-y-5 transition-colors">
           <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center border-b pb-3 border-slate-100 dark:border-slate-800 uppercase tracking-wider">
             <i class="fa-solid fa-fingerprint text-red-600 mr-2 text-base"></i> Attendance Punch Console
           </h3>
@@ -600,10 +600,11 @@
     var userTriggeredManualSearchFlag = false; 
     var dynamicLeavesDatasetGlobalCache = []; 
     
-    // Na-upgrade na Structured Multiple Attachment Tracker mapping via [dateStr][logType] structure
+    // DATA INTEGRITY CORE VARIABLE
+    var photoCaptureTimestamp = null; 
+    
     var logbookImagesCache = {}; 
 
-    // Global tracking parameters para sa active dual QR scanner connection route
     let html5QrcodeScannerInstance = null;
     var activeQRTargetField = 1;
 
@@ -653,13 +654,14 @@
       })
       .catch(function(error) {
         if (isBackgroundRequest) { if (failureCallback) failureCallback(error); return; }
-        Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: error.message, confirmButtonColor: '#dc2626' });
+        Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: error.message, confirmButtonColor: '#0f172a' });
         if (failureCallback) failureCallback(error);
       });
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    function documentReadyHandler() {
       initClock(); setupGlobalKeyBindings(); setDefaultFilterDates(); loadSystemDepartmentsList(); 
+      setupPageVisibilityIntegrityMonitor();
       var activeSession = sessionStorage.getItem("pandayan_active_session") || localStorage.getItem("pandayan_remembered_user");
       if (activeSession) {
         currentUser = JSON.parse(activeSession);
@@ -667,7 +669,29 @@
         if (savedPane) { activeViewPaneMode = savedPane; }
         bootDashboardPortal();
       }
-    });
+    }
+    document.addEventListener('DOMContentLoaded', documentReadyHandler);
+
+    // SECURITY ENGINE: AUTO-CLEAR VIA LIFECYCLE MANAGEMENT
+    function setupPageVisibilityIntegrityMonitor() {
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden && photoCaptureTimestamp) {
+          var millisecondsElapsed = Date.now() - photoCaptureTimestamp;
+          if (millisecondsElapsed > 120000) { 
+            clearPunchConsoleInputs();
+            var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
+            Swal.fire({
+              icon: 'info',
+              title: 'Console Privacy Reset',
+              text: 'Awtomatikong na-clear ang punch console dahil lumampas na sa 2 minutong palugit ang hindi naipadalang log para sa integridad ng oras.',
+              confirmButtonColor: '#0f172a',
+              background: isDarkModeActive ? '#0f172a' : '#ffffff',
+              color: isDarkModeActive ? '#ffffff' : '#1e293b'
+            });
+          }
+        }
+      });
+    }
 
     function loadSystemDepartmentsList() {
       executeServerRequest({ action: "getDepartments" }, function(depts) {
@@ -727,7 +751,7 @@
             icon: 'success',
             title: 'Matagumpay ang Rehistro!',
             text: res.message || 'Account matagumpay na nairerehistro! Mangyaring i-contact ang Admin para sa pag-apruba.',
-            confirmButtonColor: '#dc2626'
+            confirmButtonColor: '#0f172a'
           }).then(function() {
             document.getElementById('regEmpId').value = "";
             document.getElementById('regName').value = "";
@@ -783,7 +807,7 @@
         if (currentUser) { 
           loadDepartmentMonitorFeed(false, true); 
           if (isPayrollOrAdmin) { loadAdminApprovalQueue(); loadPlatinumPayrollReport(); }
-          if (currentUser.isApprover || isFEorGE) { loadApproversRequestQueue(); }
+          if (currentUser.isApprover || isFEorGE || isPayrollOrAdmin) { loadApproversRequestQueue(); }
         } 
       }, 30000);
     }
@@ -870,7 +894,7 @@
           case "LB IN":
             if (type === "LB IN" || type === "CB IN" || type === "LB OUT") {
               isOutSequence = true;
-              reasonText = "Ang huli mong log ay <strong>LB IN</strong>. Ang susunod na inaasahang hakbang ay <strong>CB OUT</strong> o <strong>OUT</strong>.";
+              reasonText = "Ang huli mong log ay <strong>LB IN</strong>. Ang susunong na inaasahang hakbang ay <strong>CB OUT</strong> o <strong>OUT</strong>.";
             }
             break;
           case "CB OUT":
@@ -905,7 +929,7 @@
                   '<p class="font-bold ' + (isDarkModeActive ? 'text-slate-400' : 'text-slate-500') + '">Nais mo bang ituloy ang pagpili sa log na ito?</p>' +
                 '</div>',
           showCancelButton: true,
-          confirmButtonColor: '#dc2626',
+          confirmButtonColor: '#0f172a',
           cancelButtonColor: '#475569',
           confirmButtonText: 'Oo, I-apply',
           cancelButtonText: 'Huwag muna',
@@ -947,14 +971,12 @@
       var container = document.getElementById('innerFilingPayloadArea-' + dateStr);
       var currentActiveMode = container ? container.getAttribute('data-active-mode') : "CORRECTION";
 
-      // TIER 1 RULE: Kung naka-File Leave Hub mode, pwedeng mag-submit kahit walang picture attachment
       if (currentActiveMode === "LEAVE") {
         btn.disabled = false;
         btn.className = "w-full py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-black rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1 cursor-pointer";
         return;
       }
 
-      // TTP VALIDATION ROUTE: Kung Log Correction, dapat kumpleto ang attachment kada missing log block type
       var attachedImages = logbookImagesCache[dateStr] || {};
       var targetLog = fetchedMissingLogsArrayCache.find(function(x) { return x.date === dateStr; });
       var missingTypesArray = targetLog ? targetLog.missingTypes : [];
@@ -991,6 +1013,22 @@
     
     function processAttendanceSubmission() { 
       if (!currentUser) return;
+
+      // SECURITY ENFORCEMENT: TIME INTEGRITY HANDSHAKE
+      if (photoCaptureTimestamp && (Date.now() - photoCaptureTimestamp > 120000)) {
+        var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
+        Swal.fire({
+          icon: 'error',
+          title: 'Integredad ng Oras (Security)',
+          text: 'Hinarang ng TTP Portal. Ang iyong selfie ay lumampas na sa 2-minutong limitasyon. Mangyaring kumuha ng bagong selfie para sa kasalukuyang shift log upang makapag-submit.',
+          confirmButtonColor: '#0f172a',
+          background: isDarkModeActive ? '#0f172a' : '#ffffff',
+          color: isDarkModeActive ? '#ffffff' : '#1e293b'
+        });
+        clearPunchConsoleInputs();
+        return;
+      }
+
       var branch = document.getElementById('branchInput').value.trim(); 
       
       var hasHelperVal = document.getElementById('has-helper') ? document.getElementById('has-helper').value : "no";
@@ -1038,12 +1076,12 @@
           loadDepartmentMonitorFeed(false, false); 
           executeHistoryAndMissingPipeline(); 
         } else {
-          Swal.fire({ icon: 'error', title: 'Bigo sa Pagpapadala', text: (res && res.message) ? res.message : 'May hindi inaasahang problema sa TTP server base. Subukan ulit.', confirmButtonColor: '#dc2626', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' });
+          Swal.fire({ icon: 'error', title: 'Bigo sa Pagpapadala', text: (res && res.message) ? res.message : 'May hindi inaasahang problema sa TTP server base. Subukan ulit.', confirmButtonColor: '#0f172a', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' });
         }
       }, function(err) {
         if (!currentUser) return;
         toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log');
-        Swal.fire({ icon: 'error', title: 'Network Link Error', text: 'Hindi maipadala ang log dahil sa mahinang koneksyon sa internet.', confirmButtonColor: '#dc2626', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' });
+        Swal.fire({ icon: 'error', title: 'Network Link Error', text: 'Hindi maipadala ang log dahil sa mahinang koneksyon sa internet.', confirmButtonColor: '#0f172a', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' });
       }); 
     }
 
@@ -1187,7 +1225,7 @@
         title: 'Aking QR Code Card',
         html: cardTemplateHtml,
         showConfirmButton: true,
-        confirmButtonColor: '#dc2626',
+        confirmButtonColor: '#0f172a',
         confirmButtonText: '<i class="fa-solid fa-circle-check mr-1"></i> Sige, Maayos',
         background: isDarkModeActive ? '#0f172a' : '#ffffff',
         color: isDarkModeActive ? '#ffffff' : '#1e293b'
@@ -1223,7 +1261,6 @@
         executeServerRequest({ action: "getMissingLogs", employeeId: currentUser.employeeId, fromDate: fromDateStr, toDate: toDateStr }, function(missing) { 
           if (!currentUser) return;
           
-          // Tukuyin ang petsa ngayong araw para sa paghahambing ng Remarks
           var todayObj = new Date();
           var realTodayStr = todayObj.getFullYear() + '-' + String(todayObj.getMonth() + 1).padStart(2, '0') + '-' + String(todayObj.getDate()).padStart(2, '0');
 
@@ -1271,12 +1308,31 @@
             var statusStyle = "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500";
             
             if (s) {
-              resolvedStatusCode = s.logType;
-              if (s.logType === "COMPLETE") { statusStyle = "bg-emerald-100 text-emerald-800 dark:bg-emerald-955/60 dark:text-emerald-400"; }
-              else if (s.logType === "MANUAL") { statusStyle = "bg-purple-100 text-purple-800 dark:bg-purple-955/60 dark:text-purple-400"; }
-              else if (s.logType === "APPROVED leave") { statusStyle = "bg-blue-100 text-blue-800 font-bold dark:bg-blue-955/60 dark:text-blue-400"; }
-              else if (s.logType === "For Approval Leave") { statusStyle = "bg-amber-100 text-amber-800 font-bold animate-pulse dark:bg-amber-955/60 dark:text-amber-400"; }
-              else if (s.logType === "INCOMPLETE" || s.logType === "MISSING") { resolvedStatusCode = "MISSING LOG"; statusStyle = "bg-red-100 text-red-800 dark:bg-red-955/60 dark:text-red-400"; }
+              var logTypeUpper = (s.logType || s.status || s.type || "").toString().toUpperCase().trim();
+              
+              if (logTypeUpper.indexOf("APPROVED") !== -1 && logTypeUpper.indexOf("LEAVE") !== -1) {
+                resolvedStatusCode = "APPROVED leave";
+                statusStyle = "bg-blue-100 text-blue-800 font-bold dark:bg-blue-955/60 dark:text-blue-400";
+              }
+              else if (logTypeUpper.indexOf("PENDING") !== -1 || logTypeUpper.indexOf("FOR APPROVAL") !== -1 || logTypeUpper.indexOf("FOR_APPROVAL") !== -1) {
+                resolvedStatusCode = "For Approval Leave";
+                statusStyle = "bg-amber-100 text-amber-800 font-bold animate-pulse dark:bg-amber-955/60 dark:text-amber-400";
+              }
+              else if (logTypeUpper === "COMPLETE") {
+                resolvedStatusCode = "COMPLETE";
+                statusStyle = "bg-emerald-100 text-emerald-800 dark:bg-emerald-955/60 dark:text-emerald-400";
+              }
+              else if (logTypeUpper === "MANUAL") {
+                resolvedStatusCode = "MANUAL";
+                statusStyle = "bg-purple-100 text-purple-800 dark:bg-purple-955/60 dark:text-purple-400";
+              }
+              else if (logTypeUpper === "INCOMPLETE" || logTypeUpper === "MISSING") {
+                resolvedStatusCode = "MISSING LOG";
+                statusStyle = "bg-red-100 text-red-800 dark:bg-red-955/60 dark:text-red-400";
+              }
+              else {
+                resolvedStatusCode = s.logType || s.status || "PUNCH_SHIFT";
+              }
             }
             
             if (missingDataMap[dateStr] && !missingDataMap[dateStr].isFutureBlank && resolvedStatusCode !== "APPROVED leave" && resolvedStatusCode !== "For Approval Leave") {
@@ -1284,7 +1340,6 @@
               statusStyle = "bg-amber-100 text-amber-800 font-bold dark:bg-amber-955/60 dark:text-amber-400";
             }
 
-            // BUG FIX ROUTE PARA SA MGA LUMLIPAS NA ARAW NA WALANG DATA ENTRY SHIFT
             if (!s) {
               var emptyRemarks = "Hindi pa tapos ang araw.";
               if (dateStr < realTodayStr) {
@@ -1317,17 +1372,18 @@
               });
             }
 
-            var finalRemarksLabelText = s.details || "";
-            if (s.logType === "MANUAL" && s.leaveCodeApplied) {
-              finalRemarksLabelText = "Approved-" + s.leaveCodeApplied + (s.details ? " | " + s.details : "");
+            var extractedLeaveApplied = s.leaveCodeApplied || s.leaveCode || s.leaveType || s.reason || "";
+            var finalRemarksLabelText = s.details || s.remarks || "";
+            if (extractedLeaveApplied) {
+              finalRemarksLabelText = (resolvedStatusCode === "APPROVED leave" ? "Approved-" : "Pending-") + extractedLeaveApplied + (finalRemarksLabelText ? " | " + finalRemarksLabelText : "");
             }
 
             var remarksColumnText = "PUNCH_LOG";
             if (resolvedStatusCode === "APPROVED leave") {
-              remarksColumnText = s.leaveCodeApplied ? "Approved-" + s.leaveCodeApplied : "APPROVED leave";
+              remarksColumnText = extractedLeaveApplied ? "Approved-" + extractedLeaveApplied : "APPROVED leave";
             } else if (resolvedStatusCode === "For Approval Leave") {
-              remarksColumnText = s.leaveCodeApplied ? "Pending-" + s.leaveCodeApplied : "For Approval Leave";
-            } else if (resolvedStatusCode === "MANUAL") {
+              remarksColumnText = extractedLeaveApplied ? "Pending-" + extractedLeaveApplied : "For Approval Leave";
+            } else if (logTypeUpper === "MANUAL") {
               remarksColumnText = "Manual Log";
             }
 
@@ -1399,9 +1455,9 @@
         } else {
           var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
           targetedElements.forEach(function(el) {
-            el.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/40');
+            el.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-955/40');
             setTimeout(function() {
-              el.classList.remove('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/40');
+              el.classList.remove('border-rose-500', 'bg-rose-50', 'dark:bg-rose-955/40');
             }, 2500);
           });
 
@@ -1409,7 +1465,7 @@
             icon: 'error',
             title: 'Ipinagbawal ang Aksyon',
             text: res.message || 'Hindi ma-sync ang allowance details.',
-            confirmButtonColor: '#dc2626',
+            confirmButtonColor: '#0f172a',
             background: isDarkModeActive ? '#0f172a' : '#ffffff',
             color: isDarkModeActive ? '#ffffff' : '#1e293b'
           });
@@ -1418,7 +1474,7 @@
       }, function(err) {
         targetedElements.forEach(function(el) {
           el.classList.remove('animate-pulse', 'border-amber-500', 'bg-amber-50', 'dark:bg-amber-900/40');
-          el.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/40');
+          el.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-955/40');
         });
         var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
         Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: 'Hindi makakonekta sa portal base.', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' });
@@ -1479,53 +1535,79 @@
         }
 
         div.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl space-y-3 flex flex-col justify-between shadow-md border-t-4 border-t-red-500 animate-fadeIn";
+        
         var tabOptionsHeaderHtml = '<div class="flex border-b border-slate-200 dark:border-slate-700 text-[11px] font-black uppercase tracking-wider mb-2">' +
-                                     '<button type="button" onclick="switchInnerFilingSubTab(\''+m.date+'\', \'CORRECTION\', this)" class="flex-1 py-1.5 text-red-600 dark:text-red-500 border-b-2 border-red-600 dark:border-red-500 font-bold outline-none">Log Correction</button>' +
-                                     '<button type="button" onclick="switchInnerFilingSubTab(\''+m.date+'\', \'LEAVE\', this)" class="flex-1 py-1.5 text-slate-400 dark:text-slate-500 font-medium outline-none">File Leave Hub</button>' +
+                                     '<button type="button" onclick="switchInnerFilingSubTab(\''+m.date+'\', ' + "'CORRECTION'" + ', this)" class="flex-1 py-1.5 ' + (m.isFutureBlank ? 'text-slate-400 dark:text-slate-500 font-medium' : 'text-red-600 dark:text-red-500 border-b-2 border-red-600 dark:border-red-500 font-bold') + ' outline-none">Log Correction</button>' +
+                                     '<button type="button" onclick="switchInnerFilingSubTab(\''+m.date+'\', ' + "'LEAVE'" + ', this)" class="flex-1 py-1.5 ' + (m.isFutureBlank ? 'text-red-600 dark:text-red-500 border-b-2 border-red-600 dark:border-red-500 font-bold' : 'text-slate-400 dark:text-slate-500 font-medium') + ' outline-none">File Leave Hub</button>' +
                                    '</div>';
 
-        var correctionBodyFieldsHtml = '<div class="space-y-3">';
-        m.missingTypes.forEach(function(t) {
-          var cleanTypeKey = t.replace(/ /g, '_');
-          correctionBodyFieldsHtml += '<div class="border border-slate-100 dark:border-slate-800 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60 space-y-2">' +
-            '  <span class="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1"><i class="fa-solid fa-clock-pulse text-red-500"></i> entry block for: ' + t + '</span>' +
-            '  <div class="grid grid-cols-2 gap-2 items-center">' +
-            '    <div>' +
-            '      <label class="block text-[8px] uppercase font-bold text-slate-400">Target Time</label>' +
-            '      <input type="time" id="timeInput-' + cleanTypeKey + '-' + m.date + '" class="w-full p-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none">' +
-            '    </div>' +
-            '    <div class="text-center">' +
-            '      <input type="file" id="camInput-' + cleanTypeKey + '-' + m.date + '" accept="image/*" capture="user" class="hidden" onchange="processTypeSpecificFile(this, \'' + m.date + '\', \'' + t + '\', \'card\')">' +
-            '      <button type="button" onclick="document.getElementById(\'camInput-' + cleanTypeKey + '-' + m.date + '\').click()" id="camBtn-' + cleanTypeKey + '-' + m.date + '" class="w-full py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1 outline-none transition-all"><i class="fa-solid fa-camera"></i> Take (' + t + ')</button>' +
-            '      <div id="previewBox-' + cleanTypeKey + '-' + m.date + '" class="mt-1 hidden w-8 h-8 mx-auto border rounded overflow-hidden bg-slate-200 shadow-inner"><img id="previewImg-' + cleanTypeKey + '-' + m.date + '" class="w-full h-full object-cover"></div>' +
-            '    </div>' +
-            '  </div>' +
-            '</div>';
-        });
+        var innerBodyHtml = "";
+        if (m.isFutureBlank) {
+          var selectOpts = "";
+          if (dynamicLeavesDatasetGlobalCache && dynamicLeavesDatasetGlobalCache.length > 0) {
+            dynamicLeavesDatasetGlobalCache.forEach(function(item) {
+              selectOpts += '<option value="' + item.code + '">' + item.code + ' - ' + item.description + '</option>';
+            });
+          } else {
+            var leaveCodesFallback = ["SL", "VL", "BL", "CL", "FDL", "KL", "PL", "SCCB", "WAL", "WL"];
+            leaveCodesFallback.forEach(function(c) { selectOpts += '<option value="' + c + '">' + c + ' Leave Benefit Code</option>'; });
+          }
+          innerBodyHtml = '<div class="space-y-1.5">' +
+                          '  <div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400">Piliin ang Leave Type Code:</label>' +
+                          '  <select id="leaveCodeSelect-' + m.date + '" class="w-full p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg font-bold text-xs cursor-pointer outline-none">' + selectOpts + '</select></div>' +
+                          '  <div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400">Remarks / Detalye (Permitted Absent)</label>' +
+                          '  <input type="text" id="leaveRemarksInput-' + m.date + '" placeholder="Ipasok ang detalye ng leave..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div>' +
+                          '</div>';
+        } else {
+          var correctionBodyFieldsHtml = '<div class="space-y-3">';
+          m.missingTypes.forEach(function(t) {
+            var cleanTypeKey = t.replace(/ /g, '_');
+            correctionBodyFieldsHtml += '<div class="border border-slate-100 dark:border-slate-800 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60 space-y-2">' +
+              '  <span class="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1"><i class="fa-solid fa-clock-pulse text-red-500"></i> entry block for: ' + t + '</span>' +
+              '  <div class="grid grid-cols-2 gap-2 items-center">' +
+              '    <div>' +
+              '      <label class="block text-[8px] uppercase font-bold text-slate-400">Target Time</label>' +
+              '      <input type="time" id="timeInput-' + cleanTypeKey + '-' + m.date + '" class="w-full p-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none">' +
+              '    </div>' +
+              '    <div class="text-center">' +
+              '      <input type="file" id="camInput-' + cleanTypeKey + '-' + m.date + '" accept="image/*" capture="user" class="hidden" onchange="processTypeSpecificFile(this, \'' + m.date + '\', \'' + t + '\', \'card\')">' +
+              '      <button type="button" onclick="document.getElementById(\'' + "camInput-" + cleanTypeKey + "-" + m.date + '\').click()" id="camBtn-' + cleanTypeKey + '-' + m.date + '" class="w-full py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1 outline-none transition-all"><i class="fa-solid fa-camera"></i> Photo</button>' +
+              '      <div id="previewBox-' + cleanTypeKey + '-' + m.date + '" class="mt-1 hidden w-8 h-8 mx-auto border rounded overflow-hidden bg-slate-200 shadow-inner"><img id="previewImg-' + cleanTypeKey + '-' + m.date + '" class="w-full h-full object-cover"></div>' +
+              '    </div>' +
+              '  </div>' +
+              '</div>';
+          });
+          correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 mb-0.5">Dahilan (Reason)</label>' +
+                                      '<input type="text" id="reasonInput-' + m.date + '" placeholder="Dahilan ng pag-update..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div></div>';
+          innerBodyHtml = correctionBodyFieldsHtml;
+        }
+
+        var mealInputStyle = m.isFutureBlank ? 'disabled class="p-2 border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 cursor-not-allowed text-slate-400 text-xs font-bold rounded-lg transition-colors outline-none"' : 'class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none"';
+        var transpoInputStyle = m.isFutureBlank ? 'disabled class="p-2 border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 cursor-not-allowed text-slate-400 text-xs font-bold rounded-lg transition-colors outline-none"' : 'class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none"';
         
-        correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 mb-0.5">Dahilan (Reason)</label>' +
-                                    '<input type="text" id="reasonInput-' + m.date + '" placeholder="Dahilan ng pag-update..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div></div>';
+        var initialBtnDisabled = m.isFutureBlank ? "" : "disabled";
+        var initialBtnClass = m.isFutureBlank ? "w-full py-2.5 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-black rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1 cursor-pointer" : "w-full py-2.5 bg-slate-300 text-slate-500 font-black rounded-xl text-xs cursor-not-allowed flex items-center justify-center gap-1";
 
         div.innerHTML = '<div>' +
-                          '<div class="flex justify-between items-center">' +
-                            '<span class="font-mono font-black text-sm text-slate-900 dark:text-white">' + m.date + '</span>' +
-                            '<span class="text-[9px] bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-400 font-black px-1.5 py-0.5 rounded uppercase tracking-wider">' + m.day + '</span>' +
-                          '</div>' +
-                          '<p class="text-[11px] text-red-600 dark:text-red-400 font-black mt-1 uppercase tracking-tight"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Deperensya: ' + deperensyaBadgeText + '</p>' +
-                        '</div>' +
-                        '<div class="bg-slate-50 dark:bg-slate-800/40 p-3 rounded-lg border border-slate-200 dark:border-slate-800">' +
-                          tabOptionsHeaderHtml +
-                          '<div id="innerFilingPayloadArea-' + m.date + '" data-active-mode="CORRECTION" class="mt-2 transition-all">' +
-                            correctionBodyFieldsHtml +
-                          '</div>' +
-                        '</div>' +
-                        '<div class="grid grid-cols-2 gap-2">' +
-                          '<input type="number" id="mealAllowanceInput-' + m.date + '" class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none" placeholder="Meal ₱">' +
-                          '<input type="number" id="transpoAllowanceInput-' + m.date + '" class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none" placeholder="Transpo ₱">' +
-                        '</div>' +
-                        '<div class="flex gap-2">' +
-                          '<button type="button" id="btnSubmitFiling-' + m.date + '" onclick="submitFilingHubRequestPipeline(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="w-full py-2.5 bg-slate-300 text-slate-500 font-black rounded-xl text-xs cursor-not-allowed flex items-center justify-center gap-1" disabled><i class="fa-solid fa-paper-plane text-red-500"></i> Isumite ang Request sa System</button>' +
-                        '</div>';
+                         '  <div class="flex justify-between items-center">' +
+                         '    <span class="font-mono font-black text-sm text-slate-900 dark:text-white">' + m.date + '</span>' +
+                         '    <span class="text-[9px] bg-red-100 text-red-800 dark:bg-red-955/60 dark:text-red-400 font-black px-1.5 py-0.5 rounded uppercase tracking-wider">' + m.day + '</span>' +
+                         '  </div>' +
+                         '  <p class="text-[11px] text-red-600 dark:text-red-400 font-black mt-1 uppercase tracking-tight"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Deperensya: ' + deperensyaBadgeText + '</p>' +
+                         '</div>' +
+                         '<div class="bg-slate-50 dark:bg-slate-800/40 p-3 rounded-lg border border-slate-200 dark:border-slate-800">' +
+                         '  ' + tabOptionsHeaderHtml + ' ' +
+                         '  <div id="innerFilingPayloadArea-' + m.date + '" data-active-mode="' + (m.isFutureBlank ? 'LEAVE' : 'CORRECTION') + '" class="mt-2 transition-all">' +
+                         '    ' + innerBodyHtml + ' ' +
+                         '  </div>' +
+                         '</div>' +
+                         '<div class="grid grid-cols-2 gap-2">' +
+                         '  <input type="number" id="mealAllowanceInput-' + m.date + '" ' + mealInputStyle + ' placeholder="Meal ₱">' +
+                         '  <input type="number" id="transpoAllowanceInput-' + m.date + '" ' + transpoInputStyle + ' placeholder="Transpo ₱">' +
+                         '</div>' +
+                         '<div class="flex gap-2">' +
+                         '  <button type="button" id="btnSubmitFiling-' + m.date + '" onclick="submitFilingHubRequestPipeline(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="' + initialBtnClass + '" ' + initialBtnDisabled + '><i class="fa-solid fa-paper-plane text-red-500"></i> Isumite ang Request sa System</button>' +
+                         '</div>';
         grid.appendChild(div);
       });
     }
@@ -1606,7 +1688,7 @@
             '    </div>' +
             '    <div class="text-center">' +
             '      <input type="file" id="modalCamInput-' + cleanTypeKey + '" accept="image/*" capture="user" class="hidden" onchange="processTypeSpecificFile(this, \'' + dateStr + '\', \'' + t + '\', \'modal\')">' +
-            '      <button type="button" onclick="document.getElementById(\'modalCamInput-' + cleanTypeKey + '\').click()" id="modalCamBtn-' + cleanTypeKey + '" class="w-full py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1 outline-none"><i class="fa-solid fa-camera"></i> Attach Image</button>' +
+            '      <button type="button" onclick="document.getElementById(\'' + "modalCamInput-" + cleanTypeKey + '\').click()" id="modalCamBtn-' + cleanTypeKey + '" class="w-full py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1 outline-none"><i class="fa-solid fa-camera"></i> Attach Image</button>' +
             '      <div id="modalPreviewBox-' + cleanTypeKey + '" class="mt-1 hidden w-8 h-8 mx-auto border rounded overflow-hidden bg-slate-900 shadow-inner"><img id="modalPreviewImg-' + cleanTypeKey + '" class="w-full h-full object-cover"></div>' +
             '    </div>' +
             '  </div>' +
@@ -1767,7 +1849,7 @@
                   '    </div>' +
                   '    <div class="text-center">' +
                   '      <input type="file" id="camInput-' + cleanTypeKey + '-' + dateStr + '" accept="image/*" capture="user" class="hidden" onchange="processTypeSpecificFile(this, \'' + dateStr + '\', \'' + t + '\', \'card\')">' +
-                  '      <button type="button" onclick="document.getElementById(\'camInput-' + cleanTypeKey + '-' + dateStr + '\').click()" id="camBtn-' + cleanTypeKey + '-' + dateStr + '" class="w-full py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1"><i class="fa-solid fa-camera"></i> Photo</button>' +
+                  '      <button type="button" onclick="document.getElementById(\'' + "camInput-" + cleanTypeKey + "-" + dateStr + '\').click()" id="camBtn-' + cleanTypeKey + '-' + dateStr + '" class="w-full py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1"><i class="fa-solid fa-camera"></i> Photo</button>' +
                   '      <div id="previewBox-' + cleanTypeKey + '-' + dateStr + '" class="mt-1 hidden w-8 h-8 mx-auto border rounded overflow-hidden bg-slate-200"><img id="previewImg-' + cleanTypeKey + '-' + dateStr + '" class="w-full h-full object-cover"></div>' +
                   '    </div>' +
                   '  </div>' +
@@ -1791,16 +1873,18 @@
         }
 
         container.innerHTML = '<div class="space-y-1.5">' +
-                                '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400">Piliin ang Leave Type Code:</label>' +
-                                '<select id="leaveCodeSelect-' + dateStr + '" class="w-full p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg font-bold text-xs cursor-pointer outline-none">' + selectOpts + '</select></div>' +
-                                '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400">Remarks / Detalye (Permitted Absent)</label>' +
-                                '<input type="text" id="leaveRemarksInput-' + dateStr + '" placeholder="Ipasok ang detalye ng leave..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div></div>';
+                                '  <div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400">Piliin ang Leave Type Code:</label>' +
+                                '  <select id="leaveCodeSelect-' + dateStr + '" class="w-full p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg font-bold text-xs cursor-pointer outline-none">' + selectOpts + '</select></div>' +
+                                '  <div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400">Remarks / Detalye (Permitted Absent)</label>' +
+                                '  <input type="text" id="leaveRemarksInput-' + dateStr + '" placeholder="Ipasok ang detalye ng leave..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div></div>';
       }
       
       setTimeout(function() { 
         evaluateCardFilingReadiness(dateStr); 
       }, 50);
     }
+
+    function toggleSelectAllPayrollRows(masterBox) { var checkboxes = document.querySelectorAll('.pay-row-checkbox'); checkboxes.forEach(function(cb) { cb.checked = masterBox.checked; }); }
 
     function submitFilingHubRequestPipeline(dateStr, missingLabel, btnElement) {
       if (!currentUser) return;
@@ -1930,7 +2014,7 @@
         title: 'Real-time Feed Filter Matrix', 
         html: swalHtml, 
         showCancelButton: true,
-        confirmButtonColor: '#dc2626',
+        confirmButtonColor: '#0f172a',
         confirmButtonText: 'I-apply Filter Matrix',
         background: isDarkModeActive ? '#0f172a' : '#ffffff',
         color: isDarkModeActive ? '#ffffff' : '#1e293b',
@@ -1997,7 +2081,7 @@
         title: 'Palitan ang Password',
         html: htmlForm,
         showCancelButton: true,
-        confirmButtonColor: '#dc2626',
+        confirmButtonColor: '#0f172a',
         confirmButtonText: 'I-update Password',
         background: isDarkModeActive ? '#0f172a' : '#ffffff',
         color: isDarkModeActive ? '#ffffff' : '#1e293b',
@@ -2047,11 +2131,12 @@
       if (!logs || logs.length === 0) { container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Walang nakatalang physical punch logs sa kasalukuyan sa real-time feed monitor.</div>'; return; }
       container.innerHTML = "";
       logs.forEach(function(l) { 
-        var isMissingLogEntry = (l.logType === "MISSING LOG REASON" || l.logType === "ATTENDANCE REQUEST PENDING" || l.logType.indexOf("MANUAL") !== -1 || l.logType.indexOf("LEAVE") !== -1);
+        var logTypeUpper = (l.logType || "").toString().toUpperCase();
+        var isMissingLogEntry = (logTypeUpper === "MISSING LOG REASON" || logTypeUpper === "ATTENDANCE REQUEST PENDING" || logTypeUpper.indexOf("MANUAL") !== -1 || logTypeUpper.indexOf("LEAVE") !== -1);
         
         var badgeColor = "bg-amber-600";
-        if (l.logType === "IN" || l.logType === "APPROVED:IN") badgeColor = "bg-emerald-600";
-        else if (l.logType === "OUT" || l.logType === "APPROVED:OUT") badgeColor = "bg-rose-600";
+        if (logTypeUpper === "IN" || logTypeUpper === "APPROVED:IN") badgeColor = "bg-emerald-600";
+        else if (logTypeUpper === "OUT" || logTypeUpper === "APPROVED:OUT") badgeColor = "bg-rose-600";
         else if (isMissingLogEntry) badgeColor = "bg-purple-600";
 
         var subDeptIndicator = ' <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-900/50 px-1.5 rounded-md ml-1">( ' + l.subDept + ' )</span>'; 
@@ -2106,27 +2191,45 @@
       
       executeServerRequest({ action: "getApproverQueue", approverId: currentUser.employeeId }, function(res) {
         if (!currentUser) return;
-        if (!res || !res.pending || res.pending.length === 0) { 
+        
+        var pendingList = (res && (res.pending || res.queue || res.data)) ? (res.pending || res.queue || res.data) : [];
+        var historyList = (res && (res.history || res.logs || res.processed)) ? (res.history || res.logs || res.processed) : [];
+        
+        if (!Array.isArray(pendingList) || pendingList.length === 0) { 
           container.innerHTML = '<p class="text-xs text-slate-400 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-inner italic border dark:border-slate-800">Walang nakabinbing applications sa kasalukuyan.</p>'; 
         } else {
           container.innerHTML = "";
-          res.pending.forEach(function(r) {
+          pendingList.forEach(function(r) {
+            var rRowId = r.rowId || r.id || 0;
+            var rName = r.name || "Kapwa Employee";
+            var rEmpId = r.employeeId || r.empId || "";
+            var rDept = r.department || r.dept || "";
+            var rLeaveType = r.leaveType || r.type || r.requestType || r.reason || "Leave Application";
+            var rDateTarget = r.dateTarget || r.date || r.targetDate || "";
+            var rFiledTime = r.filedTime || r.timestamp || r.time || "N/A";
+
             var box = document.createElement('div'); box.className = "bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2 text-xs relative animate-fadeIn text-slate-800 dark:text-slate-200";
-            box.innerHTML = '<div><span class="font-bold text-slate-900 dark:text-white text-sm">' + r.name + '</span> (' + r.employeeId + ')<br><span class="text-[11px] text-slate-500 font-medium">' + r.department + '</span></div><div class="p-2 bg-emerald-50 dark:bg-emerald-955/40 rounded-lg border border-slate-200 dark:border-emerald-900"><span class="font-bold text-emerald-700 dark:text-emerald-400">Request: ' + r.leaveType + '</span><br><span class="font-mono text-slate-600 dark:text-slate-400 font-bold">Target Date: ' + r.dateTarget + '</span></div><div class="text-[10px] text-slate-400 font-mono"><i class="fa-regular fa-clock"></i> Filed: ' + r.filedTime + '</div><div class="flex gap-2 pt-1"><button type="button" onclick="processFilingAction(' + r.rowId + ', \'APPROVED\', this)" class="approver-action-btn flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-sm">Approve</button><button type="button" onclick="processFilingAction(' + r.rowId + ', \'DENIED\', this)" class="approver-action-btn flex-1 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition shadow-sm">Deny</button></div>';
+            box.innerHTML = '<div><span class="font-bold text-slate-900 dark:text-white text-sm">' + rName + '</span> (' + rEmpId + ')<br><span class="text-[11px] text-slate-500 font-medium">' + rDept + '</span></div><div class="p-2 bg-emerald-50 dark:bg-emerald-955/40 rounded-lg border border-slate-200 dark:border-emerald-900"><span class="font-bold text-emerald-700 dark:text-emerald-400">Request: ' + rLeaveType + '</span><br><span class="font-mono text-slate-600 dark:text-slate-400 font-bold">Target Date: ' + rDateTarget + '</span></div><div class="text-[10px] text-slate-400 font-mono"><i class="fa-regular fa-clock"></i> Filed: ' + rFiledTime + '</div><div class="flex gap-2 pt-1"><button type="button" onclick="processFilingAction(' + rRowId + ', ' + "'APPROVED'" + ', this)" class="approver-action-btn flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-sm">Approve</button><button type="button" onclick="processFilingAction(' + rRowId + ', ' + "'DENIED'" + ', this)" class="approver-action-btn flex-1 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition shadow-sm">Deny</button></div>';
             container.appendChild(box);
           });
         }
 
-        if (!res || !res.history || res.history.length === 0) {
+        if (!Array.isArray(historyList) || historyList.length === 0) {
           historyBody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Walang kasaysayan ng aksyon.</td></tr>';
         } else {
           historyBody.innerHTML = "";
-          res.history.forEach(function(h) {
+          historyList.forEach(function(h) {
+            var hName = h.name || "Kapwa";
+            var hEmpId = h.employeeId || h.empId || "";
+            var hLeaveType = h.leaveType || h.type || h.requestType || h.reason || "Leave Request";
+            var hDateTarget = h.dateTarget || h.date || h.targetDate || "";
+            var hDecision = (h.decision || h.status || h.action || "APPROVED").toString().toUpperCase();
+
             var tr = document.createElement('tr'); tr.className = "border-b border-slate-100 dark:border-slate-800 text-[11px] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition text-slate-800 dark:text-slate-300";
-            var badgeClass = h.decision === "APPROVED" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-955/50 dark:text-emerald-400" : "bg-rose-100 text-rose-800 dark:bg-rose-955/50 dark:text-rose-400";
-            tr.innerHTML = '<td class="p-2.5 font-bold">' + h.name + ' <span class="text-[10px] text-slate-400 block font-normal">ID: ' + h.employeeId + '</span></td>' +
-                           '<td class="p-2.5 font-mono">' + h.leaveType + ' <span class="text-[10px] text-slate-400 block font-normal">' + h.dateTarget + '</span></td>' +
-                           '<td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ' + badgeClass + '">' + h.decision + '</span></td>';
+            var badgeClass = hDecision === "APPROVED" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-955/50 dark:text-emerald-400" : "bg-rose-100 text-rose-800 dark:bg-rose-955/50 dark:text-rose-400";
+            tr.innerHTML = '<td class="p-2.5 font-bold">' + hName + ' <span class="text-[10px] text-slate-400 block font-normal">ID: ' + hEmpId + '</span></td>' +
+                           '<td class="p-2.5 font-mono">' + hLeaveType + ' <span class="text-[10px] text-slate-400 block font-normal">' + hDateTarget + '</span></td>' +
+                           '<td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ' + badgeClass + '">' + hDecision + '</span></td>';
             historyBody.appendChild(tr);
           });
         }
@@ -2173,14 +2276,12 @@
       }); 
     }
 
-    function toggleSelectAllPayrollRows(masterBox) { var checkboxes = document.querySelectorAll('.pay-row-checkbox'); checkboxes.forEach(function(cb) { cb.checked = masterBox.checked; }); }
-    
     function executeBulkPayrollPostingPipeline() { 
       if (!currentUser) return; 
       var checkedBoxes = document.querySelectorAll('.pay-row-checkbox:checked'); 
       if (checkedBoxes.length === 0) { 
         var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
-        Swal.fire({ icon: 'warning', title: 'Walang Napili', text: 'Mag-check ng mga active attendance logs.', confirmButtonColor: '#dc2626', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
+        Swal.fire({ icon: 'warning', title: 'Walang Napili', text: 'Mag-check ng mga active attendance logs.', confirmButtonColor: '#0f172a', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
         return; 
       } 
       var dynamicCollectedRowIds = []; 
@@ -2195,7 +2296,7 @@
         text: "Permanenteng ila-lock sa system ang mga napiling tala!", 
         icon: 'warning', 
         showCancelButton: true, 
-        confirmButtonColor: '#dc2626', 
+        confirmButtonColor: '#0f172a', 
         cancelButtonColor: '#475569',
         confirmButtonText: '<i class="fa-solid fa-lock mr-1"></i> Oo, I-Post',
         cancelButtonText: 'Cancel',
@@ -2244,7 +2345,7 @@
       executeServerRequest({ action: "getPendingUsers", adminId: currentUser.employeeId }, function(data) { 
         if (!currentUser) return;
         if (!data || !data.pending || data.pending.length === 0) { queueContainer.innerHTML = '<div class="text-xs text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-955/40 p-3 rounded-xl border dark:border-emerald-900">Walang nag-aantay na approval.</div>'; } 
-        else { queueContainer.innerHTML = ""; data.pending.forEach(function(u) { var item = document.createElement('div'); item.className = "flex justify-between items-center bg-white dark:bg-slate-900 p-3 border border-slate-200 dark:border-slate-800 rounded-xl text-xs shadow-sm gap-2 text-slate-800 dark:text-slate-200"; item.innerHTML = '<div><span class="font-bold">' + u.name + '</span> (' + u.employeeId + ')<br><span class="text-[10px] text-slate-500">' + u.department + '</span></div><div class="flex gap-1"><button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', \'APPROVED\', this)" class="px-2 py-1 bg-emerald-600 text-white rounded text-[11px] font-bold">Approve</button></div>'; queueContainer.appendChild(item); }); } 
+        else { queueContainer.innerHTML = ""; data.pending.forEach(function(u) { var item = document.createElement('div'); item.className = "flex justify-between items-center bg-white dark:bg-slate-900 p-3 border border-slate-200 dark:border-slate-800 rounded-xl text-xs shadow-sm gap-2 text-slate-800 dark:text-slate-200"; item.innerHTML = '<div><span class="font-bold">' + u.name + '</span> (' + u.employeeId + ')<br><span class="text-[10px] text-slate-500">' + u.department + '</span></div><div class="flex gap-1"><button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', ' + "'APPROVED'" + ', this)" class="px-2 py-1 bg-emerald-600 text-white rounded text-[11px] font-bold">Approve</button></div>'; queueContainer.appendChild(item); }); } 
         if (data && data.history) { 
           historyTableBody.innerHTML = ""; 
           data.history.forEach(function(h) { 
@@ -2296,6 +2397,9 @@
           ctx.drawImage(img, 0, 0, width, height); 
           capturedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.65); 
           
+          // STRICT TIMESTAMP CAPTURE SECURE SIGNATURE
+          photoCaptureTimestamp = Date.now(); 
+          
           document.getElementById('selfiePlaceholderText').classList.add('hidden'); 
           var view = document.getElementById('selfieImgView'); 
           view.src = capturedPhotoBase64; view.classList.remove('hidden'); 
@@ -2309,7 +2413,7 @@
     document.getElementById('nativeCameraInput').addEventListener('click', function(e) {
       if(!selectedLogType || !document.getElementById('branchInput').value.trim()) {
         e.preventDefault();
-        Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Pumili muna ng Uri ng Log at Lokasyon bago mag-selfie.', confirmButtonColor: '#dc2626' });
+        Swal.fire({ icon: 'warning', title: 'Pansin!', text: 'Pumili muna ng Uri ng Log at Lokasyon bago mag-selfie.', confirmButtonColor: '#0f172a' });
       }
     });
 
@@ -2333,6 +2437,8 @@
     
     function clearPunchConsoleInputs() { 
       capturedPhotoBase64 = ""; 
+      photoCaptureTimestamp = null; // HARD RESET ON MEMORY DATA
+      
       document.getElementById('selfieImgView').classList.add('hidden'); 
       document.getElementById('selfiePlaceholderText').classList.remove('hidden'); 
       document.getElementById('nativeCameraInput').value = ""; 
