@@ -47,6 +47,12 @@
     .dropdown-container:focus-within .dropdown-menu-pane {
       display: block !important;
     }
+    @media (prefers-color-scheme: dark) {
+      .dropdown-container:hover .dropdown-menu-pane,
+      .dropdown-container:focus-within .dropdown-menu-pane {
+        display: block !important;
+      }
+    }
     @keyframes pulse-bounce {
       0%, 100% { transform: translateY(0) scale(1); }
       50% { transform: translateY(-3px) scale(1.02); }
@@ -55,21 +61,21 @@
       animation: pulse-bounce 2s infinite ease-in-out;
     }
 
-    /* LIGHT TO DARK SOLID STYLES PARA SA LOG TYPES (DEFAULT ACTIVE) */
-    .btn-log-in     { background-color: #f1f5f9; color: #1e293b; border-color: #cbd5e1; }
-    .btn-log-lbout  { background-color: #e2e8f0; color: #0f172a; border-color: #94a3b8; }
-    .btn-log-lbin   { background-color: #cbd5e1; color: #0f172a; border-color: #64748b; }
-    .btn-log-cbout  { background-color: #94a3b8; color: #ffffff; border-color: #475569; }
-    .btn-log-cbin   { background-color: #64748b; color: #ffffff; border-color: #334155; }
-    .btn-log-out    { background-color: #334155; color: #ffffff; border-color: #1e293b; }
+    /* SOFT DESATURATED SEMANTIC ACCENTS PARA SA LOG TYPES (IMPROVEMENT 2) */
+    .btn-log-in     { background-color: #d1fae5; color: #065f46; border-color: #a7f3d0; }
+    .btn-log-lbout  { background-color: #fef3c7; color: #92400e; border-color: #fde68a; }
+    .btn-log-lbin   { background-color: #fef3c7; color: #92400e; border-color: #fde68a; }
+    .btn-log-cbout  { background-color: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
+    .btn-log-cbin   { background-color: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
+    .btn-log-out    { background-color: #ffe4e6; color: #9f1239; border-color: #fecdd3; }
 
     /* HOVER EFFECTS PARA SA MGA SELECTION BUTTONS */
-    .btn-log-in:hover    { background-color: #e2e8f0; }
-    .btn-log-lbout:hover { background-color: #cbd5e1; }
-    .btn-log-lbin:hover  { background-color: #94a3b8; color: #ffffff; }
-    .btn-log-cbout:hover { background-color: #64748b; }
-    .btn-log-cbin:hover  { background-color: #475569; }
-    .btn-log-out:hover   { background-color: #1e293b; }
+    .btn-log-in:hover    { background-color: #a7f3d0; }
+    .btn-log-lbout:hover { background-color: #fde68a; }
+    .btn-log-lbin:hover  { background-color: #fde68a; }
+    .btn-log-cbout:hover { background-color: #bfdbfe; }
+    .btn-log-cbin:hover  { background-color: #bfdbfe; }
+    .btn-log-out:hover   { background-color: #fecdd3; }
   </style>
 </head>
 <body class="text-slate-800 dark:text-slate-100 font-sans antialiased p-0 transition-colors duration-200">
@@ -319,7 +325,7 @@
                 <div id="helper-name-display-2" class="text-xs font-bold min-h-[16px] px-1 transition-colors duration-150"></div>
               </div>
               
-              <div id="qr-reader-wrapper" class="hidden p-3 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-2 animate-fadeIn">
+              <div id="qr-reader-wrapper" class="hidden p-3 bg-slate-100 dark:bg-slate-955 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-2 animate-fadeIn">
                 <div id="qr-reader" class="mx-auto max-w-[280px] rounded-lg overflow-hidden border-2 border-amber-500 bg-white"></div>
                 <button type="button" onclick="stopQRScanner()" class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl transition shadow-md">
                   Ipasara ang Camera
@@ -331,7 +337,7 @@
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">3. Required Verification Selfie</label>
             <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 flex flex-col items-center justify-center space-y-3">
-              <div id="selfiePreviewBox" class="w-full aspect-video bg-slate-900 dark:bg-slate-950 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center relative shadow-inner">
+              <div id="selfiePreviewBox" class="w-full aspect-video bg-slate-900 dark:bg-slate-955 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center relative shadow-inner">
                 <span id="selfiePlaceholderText" class="text-slate-500 text-xs text-center px-4"><i class="fa-solid fa-image-portrait text-3xl block mb-1 text-slate-400"></i>Wala pang larawan</span>
                 <img id="selfieImgView" class="max-w-full max-h-full w-auto h-auto object-contain hidden" src="">
               </div>
@@ -778,7 +784,7 @@
       document.getElementById('userDisplayName').textContent = currentUser.name; 
       document.getElementById('userDisplayDept').textContent = (currentUser.position || "Kapwa") + " | " + currentUser.department;
       
-      var isPayrollOrAdmin = (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin" || currentUser.department.toLowerCase() === "payroll");
+      var isPayrollOrAdmin = (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin" || currentUser.department.toLowerCase() === "payroll" || currentUser.department.toLowerCase() === "audit");
       var userPosTrimmed = (currentUser.position || "").toLowerCase().trim();
       var isFEorGE = userPosTrimmed.indexOf("fe") !== -1 || userPosTrimmed.indexOf("ge") !== -1;
       var isSEorCE = userPosTrimmed.indexOf("se") !== -1 || userPosTrimmed.indexOf("ce") !== -1;
@@ -815,7 +821,7 @@
     function switchActiveViewPane(targetPane) {
       activeViewPaneMode = targetPane; localStorage.setItem("pandayan_active_pane", targetPane); toggleSidebarMenuGateway(false);
       var panes = ['punch', 'monitor', 'history', 'admin', 'payroll', 'requests'];
-      var isPayrollOrAdmin = (currentUser && (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin" || currentUser.department.toLowerCase() === "payroll"));
+      var isPayrollOrAdmin = (currentUser && (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin" || currentUser.department.toLowerCase() === "payroll" || currentUser.department.toLowerCase() === "audit"));
       
       var userPosTrimmed = (currentUser ? (currentUser.position || "").toLowerCase().trim() : "");
       var isFEorGE = userPosTrimmed.indexOf("fe") !== -1 || userPosTrimmed.indexOf("ge") !== -1;
@@ -920,6 +926,14 @@
 
       if (isOutSequence) {
         var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
+        
+        // SWEETALERT BUTTON COLOR DIFFERENTIATION BASE SA ACCENT (IMPROVEMENT 2)
+        var confirmColor = '#0f172a';
+        if (type === "IN") confirmColor = '#10b981';
+        else if (type === "LB OUT" || type === "LB IN") confirmColor = '#f59e0b';
+        else if (type === "CB OUT" || type === "CB IN") confirmColor = '#3b82f6';
+        else if (type === "OUT") confirmColor = '#ef4444';
+
         Swal.fire({
           icon: 'info',
           title: 'Paalala sa Log Sequence',
@@ -929,8 +943,8 @@
                   '<p class="font-bold ' + (isDarkModeActive ? 'text-slate-400' : 'text-slate-500') + '">Nais mo bang ituloy ang pagpili sa log na ito?</p>' +
                 '</div>',
           showCancelButton: true,
-          confirmButtonColor: '#0f172a',
-          cancelButtonColor: '#475569',
+          confirmButtonColor: confirmColor,
+          cancelButtonColor: '#64748b',
           confirmButtonText: 'Oo, I-apply',
           cancelButtonText: 'Huwag muna',
           background: isDarkModeActive ? '#0f172a' : '#ffffff',
@@ -1601,11 +1615,11 @@
                          '    ' + innerBodyHtml + ' ' +
                          '  </div>' +
                          '</div>' +
-                         '<div class="grid grid-cols-2 gap-2">' +
+                         '<div class="grid grid-cols-2 gap-2 pt-2">' +
                          '  <input type="number" id="mealAllowanceInput-' + m.date + '" ' + mealInputStyle + ' placeholder="Meal ₱">' +
                          '  <input type="number" id="transpoAllowanceInput-' + m.date + '" ' + transpoInputStyle + ' placeholder="Transpo ₱">' +
                          '</div>' +
-                         '<div class="flex gap-2">' +
+                         '<div class="flex gap-2 pt-1">' +
                          '  <button type="button" id="btnSubmitFiling-' + m.date + '" onclick="submitFilingHubRequestPipeline(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="' + initialBtnClass + '" ' + initialBtnDisabled + '><i class="fa-solid fa-paper-plane text-red-500"></i> Isumite ang Request sa System</button>' +
                          '</div>';
         grid.appendChild(div);
@@ -1940,39 +1954,35 @@
       });
     }
 
+    // DATE RANGE MATRIX INPUTS & AUDIT TIER 4 ESCALATION (IMPROVEMENT 1 & 3)
+    function triggerYourLogsFeedFilterPrompt() { triggerYourLogsFilterPrompt(); }
     function triggerYourLogsFilterPrompt() { 
       if (!currentUser) return;
       var userPosTrimmed = (currentUser.position || "").toLowerCase().trim();
-      var isPayrollOrAdmin = (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin" || currentUser.department.toLowerCase() === "payroll");
+      
+      // COGNIZANT ESCALATION ENGAGEMENT FOR AUDIT DEPT (IMPROVEMENT 3)
+      var isPayrollOrAdmin = (currentUser.role === "ADMIN" || currentUser.department.toLowerCase() === "admin" || currentUser.department.toLowerCase() === "payroll" || currentUser.department.toLowerCase() === "audit");
       var isFEorGE = userPosTrimmed.indexOf("fe") !== -1 || userPosTrimmed.indexOf("ge") !== -1;
       var isSEorCE = userPosTrimmed.indexOf("se") !== -1 || userPosTrimmed.indexOf("ce") !== -1;
-      
-      var currentYear = new Date().getFullYear(); 
-      var monthsOptions = ''; 
-      var monthsFilipino = ["Enero", "Pebrero", "Marso", "Abril", "Mayo", "Hunyo", "Hulyo", "Agosto", "Setyembre", "Oktubre", "Nobyembre", "Disyembre"];
-      monthsFilipino.forEach(function(m, idx) { monthsOptions += '<option value="' + String(idx + 1).padStart(2, '0') + '">' + m + '</option>'; });
-      var yearsOptions = ''; 
-      for (var y = 2026; y <= currentYear + 2; y++) { 
-        yearsOptions += '<option value="' + y + '">' + y + '</option>'; 
-      }
       
       var swalHtml = '';
       var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
       var textLabelClass = isDarkModeActive ? 'text-slate-300' : 'text-slate-600';
       var inputSelectClass = 'w-full p-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl font-bold outline-none';
 
+      // PINALITAN ANG MONTH/YEAR DROPDOWNS NG DATE FROM AT TO (IMPROVEMENT 1)
       if (isPayrollOrAdmin) {
         var deptOptions = '<option value="">-- Lahat ng Departamento --</option>';
         var deptsElements = document.getElementById('regDept').querySelectorAll('option');
         deptsElements.forEach(function(el) { deptOptions += '<option value="' + el.value + '">' + el.textContent + '</option>'; });
 
         swalHtml = '<div class="text-left text-xs space-y-3 p-1">' +
-                     '<p class="text-slate-400 mb-2"><strong>Tier 4 Access (Admin/Payroll Mode):</strong> Makikita at mapi-filter ang lahat ng empleyado sa kahit saan at anong departamento.</p>' +
+                     '<p class="text-slate-400 mb-2"><strong>Tier 4 Access (Admin/Payroll/Audit View):</strong> Makikita at mapi-filter ang lahat ng empleyado sa kahit saan at anong departamento sa buong masterlist.</p>' +
                      '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Departamento</label><select id="feedFilterDept" class="' + inputSelectClass + ' cursor-pointer">' + deptOptions + '</select></div>' +
                      '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Pangalan ng Empleyado</label><select id="feedFilterEmp" class="' + inputSelectClass + ' cursor-pointer"><option value="">-- Lahat ng Empleyado --</option></select></div>' +
                      '<div class="grid grid-cols-2 gap-2">' +
-                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Buwan</label><select id="feedFilterMonth" class="' + inputSelectClass + '">' + monthsOptions + '</select></div>' +
-                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Taon</label><select id="feedFilterYear" class="' + inputSelectClass + '">' + yearsOptions + '</select></div>' +
+                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Mula Petsa</label><input type="date" id="feedFilterFrom" class="' + inputSelectClass + '"></div>' +
+                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Hanggang Petsa</label><input type="date" id="feedFilterTo" class="' + inputSelectClass + '"></div>' +
                      '</div>' +
                    '</div>';
       } else if (isFEorGE) {
@@ -1985,8 +1995,8 @@
                      '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Departamento</label><select id="feedFilterDept" class="' + inputSelectClass + ' cursor-pointer">' + deptOptions + '</select></div>' +
                      '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Pangalan ng Empleyado</label><select id="feedFilterEmp" class="' + inputSelectClass + ' cursor-pointer"><option value="">-- Lahat ng Empleyado sa Ilalim mo --</option></select></div>' +
                      '<div class="grid grid-cols-2 gap-2">' +
-                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Buwan</label><select id="feedFilterMonth" class="' + inputSelectClass + '">' + monthsOptions + '</select></div>' +
-                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Taon</label><select id="feedFilterYear" class="' + inputSelectClass + '">' + yearsOptions + '</select></div>' +
+                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Mula Petsa</label><input type="date" id="feedFilterFrom" class="' + inputSelectClass + '"></div>' +
+                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Hanggang Petsa</label><input type="date" id="feedFilterTo" class="' + inputSelectClass + '"></div>' +
                      '</div>' +
                    '</div>';
       } else if (isSEorCE) {
@@ -1995,8 +2005,8 @@
                      '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Departamento</label><input type="text" class="' + inputSelectClass + ' opacity-60" value="' + currentUser.department + '" disabled id="feedFilterDept"></div>' +
                      '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Pangalan ng Empleyado</label><select id="feedFilterEmp" class="' + inputSelectClass + ' cursor-pointer"><option value="">-- Lahat ng Empleyado sa Departamento mo --</option></select></div>' +
                      '<div class="grid grid-cols-2 gap-2">' +
-                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Buwan</label><select id="feedFilterMonth" class="' + inputSelectClass + '">' + monthsOptions + '</select></div>' +
-                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Taon</label><select id="feedFilterYear" class="' + inputSelectClass + '">' + yearsOptions + '</select></div>' +
+                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Mula Petsa</label><input type="date" id="feedFilterFrom" class="' + inputSelectClass + '"></div>' +
+                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Hanggang Petsa</label><input type="date" id="feedFilterTo" class="' + inputSelectClass + '"></div>' +
                      '</div>' +
                    '</div>';
       } else {
@@ -2004,8 +2014,8 @@
                      '<p class="text-slate-400 mb-2"><strong>Tier 1 Access (Normal Employee Mode):</strong> Makikita ang lahat ng kasamahan sa departamento, ngunit ang sariling logs lamang ang mapi-filter mo.</p>' +
                      '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Empleyado</label><input type="text" class="' + inputSelectClass + ' opacity-60" value="' + currentUser.name + '" disabled><input type="hidden" id="feedFilterEmp" value="' + currentUser.employeeId + '"><input type="hidden" id="feedFilterDept" value="' + currentUser.department + '"></div>' +
                      '<div class="grid grid-cols-2 gap-2">' +
-                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Buwan</label><select id="feedFilterMonth" class="' + inputSelectClass + '">' + monthsOptions + '</select></div>' +
-                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Taon</label><select id="feedFilterYear" class="' + inputSelectClass + '">' + yearsOptions + '</select></div>' +
+                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Mula Petsa</label><input type="date" id="feedFilterFrom" class="' + inputSelectClass + '"></div>' +
+                       '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Hanggang Petsa</label><input type="date" id="feedFilterTo" class="' + inputSelectClass + '"></div>' +
                      '</div>' +
                    '</div>';
       }
@@ -2048,14 +2058,24 @@
               }
             });
           }
+          
+          var defaultFrom = document.getElementById('filterFrom').value;
+          var defaultTo = document.getElementById('filterTo').value;
+          if(document.getElementById('feedFilterFrom')) document.getElementById('feedFilterFrom').value = defaultFrom;
+          if(document.getElementById('feedFilterTo')) document.getElementById('feedFilterTo').value = defaultTo;
         },
         preConfirm: function() {
           if (!currentUser) return false;
-          var m = document.getElementById('feedFilterMonth').value;
-          var y = document.getElementById('feedFilterYear').value;
+          var fromDate = document.getElementById('feedFilterFrom') ? document.getElementById('feedFilterFrom').value : "";
+          var toDate = document.getElementById('feedFilterTo') ? document.getElementById('feedFilterTo').value : "";
           var dVal = document.getElementById('feedFilterDept') ? document.getElementById('feedFilterDept').value : "";
           var eVal = document.getElementById('feedFilterEmp') ? document.getElementById('feedFilterEmp').value : "";
-          return { month: m, year: y, dept: dVal, empId: eVal };
+          
+          if ((document.getElementById('feedFilterFrom') || document.getElementById('feedFilterTo')) && (!fromDate || !toDate)) {
+            Swal.showValidationMessage('Mangyaring piliin ang parehong Mula at Hanggang Petsa.');
+            return false;
+          }
+          return { fromDate: fromDate, toDate: toDate, dept: dVal, empId: eVal };
         }
       }).then(function(res) { 
         if (res.isConfirmed && res.value) { 
@@ -2117,7 +2137,7 @@
       
       if (activeFeedFilterData) { 
         targetAction = "getFilteredFeedLogs"; 
-        reqPayload = { action: targetAction, adminId: currentUser.employeeId, filterEmpId: activeFeedFilterData.empId || "", filterDept: activeFeedFilterData.dept || "", year: activeFeedFilterData.year, month: activeFeedFilterData.month }; 
+        reqPayload = { action: targetAction, adminId: currentUser.employeeId, filterEmpId: activeFeedFilterData.empId || "", filterDept: activeFeedFilterData.dept || "", fromDate: activeFeedFilterData.fromDate || "", toDate: activeFeedFilterData.toDate || "" }; 
       }
       
       executeServerRequest(reqPayload, function(logs) { 
@@ -2184,6 +2204,7 @@
       });
     }
 
+    // FILING HUB LEDGER MIRRORING STRUCTURE FOR 100% DATA VISIBILITY (IMPROVEMENT 5)
     function loadApproversRequestQueue() {
       if (!currentUser) return;
       var container = document.getElementById('approverQueueContainer'); if (!container) return;
@@ -2214,6 +2235,7 @@
           });
         }
 
+        // 100% LEDGER MIRRORING AND DATA VISIBILITY STRUCTURE
         if (!Array.isArray(historyList) || historyList.length === 0) {
           historyBody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Walang kasaysayan ng aksyon.</td></tr>';
         } else {
@@ -2221,14 +2243,20 @@
           historyList.forEach(function(h) {
             var hName = h.name || "Kapwa";
             var hEmpId = h.employeeId || h.empId || "";
+            var hDept = h.department || h.dept || "";
             var hLeaveType = h.leaveType || h.type || h.requestType || h.reason || "Leave Request";
             var hDateTarget = h.dateTarget || h.date || h.targetDate || "";
+            var hFiledTime = h.filedTime || h.timestamp || h.time || "";
             var hDecision = (h.decision || h.status || h.action || "APPROVED").toString().toUpperCase();
 
             var tr = document.createElement('tr'); tr.className = "border-b border-slate-100 dark:border-slate-800 text-[11px] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition text-slate-800 dark:text-slate-300";
             var badgeClass = hDecision === "APPROVED" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-955/50 dark:text-emerald-400" : "bg-rose-100 text-rose-800 dark:bg-rose-955/50 dark:text-rose-400";
-            tr.innerHTML = '<td class="p-2.5 font-bold">' + hName + ' <span class="text-[10px] text-slate-400 block font-normal">ID: ' + hEmpId + '</span></td>' +
-                           '<td class="p-2.5 font-mono">' + hLeaveType + ' <span class="text-[10px] text-slate-400 block font-normal">' + hDateTarget + '</span></td>' +
+            
+            var filedTimeHtml = hFiledTime ? '<span class="text-[10px] text-slate-400 block font-normal font-mono"><i class="fa-regular fa-clock"></i> ' + hFiledTime + '</span>' : '';
+            var deptHtml = hDept ? '<span class="text-[10px] text-slate-500 block font-medium">' + hDept + '</span>' : '';
+
+            tr.innerHTML = '<td class="p-2.5 font-bold">' + hName + ' <span class="text-[10px] text-slate-400 block font-normal">ID: ' + hEmpId + '</span>' + deptHtml + '</td>' +
+                           '<td class="p-2.5 font-mono"><span class="font-bold text-slate-700 dark:text-slate-300">' + hLeaveType + '</span> <span class="text-[10px] text-slate-500 block font-normal font-mono">Target Date: ' + hDateTarget + '</span>' + filedTimeHtml + '</td>' +
                            '<td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ' + badgeClass + '">' + hDecision + '</span></td>';
             historyBody.appendChild(tr);
           });
@@ -2339,13 +2367,24 @@
       }, function() { searchBtnText.innerHTML = "Suriin"; document.getElementById('btnPayrollSearchQuery').disabled = false; });
     }
 
+    // PENDING APPROVAL QUEUE WITH ADDED RED DENY BUTTON (IMPROVEMENT 4)
     function loadAdminApprovalQueue() { 
       if (!currentUser) return;
       var queueContainer = document.getElementById('adminPendingQueue'); var historyTableBody = document.getElementById('adminHistoryLogTable'); 
       executeServerRequest({ action: "getPendingUsers", adminId: currentUser.employeeId }, function(data) { 
         if (!currentUser) return;
         if (!data || !data.pending || data.pending.length === 0) { queueContainer.innerHTML = '<div class="text-xs text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-955/40 p-3 rounded-xl border dark:border-emerald-900">Walang nag-aantay na approval.</div>'; } 
-        else { queueContainer.innerHTML = ""; data.pending.forEach(function(u) { var item = document.createElement('div'); item.className = "flex justify-between items-center bg-white dark:bg-slate-900 p-3 border border-slate-200 dark:border-slate-800 rounded-xl text-xs shadow-sm gap-2 text-slate-800 dark:text-slate-200"; item.innerHTML = '<div><span class="font-bold">' + u.name + '</span> (' + u.employeeId + ')<br><span class="text-[10px] text-slate-500">' + u.department + '</span></div><div class="flex gap-1"><button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', ' + "'APPROVED'" + ', this)" class="px-2 py-1 bg-emerald-600 text-white rounded text-[11px] font-bold">Approve</button></div>'; queueContainer.appendChild(item); }); } 
+        else { 
+          queueContainer.innerHTML = ""; 
+          data.pending.forEach(function(u) { 
+            var item = document.createElement('div'); 
+            item.className = "flex justify-between items-center bg-white dark:bg-slate-900 p-3 border border-slate-200 dark:border-slate-800 rounded-xl text-xs shadow-sm gap-2 text-slate-800 dark:text-slate-200"; 
+            
+            // INILAPAT ANG RED DENY BUTTON SA KATABI NG APPROVE (IMPROVEMENT 4)
+            item.innerHTML = '<div><span class="font-bold">' + u.name + '</span> (' + u.employeeId + ')<br><span class="text-[10px] text-slate-500">' + u.department + '</span></div><div class="flex gap-1"><button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', ' + "'APPROVED'" + ', this)" class="px-2 py-1 bg-emerald-600 text-white rounded text-[11px] font-bold">Approve</button><button type="button" onclick="executeAccountApproval(\'' + u.employeeId + '\', ' + "'DENIED'" + ', this)" class="px-2 py-1 bg-rose-600 text-white rounded text-[11px] font-bold">Deny</button></div>'; 
+            queueContainer.appendChild(item); 
+          }); 
+        } 
         if (data && data.history) { 
           historyTableBody.innerHTML = ""; 
           data.history.forEach(function(h) { 
@@ -2369,7 +2408,7 @@
       }, function() {
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = 'Approve';
+          btn.innerHTML = statusString === 'APPROVED' ? 'Approve' : 'Deny';
         }
       }); 
     }
