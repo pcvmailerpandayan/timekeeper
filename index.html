@@ -70,6 +70,15 @@
     .btn-log-cbout:hover { background-color: #bfdbfe; }
     .btn-log-cbin:hover  { background-color: #bfdbfe; }
     .btn-log-out:hover   { background-color: #fecdd3; }
+
+    /* AUTO EXPANDABLE BOX STYLE */
+    .auto-stretch-box {
+      min-height: 2rem;
+      max-height: none;
+      word-break: break-word;
+      white-space: pre-wrap;
+      overflow-y: hidden;
+    }
   </style>
 </head>
 <body class="text-slate-800 dark:text-slate-100 font-sans antialiased p-0 transition-colors duration-200">
@@ -248,7 +257,7 @@
           <button type="button" id="navBtn-payroll" onclick="switchActiveViewPane('payroll')" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30 transition text-left text-xs" style="display: none;">
             <i class="fa-solid fa-file-invoice-dollar w-6 text-center text-sm"></i> <span>Payroll Summary Portal</span>
           </button>
-          <button type="button" id="navBtn-admin" onclick="switchActiveViewPane('admin')" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition text-left text-xs" style="display: none;">
+          <button type="button" id="navBtn-admin" onclick="switchActiveViewPane('admin')" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-amber-900/30 transition text-left text-xs" style="display: none;">
             <i class="fa-solid fa-user-shield w-6 text-center text-sm"></i> <span>Admin Control Portal</span>
           </button>
         </nav>
@@ -553,11 +562,6 @@
             <button type="button" id="tabBtnActualLogs" onclick="toggleHistoryViewTabs('actual')" class="px-4 py-2 text-red-600 border-b-2 border-red-600 font-bold dark:text-red-500">Mga Nakatalang Log / Allowances</button>
             <button type="button" id="tabBtnMissingLogs" onclick="toggleHistoryViewTabs('missing')" class="px-4 py-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">Mga Nawawalang Log / Corrections</button>
           </div>
-          <div id="missingLayoutToolbar" class="items-center space-x-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-1 self-end hidden">
-            <button type="button" onclick="setMissingLayoutMode('list')" id="btnLayoutList" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">List View</button>
-            <button type="button" onclick="setMissingLayoutMode('small')" id="btnLayoutSmall" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">Small Icons</button>
-            <button type="button" onclick="setMissingLayoutMode('large')" id="btnLayoutLarge" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">Large Cards</button>
-          </div>
         </div>
 
         <div id="subViewActualLogs" class="block overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
@@ -595,11 +599,6 @@
           <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
             <i class="fa-solid fa-plane-departure mr-2 text-base"></i> Personal Leave Filing Hub Console
           </h3>
-          <div id="leaveLayoutToolbar" class="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shadow-sm">
-            <button type="button" onclick="setLeaveLayoutMode('list')" id="btnLeaveLayoutList" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">List View</button>
-            <button type="button" onclick="setLeaveLayoutMode('small')" id="btnLeaveLayoutSmall" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">Small Icons</button>
-            <button type="button" onclick="setLeaveLayoutMode('large')" id="btnLeaveLayoutLarge" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition">Large Cards</button>
-          </div>
         </div>
         <div id="leaveFilingHubGrid"></div>
       </div>
@@ -654,6 +653,9 @@
           if (isBackgroundRequest && data && data.success === false && data.isGoogleInternalError) return;
           if (successCallback) successCallback(data);
         } catch(jsonErr) {
+          /* RCA SAFE PREVENT: Close loading freeze if popup active */
+          if (Swal.isVisible()) { Swal.close(); }
+          
           if (payload && payload.action === "getLeavesDataset") {
             if (successCallback) successCallback([]); return;
           }
@@ -672,6 +674,7 @@
         }
       })
       .catch(function(error) {
+        if (Swal.isVisible()) { Swal.close(); }
         if (isBackgroundRequest) { if (failureCallback) failureCallback(error); return; }
         Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: error.message, confirmButtonColor: '#0f172a' });
         if (failureCallback) failureCallback(error);
@@ -823,8 +826,6 @@
       }
 
       initEnforcedGeolocatorTelemetry(); loadBranchDataset(); loadDepartmentMonitorFeed(false, false); executeHistoryAndMissingPipeline();
-      setMissingLayoutMode(missingLayoutMode);
-      setLeaveLayoutMode(leaveLayoutMode);
       switchActiveViewPane(activeViewPaneMode);
       
       if (backgroundSyncInterval) clearInterval(backgroundSyncInterval);
@@ -1169,6 +1170,7 @@
       executeHistoryAndMissingPipeline();
     }
 
+    // Default tag na part ng script, inalagaan ang compatibility
     function formatCustomDateString(dateStr) {
       var parts = dateStr.split('-');
       if (parts.length !== 3) return dateStr;
@@ -1440,7 +1442,8 @@
             var isLeaveTypeEncountered = resolvedStatusCode.toString().toUpperCase().indexOf("LEAVE") !== -1;
             
             var isEditable = !s.isLocked && s.allowAllowance && !isLeaveTypeEncountered; 
-            var isLockedAttr = isEditable ? '' : 'disabled';
+            var isLockedAttr = isEditable ? '' : 'contenteditable="false"';
+            var isInputLockedAttr = isEditable ? '' : 'disabled';
             var lockClass = isEditable ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-600' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 font-mono cursor-not-allowed border-slate-200 dark:border-slate-800';
             var postBadge = s.isLocked ? ' <span class="px-1 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-955/60 dark:text-amber-400 rounded text-[8px] font-black uppercase block mt-1"><i class="fa-solid fa-lock"></i> Posted</span>' : '';
 
@@ -1475,6 +1478,7 @@
                 return hrs * 60 + mins;
               }
 
+              /* RCA CONTROLLED REDUCER COMPATIBILITY CHECK */
               if (parsedLogs["IN"].length > 0) {
                 timeMap["IN"] = parsedLogs["IN"].reduce(function(min, current) {
                   return timeToMinutes(current) < timeToMinutes(min) ? current : min;
@@ -1524,9 +1528,10 @@
               remarksColumnText = "Manual Log";
             }
 
-            var mealInputHtml = '<div class="relative"><span class="absolute left-1 top-2 text-slate-400 dark:text-slate-500 font-bold">₱</span><input type="number" value="' + (isLeaveTypeEncountered ? "" : (s.meal !== undefined ? s.meal : "0")) + '" ' + isLockedAttr + ' onchange="syncAllowanceToSheet(\'' + s.date + '\', this)" class="w-full pl-4 pr-1 py-1 border rounded-lg text-center text-xs outline-none transition ' + lockClass + '"></div>';
-            var transpoInputHtml = '<div class="relative"><span class="absolute left-1 top-2 text-slate-400 dark:text-slate-500 font-bold">₱</span><input type="number" value="' + (isLeaveTypeEncountered ? "" : (s.transpo !== undefined ? s.transpo : "0")) + '" ' + isLockedAttr + ' onchange="syncAllowanceToSheet(\'' + s.date + '\', this)" class="w-full pl-4 pr-1 py-1 border rounded-lg text-center text-xs outline-none transition ' + lockClass + '"></div>';
-            var detailsInputHtml = '<textarea ' + isLockedAttr + ' onchange="syncAllowanceToSheet(\'' + s.date + '\', this)" class="w-full p-1 border rounded-lg text-[11px] h-8 resize-none outline-none transition ' + lockClass + '">' + finalRemarksLabelText + '</textarea>';
+            var mealInputHtml = '<div class="relative"><span class="absolute left-1 top-2 text-slate-400 dark:text-slate-500 font-bold">₱</span><input type="number" value="' + (isLeaveTypeEncountered ? "" : (s.meal !== undefined ? s.meal : "0")) + '" ' + isInputLockedAttr + ' onchange="syncAllowanceToSheet(\'' + s.date + '\', this)" class="w-full pl-4 pr-1 py-1 border rounded-lg text-center text-xs outline-none transition ' + lockClass + '"></div>';
+            var transpoInputHtml = '<div class="relative"><span class="absolute left-1 top-2 text-slate-400 dark:text-slate-500 font-bold">₱</span><input type="number" value="' + (isLeaveTypeEncountered ? "" : (s.transpo !== undefined ? s.transpo : "0")) + '" ' + isInputLockedAttr + ' onchange="syncAllowanceToSheet(\'' + s.date + '\', this)" class="w-full pl-4 pr-1 py-1 border rounded-lg text-center text-xs outline-none transition ' + lockClass + '"></div>';
+            
+            var detailsInputHtml = '<div ' + isLockedAttr + ' contenteditable="' + isEditable + '" onblur="syncAllowanceToSheet(\'' + s.date + '\', this)" class="w-full p-1.5 border rounded-lg text-[11px] outline-none transition auto-stretch-box ' + lockClass + '">' + finalRemarksLabelText + '</div>';
             
             tr.innerHTML = '<td class="p-3 font-bold text-left text-slate-900 dark:text-white">' + fancyFormattedDateLabel + postBadge + '</td>' +
                            '<td class="p-3 font-mono font-bold text-emerald-600 dark:text-emerald-400">' + timeMap["IN"] + '</td>' +
@@ -1559,11 +1564,11 @@
 
       var mealInput = tr.querySelectorAll('input[type="number"]')[0];
       var transpoInput = tr.querySelectorAll('input[type="number"]')[1];
-      var detailsInput = tr.querySelector('textarea');
+      var detailsInput = tr.querySelector('.auto-stretch-box');
 
       var mealVal = mealInput ? mealInput.value : "0";
       var transpoVal = transpoInput ? transpoInput.value : "0";
-      var detailsVal = detailsInput ? detailsInput.value : "";
+      var detailsVal = detailsInput ? detailsInput.innerText.trim() : "";
 
       var targetedElements = [mealInput, transpoInput, detailsInput].filter(Boolean);
       
@@ -1632,50 +1637,11 @@
         return;
       }
       grid.innerHTML = "";
-
-      if (leaveLayoutMode === "large") {
-        grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 shadow-sm w-full";
-      } else if (leaveLayoutMode === "small") {
-        grid.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 w-full";
-      } else if (leaveLayoutMode === "list") {
-        grid.className = "flex flex-col space-y-2 max-w-2xl mx-auto w-full";
-      }
+      grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 shadow-sm w-full";
 
       validLeaveDays.forEach(function(m) {
         var missingLabel = m.missingTypes.join(", ");
         var div = document.createElement('div');
-
-        if (leaveLayoutMode === "list") {
-          div.className = "flex justify-between items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl shadow-sm hover:border-emerald-500 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition cursor-pointer font-sans";
-          div.setAttribute("onclick", "triggerSplitPaneFilingModal('" + m.date + "', '" + missingLabel + "', false)");
-          div.innerHTML = '<div class="flex items-center space-x-3 min-w-0">' +
-                          '  <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse flex-shrink-0"></div>' +
-                          '  <div>' +
-                          '    <span class="font-mono font-black text-xs text-slate-900 dark:text-white">' + m.date + '</span>' +
-                          '    <span class="ml-2 text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold px-1.5 py-0.5 rounded uppercase">' + m.day + '</span>' +
-                          '  </div>' +
-                          '</div>' +
-                          '<div class="text-right flex items-center space-x-2 min-w-0">' +
-                          '  <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-tight truncate">File Benefit Leave</span>' +
-                          '  <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-600 text-xs"></i>' +
-                          '</div>';
-          grid.appendChild(div);
-          return;
-        }
-
-        if (leaveLayoutMode === "small") {
-          div.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl shadow-sm flex flex-col justify-between hover:border-emerald-500 hover:scale-[1.02] transition cursor-pointer text-center relative overflow-hidden";
-          div.setAttribute("onclick", "triggerSplitPaneFilingModal('" + m.date + "', '" + missingLabel + "', false)");
-          div.innerHTML = '<div class="absolute top-0 left-0 right-0 h-1 bg-emerald-500"></div>' +
-                          '<div class="font-mono font-black text-xs text-slate-900 dark:text-white mt-1">' + m.date + '</div>' +
-                          '<div class="text-[9px] text-slate-400 dark:text-slate-500 font-medium uppercase mt-0.5">' + m.day + '</div>' +
-                          '<div class="mt-2 text-[9px] text-emerald-600 dark:text-emerald-400 font-black tracking-tighter uppercase line-clamp-1 bg-emerald-50 dark:bg-emerald-900/30 py-1 rounded">' +
-                          '  <i class="fa-solid fa-plane-departure mr-0.5"></i>LEAVE HUB' +
-                          '</div>';
-          grid.appendChild(div);
-          return;
-        }
-
         div.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl space-y-3 flex flex-col justify-between shadow-md border-t-4 border-t-emerald-500 animate-fadeIn";
 
         var selectOpts = "";
@@ -1730,50 +1696,12 @@
         return; 
       } 
       grid.innerHTML = ""; 
-
-      if (missingLayoutMode === "large") {
-        grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full";
-      } else if (missingLayoutMode === "small") {
-        grid.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 w-full";
-      } else if (missingLayoutMode === "list") {
-        grid.className = "flex flex-col space-y-2 max-w-2xl mx-auto w-full";
-      }
+      grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full";
 
       filteredCorrectionsOnly.forEach(function(m) {
         var missingLabel = m.missingTypes.join(", "); 
         var div = document.createElement('div');
         var deperensyaBadgeText = 'Kulang ang ' + missingLabel;
-
-        if (missingLayoutMode === "list") {
-          div.className = "flex justify-between items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl shadow-sm hover:border-red-500 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition cursor-pointer font-sans";
-          div.setAttribute("onclick", "triggerSplitPaneFilingModal('" + m.date + "', '" + missingLabel + "', false)");
-          div.innerHTML = '<div class="flex items-center space-x-3 min-w-0">' +
-                          '  <div class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse flex-shrink-0"></div>' +
-                          '  <div>' +
-                          '    <span class="font-mono font-black text-xs text-slate-900 dark:text-white">' + m.date + '</span>' +
-                          '    <span class="ml-2 text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold px-1.5 py-0.5 rounded uppercase">' + m.day + '</span>' +
-                          '  </div>' +
-                          '</div>' +
-                          '<div class="text-right flex items-center space-x-2 min-w-0">' +
-                          '  <span class="text-[10px] text-red-600 dark:text-red-400 font-bold uppercase tracking-tight truncate">' + deperensyaBadgeText + '</span>' +
-                          '  <i class="fa-solid fa-chevron-right text-slate-300 dark:text-slate-600 text-xs"></i>' +
-                          '</div>';
-          grid.appendChild(div);
-          return;
-        }
-
-        if (missingLayoutMode === "small") {
-          div.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-xl shadow-sm flex flex-col justify-between hover:border-red-500 hover:scale-[1.02] transition cursor-pointer text-center relative overflow-hidden";
-          div.setAttribute("onclick", "triggerSplitPaneFilingModal('" + m.date + "', '" + missingLabel + "', false)");
-          div.innerHTML = '<div class="absolute top-0 left-0 right-0 h-1 bg-red-500"></div>' +
-                          '<div class="font-mono font-black text-xs text-slate-900 dark:text-white mt-1">' + m.date + '</div>' +
-                          '<div class="text-[9px] text-slate-400 dark:text-slate-500 font-medium uppercase mt-0.5">' + m.day + '</div>' +
-                          '<div class="mt-2 text-[9px] text-red-600 dark:text-red-400 font-black tracking-tighter uppercase line-clamp-1 bg-red-50 dark:bg-red-900/30 py-1 rounded">' +
-                          '  <i class="fa-solid fa-circle-exclamation mr-0.5"></i>MISSING LOGS' +
-                          '</div>';
-          grid.appendChild(div);
-          return;
-        }
 
         div.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl space-y-3 flex flex-col justify-between shadow-md border-t-4 border-t-red-500 animate-fadeIn";
         
@@ -1789,7 +1717,7 @@
                                       '    </div>' +
                                       '    <div class="text-center">' +
                                       '      <input type="file" id="camInput-' + cleanTypeKey + '-' + m.date + '" accept="image/*" capture="user" class="hidden" onchange="processTypeSpecificFile(this, \'' + m.date + '\', \'' + t + '\', \'card\')">' +
-                                      '      <button type="button" onclick="document.getElementById(\'' + "camInput-" + cleanTypeKey + "-" + m.date + '\').click()" id="camBtn-' + cleanTypeKey + '-' + m.date + '" class="w-full py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1 border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1 outline-none transition-all"><i class="fa-solid fa-camera"></i> Photo</button>' +
+                                      '      <button type="button" onclick="document.getElementById(\'' + "camInput-" + cleanTypeKey + "-" + m.date + '\').click()" id="camBtn-' + cleanTypeKey + '-' + m.date + '" class="w-full py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1 outline-none transition-all"><i class="fa-solid fa-camera"></i> Photo</button>' +
                                       '      <div id="previewBox-' + cleanTypeKey + '-' + m.date + '" class="mt-1 hidden w-8 h-8 mx-auto border rounded overflow-hidden bg-slate-200 shadow-inner"><img id="previewImg-' + cleanTypeKey + '-' + m.date + '" class="w-full h-full object-cover"></div>' +
                                       '    </div>' +
                                       '  </div>' +
@@ -2144,6 +2072,7 @@
         var leavePayload = {
           employeeId: currentUser.employeeId,
           leaveCode: selectedCode,
+          workspaceApplied: "FIELDWORK",
           startDate: dateStr,
           endDate: dateStr,
           reason: typedRemarks || "Filed from Leave Hub"
@@ -2229,7 +2158,7 @@
                    '</div>';
       } else {
         swalHtml = '<div class="text-left text-xs space-y-3 p-1">' +
-                     '<p class="text-slate-400 mb-2"><strong>Personal Console Mode (User):</strong> Nakikita ang department feed, ngunit sariling logs at larawan lamang ang maaari mong i-filter.</p>' +
+                     '<p class="text-slate-400 mb-2"><strong>Personal Console Mode (User):</strong> Ngunit sariling logs at larawan lamang ang maaari mong i-filter.</p>' +
                      '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Empleyado</label><input type="text" class="' + inputSelectClass + ' opacity-60" value="' + currentUser.name + '" disabled><input type="hidden" id="feedFilterEmp" value="' + currentUser.employeeId + '"><input type="hidden" id="feedFilterDept" value="' + currentUser.department + '"></div>' +
                      '<div class="grid grid-cols-2 gap-2">' +
                        '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Mula Petsa</label><input type="date" id="feedFilterFrom" class="' + inputSelectClass + '"></div>' +
@@ -2507,7 +2436,7 @@
 
     function processFilingAction(rowId, statusString, btn) {
       if (!currentUser) return;
-      var hostCard = btn.closest('.bg-white');
+      var hostCard = btn.closest('.bg-white, .dark\\:bg-slate-900');
       var actionButtons = hostCard.querySelectorAll('.approver-action-btn');
       actionButtons.forEach(function(b) { b.disabled = true; b.classList.add('opacity-50', 'cursor-not-allowed'); });
       btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Loading';
@@ -2614,7 +2543,7 @@
       var queueContainer = document.getElementById('adminPendingQueue'); var historyTableBody = document.getElementById('adminHistoryLogTable'); 
       executeServerRequest({ action: "getPendingUsers", adminId: currentUser.employeeId }, function(data) { 
         if (!currentUser) return;
-        if (data && (!data.pending || data.pending.length === 0)) { queueContainer.innerHTML = '<div class="text-xs text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-955/40 p-3 rounded-xl border dark:border-emerald-900">Walang nag-aantay na approval.</div>'; } 
+        if (data && (!data.pending || data.pending.length === 0)) { queueContainer.innerHTML = '<div class="text-xs text-emerald-600 font-bold bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-955/50 p-3 rounded-xl border dark:border-emerald-900">Walang nag-aantay na approval.</div>'; } 
         else if (data && data.pending) { 
           queueContainer.innerHTML = ""; 
           data.pending.forEach(function(u) { 
@@ -2711,33 +2640,7 @@
 
     function addNewLocationPrompt() { var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)); Swal.fire({ title: 'Bagong Lokasyon', text: 'Ipasok ang pangalan:', input: 'text', showCancelButton: true, confirmButtonColor: '#0f172a', cancelButtonColor: '#dc2626', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }).then(function(result) { if (result.value && result.value.trim() !== "") { document.getElementById('branchInput').value = result.value.trim(); evaluateSubmissionReadiness(); } }); }
     
-    function setMissingLayoutMode(mode) { 
-      missingLayoutMode = mode; 
-      var buttons = ['List', 'Small', 'Large'];
-      buttons.forEach(function(b) {
-        var btn = document.getElementById('btnLayout' + b);
-        if (btn) btn.className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition text-slate-400 dark:text-slate-500";
-      });
-      var activeBtn = document.getElementById('btnLayout' + mode.charAt(0).toUpperCase() + mode.slice(1));
-      if (activeBtn) activeBtn.className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm font-black";
-      
-      renderMissingLogsViewLayout(); 
-    }
-
-    function setLeaveLayoutMode(mode) {
-      leaveLayoutMode = mode;
-      var buttons = ['List', 'Small', 'Large'];
-      buttons.forEach(function(b) {
-        var btn = document.getElementById('btnLeaveLayout' + b);
-        if (btn) btn.className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition text-slate-400 dark:text-slate-500";
-      });
-      var activeBtn = document.getElementById('btnLeaveLayout' + mode.charAt(0).toUpperCase() + mode.slice(1));
-      if (activeBtn) activeBtn.className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm font-black";
-      
-      renderLeaveFilingHubLayout();
-    }
-    
-    function toggleHistoryViewTabs(view) { var btnActual = document.getElementById('tabBtnActualLogs'); var btnMissing = document.getElementById('tabBtnMissingLogs'); var paneActual = document.getElementById('subViewActualLogs'); var paneMissing = document.getElementById('subViewMissingLogs'); var missingToolbar = document.getElementById('missingLayoutToolbar'); if (view === 'actual') { paneActual.classList.remove('hidden'); paneMissing.classList.add('hidden'); missingToolbar.classList.add('hidden'); btnActual.className = "px-4 py-2 text-red-600 border-b-2 border-red-600 font-bold dark:text-red-500"; btnMissing.className = "px-4 py-2 text-slate-400 dark:text-slate-500"; } else { paneActual.classList.add('hidden'); paneMissing.classList.remove('hidden'); missingToolbar.classList.remove('hidden'); missingToolbar.classList.add('flex'); btnMissing.className = "px-4 py-2 text-red-600 border-b-2 border-red-600 font-bold dark:text-red-500"; btnActual.className = "px-4 py-2 text-slate-400 dark:text-slate-500"; setMissingLayoutMode(missingLayoutMode); } }
+    function toggleHistoryViewTabs(view) { var btnActual = document.getElementById('tabBtnActualLogs'); var btnMissing = document.getElementById('tabBtnMissingLogs'); var paneActual = document.getElementById('subViewActualLogs'); var paneMissing = document.getElementById('subViewMissingLogs'); if (view === 'actual') { paneActual.classList.remove('hidden'); paneMissing.classList.add('hidden'); btnActual.className = "px-4 py-2 text-red-600 border-b-2 border-red-600 font-bold dark:text-red-500"; btnMissing.className = "px-4 py-2 text-slate-400 dark:text-slate-500"; } else { paneActual.classList.add('hidden'); paneMissing.classList.remove('hidden'); btnMissing.className = "px-4 py-2 text-red-600 border-b-2 border-red-600 font-bold dark:text-red-500"; btnActual.className = "px-4 py-2 text-slate-400 dark:text-slate-500"; renderMissingLogsViewLayout(); } }
     function toggleButtonState(btnId, isLoading, text) { var btn = typeof btnId === 'string' ? document.getElementById(btnId) : btnId; if (!btn) return; if (isLoading) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-1"></i>'; } else { btn.disabled = false; btn.innerHTML = text; } }
     
     function clearPunchConsoleInputs() { 
