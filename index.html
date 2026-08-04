@@ -687,14 +687,24 @@
       }, 1000); 
     }
 
-    function executeServerRequest(payload, successCallback, failureCallback) {
+function executeServerRequest(payload, successCallback, failureCallback) {
       var isBackgroundRequest = payload && (payload.action === "getDepartmentLogs" || payload.action === "getPendingUsers" || payload.action === "getPayrollReport" || payload.action === "getApproverQueue" || payload.action === "getLeavesDataset" || payload.action === "getFilteredFeedLogs" || payload.action === "getEmployeeName");
+      
+      // ==========================================
+      // ⏱️ TIMEOUT CONTROLLER (25-Second Limit)
+      // Pinipigilan ang pag-hang ng system kapag mabagal ang internet
+      // ==========================================
+      var controller = new AbortController();
+      var timeoutId = setTimeout(function() { controller.abort(); }, 25000);
+
       fetch(WEB_APP_API_URL, {
         method: "POST", mode: "cors", redirect: "follow",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal // Ikabit ang abort signal sa request
       })
       .then(function(response) {
+        clearTimeout(timeoutId); // Patayin ang timer kapag sumagot agad ang server
         if (!response.ok) { throw new Error("HTTP Status " + response.status); }
         return response.text();
       })
@@ -704,6 +714,7 @@
           if (isBackgroundRequest && data && data.success === false && data.isGoogleInternalError) return;
           if (successCallback) successCallback(data);
         } catch(jsonErr) {
+          clearTimeout(timeoutId);
           /* RCA SAFE PREVENT: Close loading freeze if popup active */
           if (Swal.isVisible()) { Swal.close(); }
           
@@ -721,12 +732,34 @@
           }
 
           console.error("Intercepted Stream Payload Data:", text);
-          if (successCallback) successCallback({ success: false, fallbackActive: true });
+          if (successCallback) successCallback({ success: false, fallbackActive: true, message: "Network timeout o Cloudflare error. Maaaring pumasok na ang log sa background." });
         }
       })
       .catch(function(error) {
+        clearTimeout(timeoutId);
         if (Swal.isVisible()) { Swal.close(); }
         if (isBackgroundRequest) { if (failureCallback) failureCallback(error); return; }
+        
+        // ==========================================
+        // 🚨 ABORT ERROR HANDLER
+        // Awtomatikong magre-reset ng UI kapag na-trigger ang 25-second limit
+        // ==========================================
+        if (error.name === 'AbortError') {
+           var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
+           Swal.fire({ 
+             icon: 'warning', 
+             title: 'Mabagal ang Koneksyon', 
+             text: 'Masyadong matagal mag-respond ang server dahil sa mahinang internet. Kung nag-punch ka, PAKI-CHECK muna ang iyong "Personal Logs History" bago umulit upang makasigurado.', 
+             confirmButtonColor: '#0f172a',
+             background: isDarkModeActive ? '#0f172a' : '#ffffff',
+             color: isDarkModeActive ? '#ffffff' : '#1e293b'
+           });
+           
+           // I-force ang button na tumigil sa pag-ikot
+           if (failureCallback) failureCallback(error);
+           return;
+        }
+
         Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: error.message, confirmButtonColor: '#0f172a' });
         if (failureCallback) failureCallback(error);
       });
