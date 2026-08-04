@@ -56,7 +56,7 @@
     }
 
     /* SOFT DESATURATED SEMANTIC ACCENTS FOR LOG TYPES */
-    .btn-log-in     { background-color: #d1fae5; color: #065f46; border-color: #a7f3d0; }
+    .btn-log-in      { background-color: #d1fae5; color: #065f46; border-color: #a7f3d0; }
     .btn-log-lbout  { background-color: #fef3c7; color: #92400e; border-color: #fde68a; }
     .btn-log-lbin   { background-color: #fef3c7; color: #92400e; border-color: #fde68a; }
     .btn-log-cbout  { background-color: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
@@ -609,6 +609,57 @@
   <script>
     var WEB_APP_API_URL = "https://winter-haze-4d14.pcvmailer-pandayan.workers.dev";
 
+    /**
+     * PHASE 3: PANDAYAN LOCAL STORAGE MANAGER
+     * Humahawak sa session persistence at data caching sa device ng user.
+     */
+    const TTP_Storage = {
+      saveSession: function(userData, remember) {
+        sessionStorage.setItem('ttp_fieldwork_session', JSON.stringify(userData));
+        if (remember) {
+          localStorage.setItem('ttp_remembered_user', JSON.stringify(userData));
+        }
+      },
+      getSession: function() {
+        const active = sessionStorage.getItem('ttp_fieldwork_session');
+        if (active) return JSON.parse(active);
+        
+        const remembered = localStorage.getItem('ttp_remembered_user');
+        if (remembered) {
+          sessionStorage.setItem('ttp_fieldwork_session', remembered);
+          return JSON.parse(remembered);
+        }
+        return null;
+      },
+      clearSession: function() {
+        sessionStorage.removeItem('ttp_fieldwork_session');
+        localStorage.removeItem('ttp_remembered_user');
+      },
+      saveCache: function(key, data) {
+        const cachePacket = {
+          timestamp: new Date().getTime(),
+          payload: data
+        };
+        localStorage.setItem('ttp_cache_' + key, JSON.stringify(cachePacket));
+      },
+      getCache: function(key, expirationHours) {
+        const cacheString = localStorage.getItem('ttp_cache_' + key);
+        if (!cacheString) return null;
+        try {
+          const cachePacket = JSON.parse(cacheString);
+          const ageInMs = new Date().getTime() - cachePacket.timestamp;
+          if (ageInMs > expirationHours * 60 * 60 * 1000) {
+            localStorage.removeItem('ttp_cache_' + key);
+            return null;
+          }
+          return cachePacket.payload;
+        } catch (e) {
+          localStorage.removeItem('ttp_cache_' + key);
+          return null;
+        }
+      }
+    };
+
     var currentUser = null;
     var selectedLogType = ""; var capturedPhotoBase64 = "";
     var currentLat = ""; var currentLng = "";
@@ -684,9 +735,10 @@
     function documentReadyHandler() {
       initClock(); setupGlobalKeyBindings(); setDefaultFilterDates(); loadSystemDepartmentsList(); 
       setupPageVisibilityIntegrityMonitor();
-      var activeSession = sessionStorage.getItem("pandayan_active_session") || localStorage.getItem("pandayan_remembered_user");
-      if (activeSession) {
-        currentUser = JSON.parse(activeSession);
+      
+      // PHASE 3: Seamless Login Check
+      currentUser = TTP_Storage.getSession();
+      if (currentUser) {
         var savedPane = localStorage.getItem("pandayan_active_pane");
         if (savedPane) { activeViewPaneMode = savedPane; }
         bootDashboardPortal();
@@ -714,21 +766,44 @@
       });
     }
 
+    function populateDepartments(depts) {
+      var dropdown = document.getElementById('regDept'); var payDropdown = document.getElementById('payDeptSelect');
+      if (!dropdown) return; dropdown.innerHTML = "";
+      if(payDropdown) payDropdown.innerHTML = '<option value="">Lahat ng Departamento</option>';
+      if(depts && Array.isArray(depts)) {
+        depts.forEach(function(d) {
+          var opt = document.createElement('option'); opt.value = d; opt.textContent = d; dropdown.appendChild(opt);
+          if(payDropdown) { var opt2 = document.createElement('option'); opt2.value = d; opt2.textContent = d; payDropdown.appendChild(opt2); }
+        });
+      }
+    }
+
     function loadSystemDepartmentsList() {
-      executeServerRequest({ action: "getDepartments" }, function(depts) {
-        var dropdown = document.getElementById('regDept'); var payDropdown = document.getElementById('payDeptSelect');
-        if (!dropdown) return; dropdown.innerHTML = "";
-        if(payDropdown) payDropdown.innerHTML = '<option value="">Lahat ng Departamento</option>';
-        if(depts && Array.isArray(depts)) {
-          depts.forEach(function(d) {
-            var opt = document.createElement('option'); opt.value = d; opt.textContent = d; dropdown.appendChild(opt);
-            if(payDropdown) { var opt2 = document.createElement('option'); opt2.value = d; opt2.textContent = d; payDropdown.appendChild(opt2); }
-          });
-        }
-      });
-      executeServerRequest({ action: "getLeavesDataset" }, function(res) {
-        if (res && Array.isArray(res)) { dynamicLeavesDatasetGlobalCache = res; }
-      });
+      // PHASE 3: Check cached departments (Valid for 24 hours)
+      const cachedDepts = TTP_Storage.getCache('departments', 24);
+      if (cachedDepts) {
+        populateDepartments(cachedDepts);
+      } else {
+        executeServerRequest({ action: "getDepartments" }, function(depts) {
+          if (depts && Array.isArray(depts)) {
+            TTP_Storage.saveCache('departments', depts);
+            populateDepartments(depts);
+          }
+        });
+      }
+
+      // PHASE 3: Check cached leaves (Valid for 24 hours)
+      const cachedLeaves = TTP_Storage.getCache('leaves', 24);
+      if (cachedLeaves) {
+        dynamicLeavesDatasetGlobalCache = cachedLeaves;
+      } else {
+        executeServerRequest({ action: "getLeavesDataset" }, function(res) {
+          if (res && Array.isArray(res)) { 
+            TTP_Storage.saveCache('leaves', res);
+            dynamicLeavesDatasetGlobalCache = res; 
+          }
+        });
+      }
     }
 
     function handleLogin() {
@@ -738,8 +813,12 @@
       executeServerRequest({ action: "login", employeeId: empId, password: pass }, function(res) {
         if (!currentUser) toggleButtonState('btnLogin', false, '<i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In');
         if (res && res.success) {
-          currentUser = res; sessionStorage.setItem("pandayan_active_session", JSON.stringify(currentUser));
-          if (document.getElementById('loginRememberMe').checked) { localStorage.setItem("pandayan_remembered_user", JSON.stringify(currentUser)); }
+          currentUser = res;
+          
+          // PHASE 3: Save Session intelligently
+          var remember = document.getElementById('loginRememberMe').checked;
+          TTP_Storage.saveSession(currentUser, remember);
+          
           Swal.fire({ icon: 'success', title: 'Mabuhay!', text: 'Naka-log in na.', timer: 1200, showConfirmButton: false });
           bootDashboardPortal();
         } else { Swal.fire({ icon: 'error', title: 'Oops!', text: (res && res.message) ? res.message : "Maling kredensyal o hindi aprubadong account." }); }
@@ -885,8 +964,30 @@
       pullGPSLocation(); gpsIntervalReference = setInterval(pullGPSLocation, 25000); 
     }
 
-    function loadBranchDataset() { executeServerRequest({ action: "getBranches" }, function(branches) { var dl = document.getElementById('branchDataset'); dl.innerHTML = ""; if(branches && Array.isArray(branches)) { branches.forEach(function(b) { var opt = document.createElement('option'); opt.value = b.code + " " + b.name; dl.appendChild(opt); }); } }); }
-         
+    function populateBranches(branches) {
+      var dl = document.getElementById('branchDataset'); dl.innerHTML = "";
+      if(branches && Array.isArray(branches)) {
+        branches.forEach(function(b) {
+          var opt = document.createElement('option'); opt.value = b.code + " " + b.name; dl.appendChild(opt);
+        });
+      }
+    }
+
+    function loadBranchDataset() {
+      // PHASE 3: Check cached branches (Valid for 24 hours)
+      const cachedBranches = TTP_Storage.getCache('branches', 24);
+      if (cachedBranches) {
+        populateBranches(cachedBranches);
+      } else {
+        executeServerRequest({ action: "getBranches" }, function(branches) { 
+          if(branches && Array.isArray(branches)) {
+            TTP_Storage.saveCache('branches', branches);
+            populateBranches(branches);
+          }
+        });
+      }
+    }
+          
     function selectLogType(btnElement, type) {
       if (!currentUser) return;
 
@@ -952,7 +1053,7 @@
 
       if (isOutSequence) {
         var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
-             
+              
         var confirmColor = '#0f172a';
         if (type === "IN") confirmColor = '#10b981';
         else if (type === "LB OUT" || type === "LB IN") confirmColor = '#f59e0b';
@@ -2462,7 +2563,22 @@
 
     function resetFeedToRealtime() { activeFeedFilterData = null; document.getElementById('btnResetFeedFilter').classList.add('hidden'); loadDepartmentMonitorFeed(false, false); }
     
-    function loadApprovedEmployeesDropdown() { executeServerRequest({ action: "getApprovedEmployees" }, function(list) { if (Array.isArray(list)) { approvedEmployeesGlobalCache = list; renderPayrollEmployeesDropdown(); } }); }
+    function loadApprovedEmployeesDropdown() {
+      // PHASE 3: Check cached approved employees (Valid for 12 hours to stay updated)
+      const cachedEmps = TTP_Storage.getCache('approvedEmployees', 12);
+      if (cachedEmps) {
+         approvedEmployeesGlobalCache = cachedEmps;
+         renderPayrollEmployeesDropdown();
+      } else {
+        executeServerRequest({ action: "getApprovedEmployees" }, function(list) { 
+          if (Array.isArray(list)) { 
+            TTP_Storage.saveCache('approvedEmployees', list);
+            approvedEmployeesGlobalCache = list; 
+            renderPayrollEmployeesDropdown(); 
+          } 
+        }); 
+      }
+    }
     
     function renderPayrollEmployeesDropdown() { 
       var selectMenu = document.getElementById('payEmployeeIdSelect'); if (!selectMenu) return; 
@@ -2716,8 +2832,9 @@
       if (backgroundSyncInterval) { clearInterval(backgroundSyncInterval); backgroundSyncInterval = null; }
       if (gpsIntervalReference) { clearInterval(gpsIntervalReference); gpsIntervalReference = null; }
       
-      sessionStorage.clear(); 
-      localStorage.removeItem("pandayan_remembered_user");
+      // PHASE 3: Clear Session Storage but keep cached Dropdowns for speed
+      TTP_Storage.clearSession();
+      
       currentUser = null; selectedLogType = ""; capturedPhotoBase64 = ""; currentLat = ""; currentLng = ""; activeFeedFilterData = null; userTriggeredManualSearchFlag = false;
       
       document.getElementById('loginEmpId').value = ""; document.getElementById('loginPassword').value = "";
