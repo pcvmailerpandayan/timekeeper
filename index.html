@@ -1295,7 +1295,17 @@ function executeServerRequest(payload, successCallback, failureCallback) {
       }, function(err) {
         if (!currentUser) return;
         toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log');
-        Swal.fire({ icon: 'error', title: 'Network Link Error', text: 'Hindi maipadala ang log dahil sa network disruption.', confirmButtonColor: '#0f172a', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' });
+        
+        // MODIFICATION: ERROR HANDLER TIMEOUT FIX BASED ON ANTIGRAVITY RECOMMENDATION
+        Swal.fire({
+          icon: 'warning',
+          title: 'Koneksyon Na-interrupted',
+          text: 'Natagalan ang tugon ng server (Timeout) dahil sa pag-upload ng larawan. Subukang i-check ang iyong "Personal Logs History" bago umulit kung pumasok na ang iyong log upang maiwasan ang multiple entries.',
+          confirmButtonColor: '#0f172a',
+          confirmButtonText: 'Sige, titingnan ko',
+          background: isDarkModeActive ? '#0f172a' : '#ffffff',
+          color: isDarkModeActive ? '#ffffff' : '#1e293b'
+        });
       }); 
     }
 
@@ -1583,54 +1593,50 @@ function executeServerRequest(payload, successCallback, failureCallback) {
 
             var timeMap = { "IN": "--:--", "LB OUT": "--:--", "LB IN": "--:--", "CB OUT": "--:--", "CB IN": "--:--", "OUT": "--:--" };
             
-            if (s.time && (s.time.indexOf("→") !== -1 || s.time.indexOf("(") !== -1)) {
-              var tokens = s.time.split(" → ");
-              var parsedLogs = { "IN": [], "LB OUT": [], "LB IN": [], "CB OUT": [], "CB IN": [], "OUT": [] };
-              
-              tokens.forEach(function(tok) {
-                var match = tok.match(/^([A-Z\s]+)\s\((.*?)\)$/);
-                if (match && match[1] && match[2]) {
-                  var lType = match[1].trim();
-                  var lTime = match[2].trim();
-                  if (parsedLogs[lType]) {
-                    parsedLogs[lType].push(lTime);
-                  }
-                }
-              });
+if (s.time && (s.time.indexOf("→") !== -1 || s.time.indexOf("(") !== -1)) {
+  var tokens = s.time.split(" → ");
+  var parsedLogs = { "IN": [], "LB OUT": [], "LB IN": [], "CB OUT": [], "CB IN": [], "OUT": [] };
+  
+  tokens.forEach(function(tok) {
+    var match = tok.match(/^([A-Z\s]+)\s\((.*?)\)$/);
+    if (match && match[1] && match[2]) {
+      var lType = match[1].trim();
+      var lTime = match[2].trim();
+      if (parsedLogs[lType]) {
+        parsedLogs[lType].push(lTime);
+      }
+    }
+  });
 
-              function timeToMinutes(tStr) {
-                if (!tStr || tStr === "--:--") return 0;
-                var parts = tStr.match(/^(\d+):(\d+):?(\d+)?\s*(AM|PM)?/i);
-                if (!parts) return 0;
-                var hrs = parseInt(parts[1], 10);
-                var mins = parseInt(parts[2], 10);
-                var ampm = parts[4] || parts[3];
-                if (ampm) {
-                  if (ampm.toUpperCase() === "PM" && hrs < 12) hrs += 12;
-                  if (ampm.toUpperCase() === "AM" && hrs === 12) hrs = 0;
-                }
-                return hrs * 60 + mins;
-              }
+  // Mabilisang converter ng oras (24-hr) to minutes para makapag-compare ng pinaka-una at huli
+  function timeToMinutes(tStr) {
+    if (!tStr || tStr === "--:--") return 0;
+    var parts = tStr.split(":");
+    if (parts.length < 2) return 0;
+    return (parseInt(parts[0], 10) * 60) + parseInt(parts[1], 10);
+  }
 
-              /* RCA CONTROLLED REDUCER COMPATIBILITY CHECK */
-              if (parsedLogs["IN"].length > 0) {
-                timeMap["IN"] = parsedLogs["IN"].reduce(function(min, current) {
-                  return timeToMinutes(current) < timeToMinutes(min) ? current : min;
-                });
-              }
+  // Filter para sa pinaka-UNANG IN
+  if (parsedLogs["IN"].length > 0) {
+    timeMap["IN"] = parsedLogs["IN"].reduce(function(min, current) {
+      return timeToMinutes(current) < timeToMinutes(min) ? current : min;
+    });
+  }
 
-              if (parsedLogs["OUT"].length > 0) {
-                timeMap["OUT"] = parsedLogs["OUT"].reduce(function(max, current) {
-                  return timeToMinutes(current) > timeToMinutes(max) ? current : max;
-                });
-              }
+  // Filter para sa pinaka-HULING OUT
+  if (parsedLogs["OUT"].length > 0) {
+    timeMap["OUT"] = parsedLogs["OUT"].reduce(function(max, current) {
+      return timeToMinutes(current) > timeToMinutes(max) ? current : max;
+    });
+  }
 
-              ["LB OUT", "LB IN", "CB OUT", "CB IN"].forEach(function(type) {
-                if (parsedLogs[type].length > 0) {
-                  timeMap[type] = parsedLogs[type][parsedLogs[type].length - 1];
-                }
-              });
-            }
+  // Kunin ang latest para sa mga break logs
+  ["LB OUT", "LB IN", "CB OUT", "CB IN"].forEach(function(type) {
+    if (parsedLogs[type].length > 0) {
+      timeMap[type] = parsedLogs[type][parsedLogs[type].length - 1];
+    }
+  });
+}
 
             var branchText = "-";
             if (s.branch) {
@@ -1676,7 +1682,8 @@ function executeServerRequest(payload, successCallback, failureCallback) {
                            '<td class="p-3 font-mono font-bold text-rose-600 dark:text-rose-400">' + timeMap["OUT"] + '</td>' +
                            '<td><span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase ' + statusStyle + '">' + resolvedStatusCode + '</span></td>' +
                            '<td class="p-3 font-bold text-center text-indigo-600 dark:text-indigo-400 text-[11px]">' + remarksColumnText + '</td>' +
-                           '<td class="p-3 text-left font-medium text-slate-700 dark:text-slate-300 truncate max-w-[150px]" title="' + branchText + '">' + branchText + '</td>' +
+                           // BAGONG LINYA (Pinalitan ang truncate ng whitespace-normal break-words):
+'<td class="p-3 text-left font-medium text-slate-700 dark:text-slate-300 whitespace-normal break-words min-w-[150px]">' + branchText + '</td>' +
                            '<td class="p-2">' + mealInputHtml + '</td><td class="p-2">' + transpoInputHtml + '</td><td class="p-2 text-left">' + detailsInputHtml + '</td>';
             tbody.appendChild(tr);
           });
@@ -1819,75 +1826,125 @@ function executeServerRequest(payload, successCallback, failureCallback) {
       });
     }
 
-    function renderMissingLogsViewLayout() {
-      var grid = document.getElementById('missingLogsGrid'); 
-      if (!grid) return;
-      
-      var filteredCorrectionsOnly = fetchedMissingLogsArrayCache.filter(function(x) { return !x.isFutureBlank; });
+  function renderMissingLogsViewLayout() {
+  var grid = document.getElementById('missingLogsGrid'); 
+  if (!grid) return;
+  
+  var filteredCorrectionsOnly = fetchedMissingLogsArrayCache.filter(function(x) { return !x.isFutureBlank; });
 
-      if (filteredCorrectionsOnly.length === 0) { 
-        grid.innerHTML = '<p class="text-emerald-600 font-bold text-xs p-4 col-span-full text-center bg-emerald-50 dark:bg-emerald-955/30 rounded-xl w-full">Selyado ang lahat! Walang kulang o deperensya ang iyong time logs.</p>'; 
-        return; 
-      } 
-      grid.innerHTML = ""; 
-      grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full";
+  if (filteredCorrectionsOnly.length === 0) { 
+    grid.innerHTML = '<p class="text-emerald-600 font-bold text-xs p-4 col-span-full text-center bg-emerald-50 dark:bg-emerald-955/30 rounded-xl w-full">Selyado ang lahat! Walang kulang o deperensya ang iyong time logs.</p>'; 
+    return; 
+  } 
+  grid.innerHTML = ""; 
+  grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full";
 
-      filteredCorrectionsOnly.forEach(function(m) {
-        var missingLabel = m.missingTypes.join(", "); 
-        var div = document.createElement('div');
-        var deperensyaBadgeText = 'Kulang ang ' + missingLabel;
+  filteredCorrectionsOnly.forEach(function(m) {
+    var missingLabel = m.missingTypes.join(", "); 
+    var div = document.createElement('div');
+    var deperensyaBadgeText = 'Kulang ang ' + missingLabel;
 
-        div.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl space-y-3 flex flex-col justify-between shadow-md border-t-4 border-t-red-500 animate-fadeIn";
-        
-        var correctionBodyFieldsHtml = '<div class="space-y-3">';
-        m.missingTypes.forEach(function(t) {
-          var cleanTypeKey = t.replace(/ /g, '_');
-          correctionBodyFieldsHtml += '<div class="border border-slate-100 dark:border-slate-800 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60 space-y-2">' +
-                                      '  <span class="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1"><i class="fa-solid fa-clock-pulse text-red-500"></i> entry block for: ' + t + '</span>' +
-                                      '  <div class="grid grid-cols-2 gap-2 items-center">' +
-                                      '    <div>' +
-                                      '      <label class="block text-[8px] uppercase font-bold text-slate-400">Target Time</label>' +
-                                      '      <input type="time" id="timeInput-' + cleanTypeKey + '-' + m.date + '" class="w-full p-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none">' +
-                                      '    </div>' +
-                                      '    <div class="text-center">' +
-                                      '      <input type="file" id="camInput-' + cleanTypeKey + '-' + m.date + '" accept="image/*" capture="user" class="hidden" onchange="processTypeSpecificFile(this, \'' + m.date + '\', \'' + t + '\', \'card\')">' +
-                                      '      <button type="button" onclick="document.getElementById(\'' + "camInput-" + cleanTypeKey + "-" + m.date + '\').click()" id="camBtn-' + cleanTypeKey + '-' + m.date + '" class="w-full py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1 outline-none transition-all"><i class="fa-solid fa-camera"></i> Photo</button>' +
-                                      '      <div id="previewBox-' + cleanTypeKey + '-' + m.date + '" class="mt-1 hidden w-8 h-8 mx-auto border rounded overflow-hidden bg-slate-200 shadow-inner"><img id="previewImg-' + cleanTypeKey + '-' + m.date + '" class="w-full h-full object-cover"></div>' +
-                                      '    </div>' +
-                                      '  </div>' +
-                                      '</div>';
-        });
-        correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 mb-0.5">Dahilan (Reason)</label>' +
-                                    '  <input type="text" id="reasonInput-' + m.date + '" placeholder="Dahilan ng pag-update..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div></div>';
+    div.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl space-y-3 flex flex-col justify-between shadow-md border-t-4 border-t-red-500 animate-fadeIn";
+    
+    var correctionBodyFieldsHtml = '<div class="space-y-3">';
+    m.missingTypes.forEach(function(t) {
+      var cleanTypeKey = t.replace(/ /g, '_');
+      correctionBodyFieldsHtml += '<div class="border border-slate-100 dark:border-slate-800 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60 space-y-2">' +
+                                  '  <span class="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1"><i class="fa-solid fa-clock-pulse text-red-500"></i> entry block for: ' + t + '</span>' +
+                                  '  <div class="grid grid-cols-2 gap-2 items-center">' +
+                                  '    <div>' +
+                                  '      <label class="block text-[8px] uppercase font-bold text-slate-400">Target Time</label>' +
+                                  '      <input type="time" id="timeInput-' + cleanTypeKey + '-' + m.date + '" class="w-full p-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none">' +
+                                  '    </div>' +
+                                  '    <div class="text-center">' +
+                                  '      <!-- DALAWANG HIDDEN INPUTS: ISA PARA SA CAMERA, ISA PARA SA GALLERY -->' +
+                                  '      <input type="file" id="camInput-CAM-' + cleanTypeKey + '-' + m.date + '" accept="image/*" capture="environment" class="hidden" onchange="processTypeSpecificFile(this, \'' + m.date + '\', \'' + t + '\', \'card\')">' +
+                                  '      <input type="file" id="camInput-GAL-' + cleanTypeKey + '-' + m.date + '" accept="image/*" class="hidden" onchange="processTypeSpecificFile(this, \'' + m.date + '\', \'' + t + '\', \'card\')">' +
+                                  '      <!-- PAG-CLICK SA BUTTON, TATANUNGIN MUNA ANG USER VIA CUSTOM MODAL -->' +
+                                  '      <button type="button" onclick="openPhotoChoiceModal(\'' + cleanTypeKey + '\', \'' + m.date + '\', \'' + t + '\')" id="camBtn-' + cleanTypeKey + '-' + m.date + '" class="w-full py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-[10px] font-black rounded-lg border border-slate-300 dark:border-slate-600 flex items-center justify-center gap-1 outline-none transition-all"><i class="fa-solid fa-camera"></i> Photo</button>' +
+                                  '      <div id="previewBox-' + cleanTypeKey + '-' + m.date + '" class="mt-1 hidden w-8 h-8 mx-auto border rounded overflow-hidden bg-slate-200 shadow-inner"><img id="previewImg-' + cleanTypeKey + '-' + m.date + '" class="w-full h-full object-cover"></div>' +
+                                  '    </div>' +
+                                  '  </div>' +
+                                  '</div>';
+    });
+    correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 mb-0.5">Dahilan (Reason)</label>' +
+                                '  <input type="text" id="reasonInput-' + m.date + '" placeholder="Dahilan ng pag-update..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div></div>';
 
-        var mealInputStyle = 'class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none"';
-        var transpoInputStyle = 'class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none"';
-        
-        var initialBtnDisabled = "disabled";
-        var initialBtnClass = "w-full py-2.5 bg-slate-300 text-slate-500 font-black rounded-xl text-xs cursor-not-allowed flex items-center justify-center gap-1";
+    var mealInputStyle = 'class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none"';
+    var transpoInputStyle = 'class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none"';
+    
+    var initialBtnDisabled = "disabled";
+    var initialBtnClass = "w-full py-2.5 bg-slate-300 text-slate-500 font-black rounded-xl text-xs cursor-not-allowed flex items-center justify-center gap-1";
 
-        div.innerHTML = '<div>' +
-                        '  <div class="flex justify-between items-center">' +
-                        '    <span class="font-mono font-black text-sm text-slate-900 dark:text-white">' + m.date + '</span>' +
-                        '    <span class="text-[9px] bg-red-100 text-red-800 dark:bg-red-955/60 dark:text-red-400 font-black px-1.5 py-0.5 rounded uppercase tracking-wider">' + m.day + '</span>' +
-                        '  </div>' +
-                        '  <p class="text-[11px] text-red-600 dark:text-red-400 font-black mt-1 uppercase tracking-tight"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>Deperensya: ' + deperensyaBadgeText + '</p>' +
-                        '</div>' +
-                        '<div class="bg-slate-50 dark:bg-slate-800/40 p-3 rounded-lg border border-slate-200 dark:border-slate-800">' +
-                        '  <div id="innerFilingPayloadArea-CORRECTION-' + m.date + '" data-active-mode="CORRECTION" class="mt-0 transition-all">' +
-                        '    ' + correctionBodyFieldsHtml + ' ' +
-                        '  </div>' +
-                        '</div>' +
-                        '<div class="grid grid-cols-2 gap-2 pt-2">' +
-                        '  <input type="number" id="mealAllowanceInput-' + m.date + '" ' + mealInputStyle + ' placeholder="Meal ₱">' +
-                        '  <input type="number" id="transpoAllowanceInput-' + m.date + '" ' + transpoInputStyle + ' placeholder="Transpo ₱">' +
-                        '</div>' +
-                        '<div class="flex gap-2 pt-1">' +
-                        '  <button type="button" id="btnSubmitFiling-CORRECTION-' + m.date + '" onclick="submitFilingHubRequestPipeline(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="' + initialBtnClass + '" ' + initialBtnDisabled + '><i class="fa-solid fa-paper-plane text-red-500"></i> Isumite ang Log Correction</button>' +
-                        '</div>';
-        grid.appendChild(div);
-      });
-    }
+    div.innerHTML = '<div>' +
+                    '  <div class="flex justify-between items-center">' +
+                    '    <span class="font-mono font-black text-sm text-slate-900 dark:text-white">' + m.date + '</span>' +
+                    '    <span class="text-[9px] bg-red-100 text-red-800 dark:bg-red-955/60 dark:text-red-400 font-black px-1.5 py-0.5 rounded uppercase tracking-wider">' + m.day + '</span>' +
+                    '  </div>' +
+                    '  <p class="text-[11px] text-red-600 dark:text-red-400 font-black mt-1 uppercase tracking-tight"><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>Deperensya: ' + deperensyaBadgeText + '</p>' +
+                    '</div>' +
+                    '<div class="bg-slate-50 dark:bg-slate-800/40 p-3 rounded-lg border border-slate-200 dark:border-slate-800">' +
+                    '  <div id="innerFilingPayloadArea-CORRECTION-' + m.date + '" data-active-mode="CORRECTION" class="mt-0 transition-all">' +
+                    '    ' + correctionBodyFieldsHtml + ' ' +
+                    '  </div>' +
+                    '</div>' +
+                    '<div class="grid grid-cols-2 gap-2 pt-2">' +
+                    '  <input type="number" id="mealAllowanceInput-' + m.date + '" ' + mealInputStyle + ' placeholder="Meal ₱">' +
+                    '  <input type="number" id="transpoAllowanceInput-' + m.date + '" ' + transpoInputStyle + ' placeholder="Transpo ₱">' +
+                    '</div>' +
+                    '<div class="flex gap-2 pt-1">' +
+                    '  <button type="button" id="btnSubmitFiling-CORRECTION-' + m.date + '" onclick="submitFilingHubRequestPipeline(\'' + m.date + '\', \'' + missingLabel + '\', this)" class="' + initialBtnClass + '" ' + initialBtnDisabled + '><i class="fa-solid fa-paper-plane text-red-500"></i> Isumite ang Log Correction</button>' +
+                    '</div>';
+    grid.appendChild(div);
+  });
+}
+
+/**
+ * BUMUBUO NG POP-UP PROMPT PARA SA CHOICE NG CAMERA VS GALLERY
+ */
+function openPhotoChoiceModal(cleanTypeKey, date, logType) {
+  closePhotoChoiceModal(); // Alisin ang lumang modal kung mayroon man
+
+  var modalHtml = 
+    '<div id="photoChoiceModal" class="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fadeIn">' +
+    '  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 w-full max-w-xs space-y-4 shadow-2xl text-center">' +
+    '    <div class="space-y-1">' +
+    '      <h3 class="text-xs font-black text-slate-800 dark:text-white uppercase tracking-wider">Kumuha ng Larawan</h3>' +
+    '      <p class="text-[11px] text-slate-500 dark:text-slate-400">Pumili ng kukunan para sa <b>' + logType + '</b> (' + date + ')</p>' +
+    '    </div>' +
+    '    <div class="grid grid-cols-2 gap-3 pt-1">' +
+    '      <button type="button" onclick="triggerInputChoice(\'camInput-CAM-' + cleanTypeKey + '-' + date + '\')" class="py-3 px-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 outline-none">' +
+    '        <i class="fa-solid fa-camera text-base"></i>' +
+    '        <span>Camera</span>' +
+    '      </button>' +
+    '      <button type="button" onclick="triggerInputChoice(\'camInput-GAL-' + cleanTypeKey + '-' + date + '\')" class="py-3 px-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 outline-none">' +
+    '        <i class="fa-solid fa-images text-base"></i>' +
+    '        <span>Gallery</span>' +
+    '      </button>' +
+    '    </div>' +
+    '    <button type="button" onclick="closePhotoChoiceModal()" class="w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-[11px] rounded-xl border border-slate-200 dark:border-slate-700 outline-none">' +
+    '      Kanselahin' +
+    '    </button>' +
+    '  </div>' +
+    '</div>';
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function triggerInputChoice(inputId) {
+  closePhotoChoiceModal();
+  var inputEl = document.getElementById(inputId);
+  if (inputEl) {
+    inputEl.click();
+  }
+}
+
+function closePhotoChoiceModal() {
+  var modalEl = document.getElementById('photoChoiceModal');
+  if (modalEl) {
+    modalEl.remove();
+  }
+}
 
     function processTypeSpecificFile(inputElement, dateStr, logType, targetScope) {
       var file = inputElement.files[0];
