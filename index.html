@@ -745,17 +745,7 @@ function executeServerRequest(payload, successCallback, failureCallback) {
         // Awtomatikong magre-reset ng UI kapag na-trigger ang 25-second limit
         // ==========================================
         if (error.name === 'AbortError') {
-           var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
-           Swal.fire({ 
-             icon: 'warning', 
-             title: 'Mabagal ang Koneksyon', 
-             text: 'Masyadong matagal mag-respond ang server dahil sa mahinang internet. Kung nag-punch ka, PAKI-CHECK muna ang iyong "Personal Logs History" bago umulit upang makasigurado.', 
-             confirmButtonColor: '#0f172a',
-             background: isDarkModeActive ? '#0f172a' : '#ffffff',
-             color: isDarkModeActive ? '#ffffff' : '#1e293b'
-           });
-           
-           // I-force ang button na tumigil sa pag-ikot
+           // Itutuloy natin ito sa failureCallback para mai-clear ang forms
            if (failureCallback) failureCallback(error);
            return;
         }
@@ -1276,27 +1266,39 @@ function executeServerRequest(payload, successCallback, failureCallback) {
       
       executeServerRequest(mixedPayload, function(res) { 
         if (!currentUser) return;
-        toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log'); 
         
-        if (res && res.success) { 
+        // DITO ANG UPDATE: Kung SUCCESS O FALLBACK (Cloudflare error pero nasa GAS background na),
+        // Kailangan nating i-clear ang input para mapigilan ang spam resend
+        if (res && (res.success || res.fallbackActive)) { 
           var ngayon = new Date().toLocaleDateString('en-CA'); 
           localStorage.setItem("ttp_huling_log_type_" + currentUser.employeeId, selectedLogType);
           localStorage.setItem("ttp_huling_log_petsa_" + currentUser.employeeId, ngayon);
 
           Swal.close(); 
+          if(res.success) {
+            Swal.fire({ icon: 'success', title: 'Naitala Na!', text: res.message || 'Matagumpay na naipadala ang iyong attendance log.', timer: 2000, showConfirmButton: false, background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
+          } else {
+             // Kapag nag-fallback active meaning nagkaroon ng timeout sa Cloudflare pero natanggap na ng Google Script.
+             Swal.fire({ icon: 'info', title: 'Pinoproseso sa Background', text: res.message, confirmButtonColor: '#0f172a', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' });
+          }
           
-          Swal.fire({ icon: 'success', title: 'Naitala Na!', text: res.message || 'Matagumpay na naipadala ang iyong attendance log.', timer: 2000, showConfirmButton: false, background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
           clearPunchConsoleInputs(); 
+          toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log'); 
           loadDepartmentMonitorFeed(false, false); 
           executeHistoryAndMissingPipeline(); 
         } else {
+          toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log'); 
           Swal.fire({ icon: 'error', title: 'Bigo sa Pagpapadala', text: (res && res.message) ? res.message : 'May hindi inaasahang problema sa TTP server base. Subukan ulit.', confirmButtonColor: '#0f172a', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' });
         }
       }, function(err) {
         if (!currentUser) return;
         toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log');
         
-        // MODIFICATION: ERROR HANDLER TIMEOUT FIX BASED ON ANTIGRAVITY RECOMMENDATION
+        // MODIFICATION: ERROR HANDLER TIMEOUT FIX
+        // Kapag nag-timeout, force reset ang form para mapigilan ang pag-resubmit habang hindi pa tapos mag-upload ang una.
+        clearPunchConsoleInputs(); 
+        
+        var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
         Swal.fire({
           icon: 'warning',
           title: 'Koneksyon Na-interrupted',
