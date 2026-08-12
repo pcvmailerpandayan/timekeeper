@@ -1301,7 +1301,7 @@ function executeServerRequest(payload, successCallback, failureCallback) {
         var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
         Swal.fire({
           icon: 'warning',
-          title: 'Koneksyon Na-interrupted',
+          title: 'Interrupted and Koneksyon',
           text: 'Natagalan ang tugon ng server (Timeout) dahil sa pag-upload ng larawan. Subukang i-check ang iyong "Personal Logs History" bago umulit kung pumasok na ang iyong log upang maiwasan ang multiple entries.',
           confirmButtonColor: '#0f172a',
           confirmButtonText: 'Sige, titingnan ko',
