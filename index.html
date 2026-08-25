@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  
+
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="TTP Portal">
   <meta name="mobile-web-app-capable" content="yes">
-  
+
   <base target="_blank">
   <title>Pandayan Timekeeping Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -19,57 +20,119 @@
     body {
       background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     }
+
     @media (prefers-color-scheme: dark) {
       body {
         background: linear-gradient(135deg, #090d16 0%, #0f172a 100%) !important;
       }
     }
+
     .sidebar-menu-active {
       transform: translateX(0) !important;
     }
+
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
+
     .custom-scrollbar::-webkit-scrollbar-track {
       background: transparent;
     }
+
     .custom-scrollbar::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 4px;
     }
+
     @media (prefers-color-scheme: dark) {
       .custom-scrollbar::-webkit-scrollbar-thumb {
         background: #334155;
       }
     }
+
     .dropdown-container:hover .dropdown-menu-pane,
     .dropdown-container:focus-within .dropdown-menu-pane {
       display: block !important;
     }
+
     @keyframes pulse-bounce {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-3px) scale(1.02); }
+
+      0%,
+      100% {
+        transform: translateY(0) scale(1);
+      }
+
+      50% {
+        transform: translateY(-3px) scale(1.02);
+      }
     }
+
     .animate-bounce-custom {
       animation: pulse-bounce 2s infinite ease-in-out;
     }
 
     /* SOFT DESATURATED SEMANTIC ACCENTS FOR LOG TYPES */
-    .btn-log-in      { background-color: #d1fae5; color: #065f46; border-color: #a7f3d0; }
-    .btn-log-lbout  { background-color: #fef3c7; color: #92400e; border-color: #fde68a; }
-    .btn-log-lbin   { background-color: #fef3c7; color: #92400e; border-color: #fde68a; }
-    .btn-log-cbout  { background-color: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
-    .btn-log-cbin   { background-color: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
-    .btn-log-out    { background-color: #ffe4e6; color: #9f1239; border-color: #fecdd3; }
+    .btn-log-in {
+      background-color: #d1fae5;
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+
+    .btn-log-lbout {
+      background-color: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+    }
+
+    .btn-log-lbin {
+      background-color: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+    }
+
+    .btn-log-cbout {
+      background-color: #dbeafe;
+      color: #1e40af;
+      border-color: #bfdbfe;
+    }
+
+    .btn-log-cbin {
+      background-color: #dbeafe;
+      color: #1e40af;
+      border-color: #bfdbfe;
+    }
+
+    .btn-log-out {
+      background-color: #ffe4e6;
+      color: #9f1239;
+      border-color: #fecdd3;
+    }
 
     /* HOVER EFFECTS FOR SELECTION BUTTONS */
-    .btn-log-in:hover    { background-color: #a7f3d0; }
-    .btn-log-lbout:hover { background-color: #fde68a; }
-    .btn-log-lbin:hover  { background-color: #fde68a; }
-    .btn-log-cbout:hover { background-color: #bfdbfe; }
-    .btn-log-cbin:hover  { background-color: #bfdbfe; }
-    .btn-log-out:hover   { background-color: #fecdd3; }
+    .btn-log-in:hover {
+      background-color: #a7f3d0;
+    }
+
+    .btn-log-lbout:hover {
+      background-color: #fde68a;
+    }
+
+    .btn-log-lbin:hover {
+      background-color: #fde68a;
+    }
+
+    .btn-log-cbout:hover {
+      background-color: #bfdbfe;
+    }
+
+    .btn-log-cbin:hover {
+      background-color: #bfdbfe;
+    }
+
+    .btn-log-out:hover {
+      background-color: #fecdd3;
+    }
 
     /* AUTO EXPANDABLE BOX STYLE */
     .auto-stretch-box {
@@ -81,9 +144,11 @@
     }
   </style>
 </head>
+
 <body class="text-slate-800 dark:text-slate-100 font-sans antialiased p-0 transition-colors duration-200">
 
-  <div id="authContainer" class="max-w-md mx-auto mt-24 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden p-8 border border-slate-200 dark:border-slate-800 transition-colors">
+  <div id="authContainer"
+    class="max-w-md mx-auto mt-24 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden p-8 border border-slate-200 dark:border-slate-800 transition-colors">
     <div class="text-center mb-8">
       <div class="w-20 h-20 bg-red-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg mb-4">
         <i class="fa-solid fa-clock-rotate-left text-white text-4xl"></i>
@@ -121,10 +186,11 @@
         <i class="fa-solid fa-right-to-bracket mr-2"></i> Mag Log In
       </button>
 
-      <a href="https://drive.google.com/file/d/1DBABqA4XwPUeHFQQb-kZAEgAu41iqdSM/view?usp=drive_link" target="_blank" class="w-full py-2.5 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition border border-slate-200 dark:border-slate-700 shadow-sm">
+      <a href="https://drive.google.com/file/d/1DBABqA4XwPUeHFQQb-kZAEgAu41iqdSM/view?usp=drive_link" target="_blank"
+        class="w-full py-2.5 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition border border-slate-200 dark:border-slate-700 shadow-sm">
         <i class="fa-solid fa-book text-red-600 dark:text-red-500"></i> Gabay sa Paggamit ng App (How To Use)
       </a>
-      
+
       <div class="grid grid-cols-2 gap-3 pt-1">
         <button type="button" onclick="switchAuth('forgot')" class="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition text-[11px] font-bold border border-slate-200/40 dark:border-slate-700/40 outline-none cursor-pointer">
           <i class="fa-solid fa-circle-question text-slate-400 text-xs"></i> Nakalimutan ang Password?
@@ -165,10 +231,12 @@
       <div class="bg-red-50 border border-red-200 p-4 rounded-xl text-center">
         <i class="fa-solid fa-triangle-exclamation text-red-600 text-3xl mb-2"></i>
         <p class="text-xs font-bold text-slate-700 leading-relaxed">
-          Para sa inyong kaligtasan, ang pag-reset ng password ay pinangangasiwaan ng TTP System Administrator (FE Jemar) o ng Payroll Department.
+          Para sa inyong kaligtasan, ang pag-reset ng password ay pinangangasiwaan ng TTP System Administrator (FE
+          Jemar) o ng Payroll Department.
         </p>
       </div>
-      <p class="text-[11px] text-slate-500 text-center">Mangyaring mag-submit ng ticket o direktang makipag-ugnayan sa Tanggapan ng Tamang Palakad.</p>
+      <p class="text-[11px] text-slate-500 text-center">Mangyaring mag-submit ng ticket o direktang makipag-ugnayan sa
+        Tanggapan ng Tamang Palakad.</p>
       <div class="text-center pt-2">
         <button type="button" onclick="switchAuth('login')" class="text-xs font-black text-red-600 uppercase tracking-wider outline-none bg-transparent">Bumalik sa Log In</button>
       </div>
@@ -177,7 +245,8 @@
 
   <div id="dashboardContainer" class="w-full mx-auto hidden lg:pl-72 relative min-h-screen flex flex-col">
 
-    <div class="sticky top-0 z-30 bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-4 flex justify-between items-center shadow-md gap-4 border-b border-slate-200 dark:border-slate-800 w-full transition-colors duration-200">
+    <div
+      class="sticky top-0 z-30 bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-4 flex justify-between items-center shadow-md gap-4 border-b border-slate-200 dark:border-slate-800 w-full transition-colors duration-200">
       <div class="flex items-center space-x-3">
         <button type="button" onclick="toggleSidebarMenuGateway(true)" class="lg:hidden text-slate-800 dark:text-white text-xl p-2 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 transition outline-none">
           <i class="fa-solid fa-bars-staggered"></i>
@@ -187,9 +256,11 @@
         </div>
 
         <div class="relative dropdown-container inline-block text-left">
-          <div tabindex="0" class="flex items-center space-x-1.5 cursor-pointer select-none group p-1 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/60 transition">
+          <div tabindex="0"
+            class="flex items-center space-x-1.5 cursor-pointer select-none group p-1 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/60 transition">
             <div>
-              <h1 class="text-base sm:text-lg font-black leading-tight tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+              <h1
+                class="text-base sm:text-lg font-black leading-tight tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
                 <span id="userDisplayName">Loading...</span>
                 <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform group-hover:text-red-500"></i>
               </h1>
@@ -197,18 +268,23 @@
             </div>
           </div>
 
-          <div class="absolute left-0 mt-1 w-52 rounded-xl shadow-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hidden z-50 dropdown-menu-pane overflow-hidden">
-            <div class="bg-slate-50 dark:bg-slate-800/50 p-2 border-b dark:border-slate-800 text-[10px] uppercase tracking-widest font-black text-slate-400">Pamahalaan ang Account</div>
-            
+          <div
+            class="absolute left-0 mt-1 w-52 rounded-xl shadow-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hidden z-50 dropdown-menu-pane overflow-hidden">
+            <div
+              class="bg-slate-50 dark:bg-slate-800/50 p-2 border-b dark:border-slate-800 text-[10px] uppercase tracking-widest font-black text-slate-400">
+              Pamahalaan ang Account</div>
+
             <button type="button" onclick="triggerAccountPasswordChangeModal()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 outline-none">
               <i class="fa-solid fa-key text-red-500 text-sm"></i> Baguhin ang Password
             </button>
-            
+
             <button type="button" onclick="triggerMyQRCodeModal()" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 border-t dark:border-slate-800 outline-none">
               <i class="fa-solid fa-qrcode text-red-500 text-sm"></i> Aking QR Code
             </button>
 
-            <a href="https://drive.google.com/file/d/1DBABqA4XwPUeHFQQb-kZAEgAu41iqdSM/view?usp=drive_link" target="_blank" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 border-t dark:border-slate-800 outline-none">
+            <a href="https://drive.google.com/file/d/1DBABqA4XwPUeHFQQb-kZAEgAu41iqdSM/view?usp=drive_link"
+              target="_blank"
+              class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2 border-t dark:border-slate-800 outline-none">
               <i class="fa-solid fa-book text-red-500 text-sm"></i> How To Use App?
             </a>
 
@@ -221,8 +297,10 @@
 
       <div class="flex items-center space-x-4">
         <div class="text-right block">
-          <div class="text-xs sm:text-sm font-black tracking-wide text-red-600 dark:text-red-500" id="liveClock">00:00:00 PM</div>
-          <div class="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-wider" id="liveDate">Date Loader</div>
+          <div class="text-xs sm:text-sm font-black tracking-wide text-red-600 dark:text-red-500" id="liveClock">
+            00:00:00 PM</div>
+          <div class="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-wider"
+            id="liveDate">Date Loader</div>
         </div>
         <button type="button" onclick="handleLogout()" class="px-3 sm:px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-red-600 dark:hover:bg-red-600 text-slate-700 dark:text-slate-200 hover:text-white text-xs sm:text-sm font-bold rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hidden lg:flex items-center transition">
           <i class="fa-solid fa-power-off mr-1.5 text-red-500"></i> <span>Log-out</span>
@@ -230,8 +308,10 @@
       </div>
     </div>
 
-    <div id="sidebarMenuOverlay" onclick="toggleSidebarMenuGateway(false)" class="fixed inset-0 bg-slate-900/60 dark:bg-slate-900/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
-    <div id="sidebarMenuLayoutWindow" class="fixed top-0 left-0 bottom-0 h-screen w-72 bg-white dark:bg-slate-900 z-40 p-6 shadow-2xl lg:shadow-none transform -translate-x-full transition duration-300 ease-in-out lg:translate-x-0 lg:border-r lg:border-slate-200/80 lg:dark:border-slate-800 flex flex-col justify-between transition-colors">
+    <div id="sidebarMenuOverlay" onclick="toggleSidebarMenuGateway(false)"
+      class="fixed inset-0 bg-slate-900/60 dark:bg-slate-900/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
+    <div id="sidebarMenuLayoutWindow"
+      class="fixed top-0 left-0 bottom-0 h-screen w-72 bg-white dark:bg-slate-900 z-40 p-6 shadow-2xl lg:shadow-none transform -translate-x-full transition duration-300 ease-in-out lg:translate-x-0 lg:border-r lg:border-slate-200/80 lg:dark:border-slate-800 flex flex-col justify-between transition-colors">
       <div class="space-y-6">
         <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4">
           <span class="font-black text-slate-900 dark:text-white tracking-wider flex items-center text-sm"><i class="fa-solid fa-folder-tree text-red-600 mr-2 text-base"></i>TTP NAVIGATOR</span>
@@ -263,15 +343,19 @@
         </nav>
       </div>
       <div class="border-t pt-4 text-center dark:border-slate-800">
-        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">⭐ Developed By : FE Jemar Jimena</p>
+        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">⭐ Developed By :
+          FE Jemar Jimena</p>
       </div>
     </div>
 
     <div class="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full flex-1">
-      
-      <div id="punchPane" class="block lg:col-span-5 space-y-6 w-full lg:max-h-[calc(100vh-130px)] lg:overflow-y-auto pr-1 custom-scrollbar">
-        <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800/80 space-y-5 transition-colors">
-          <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center border-b pb-3 border-slate-100 dark:border-slate-800 uppercase tracking-wider">
+
+      <div id="punchPane"
+        class="block lg:col-span-5 space-y-6 w-full lg:max-h-[calc(100vh-130px)] lg:overflow-y-auto pr-1 custom-scrollbar">
+        <div
+          class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800/80 space-y-5 transition-colors">
+          <h3
+            class="text-sm font-black text-slate-900 dark:text-white flex items-center border-b pb-3 border-slate-100 dark:border-slate-800 uppercase tracking-wider">
             <i class="fa-solid fa-fingerprint text-red-600 mr-2 text-base"></i> Attendance Punch Console
           </h3>
 
@@ -299,7 +383,8 @@
             </div>
           </div>
 
-          <div id="pandayan-helper-section" class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700/80 space-y-3">
+          <div id="pandayan-helper-section"
+            class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700/80 space-y-3">
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
               <i class="fa-solid fa-user-group text-red-600 mr-1.5"></i> May kasama ka bang Kapwa ngayon?
             </label>
@@ -307,8 +392,9 @@
               <option value="no">❌ Wala akong kasama</option>
               <option value="yes">🤝 Meron akong kasamang Kapwa</option>
             </select>
-            
-            <div id="helper-fields-container" class="hidden pt-2 border-t border-slate-200 dark:border-slate-700 space-y-3">
+
+            <div id="helper-fields-container"
+              class="hidden pt-2 border-t border-slate-200 dark:border-slate-700 space-y-3">
               <div class="space-y-1">
                 <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Employee ID ng Unang Kasama (Kapwa 1)</label>
                 <div class="flex gap-2">
@@ -317,7 +403,8 @@
                     <i class="fa-solid fa-qrcode"></i> <span>Scan 1</span>
                   </button>
                 </div>
-                <div id="helper-name-display-1" class="text-xs font-bold min-h-[16px] px-1 transition-colors duration-150"></div>
+                <div id="helper-name-display-1"
+                  class="text-xs font-bold min-h-[16px] px-1 transition-colors duration-150"></div>
               </div>
 
               <div class="space-y-1">
@@ -328,11 +415,14 @@
                     <i class="fa-solid fa-qrcode"></i> <span>Scan 2</span>
                   </button>
                 </div>
-                <div id="helper-name-display-2" class="text-xs font-bold min-h-[16px] px-1 transition-colors duration-150"></div>
+                <div id="helper-name-display-2"
+                  class="text-xs font-bold min-h-[16px] px-1 transition-colors duration-150"></div>
               </div>
-              
-              <div id="qr-reader-wrapper" class="hidden p-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-2 animate-fadeIn">
-                <div id="qr-reader" class="mx-auto max-w-[280px] rounded-lg overflow-hidden border-2 border-amber-500 bg-white"></div>
+
+              <div id="qr-reader-wrapper"
+                class="hidden p-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-2 animate-fadeIn">
+                <div id="qr-reader"
+                  class="mx-auto max-w-[280px] rounded-lg overflow-hidden border-2 border-amber-500 bg-white"></div>
                 <button type="button" onclick="stopQRScanner()" class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl transition shadow-md">
                   Ipasara ang Camera
                 </button>
@@ -342,8 +432,10 @@
 
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">3. Required Verification Selfie</label>
-            <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 flex flex-col items-center justify-center space-y-3">
-              <div id="selfiePreviewBox" class="w-full aspect-video bg-slate-900 dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center relative shadow-inner">
+            <div
+              class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 flex flex-col items-center justify-center space-y-3">
+              <div id="selfiePreviewBox"
+                class="w-full aspect-video bg-slate-900 dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center relative shadow-inner">
                 <span id="selfiePlaceholderText" class="text-slate-500 text-xs text-center px-4"><i class="fa-solid fa-image-portrait text-3xl block mb-1 text-slate-400"></i>Wala pang larawan</span>
                 <img id="selfieImgView" class="max-w-full max-h-full w-auto h-auto object-contain hidden" src="">
               </div>
@@ -355,13 +447,15 @@
           </div>
 
           <div class="border-t pt-4 dark:border-slate-800 space-y-3">
-            <div class="flex justify-between items-center text-[11px] font-mono font-bold bg-slate-50 dark:bg-slate-800/40 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
+            <div
+              class="flex justify-between items-center text-[11px] font-mono font-bold bg-slate-50 dark:bg-slate-800/40 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
               <span class="text-slate-500">Lat: <span id="txtLat" class="text-slate-800 dark:text-white">0.00000</span></span>
               <span class="text-slate-500">Lng: <span id="txtLng" class="text-slate-800 dark:text-white">0.00000</span></span>
               <span id="gpsBadge" class="px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded uppercase tracking-wider text-[9px]">Hahanapin...</span>
             </div>
-            <div id="mapWrapper" class="w-full h-28 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 hidden"></div>
-            
+            <div id="mapWrapper"
+              class="w-full h-28 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 hidden"></div>
+
             <button type="button" id="btnSubmitAttendance" onclick="processAttendanceSubmission()" class="w-full py-3.5 bg-slate-300 text-slate-500 font-bold rounded-xl cursor-not-allowed text-xs" disabled>
               <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log
             </button>
@@ -369,10 +463,13 @@
         </div>
       </div>
 
-      <div id="monitorPane" class="hidden lg:col-span-7 flex-col bg-white dark:bg-slate-900 p-6 h-[500px] lg:h-[calc(100vh-130px)] w-full transition-colors overflow-hidden rounded-2xl shadow-md border border-slate-200 dark:border-slate-800">
-        <div class="border-b pb-3 border-slate-100 dark:border-slate-800 mb-4 flex justify-between items-center flex-shrink-0 gap-2">
+      <div id="monitorPane"
+        class="hidden lg:col-span-7 flex-col bg-white dark:bg-slate-900 p-6 h-[500px] lg:h-[calc(100vh-130px)] w-full transition-colors overflow-hidden rounded-2xl shadow-md border border-slate-200 dark:border-slate-800">
+        <div
+          class="border-b pb-3 border-slate-100 dark:border-slate-800 mb-4 flex justify-between items-center flex-shrink-0 gap-2">
           <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center uppercase tracking-wider">
-            <i class="fa-solid fa-users text-blue-600 dark:text-blue-400 mr-2 text-base"></i> Sub-Department Monitor (Real-time Feed)
+            <i class="fa-solid fa-users text-blue-600 dark:text-blue-400 mr-2 text-base"></i> Sub-Department Monitor
+            (Real-time Feed)
           </h3>
           <div class="flex items-center gap-1.5">
             <button type="button" id="btnYourLogsFeed" onclick="triggerYourLogsFeedFilterPrompt()" class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1 hover:scale-105 active:scale-95 outline-none">
@@ -384,42 +481,55 @@
           </div>
         </div>
         <div id="departmentFeed" class="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
-          <div class="text-center py-12 text-slate-400 text-xs"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i>Komukuha ng datos...</div>
+          <div class="text-center py-12 text-slate-400 text-xs">
+            <i class="fa-solid fa-circle-notch animate-spin mr-2"></i>Komukuha ng datos...</div>
         </div>
       </div>
 
-      <div id="requestsPane" class="hidden lg:col-span-12 flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 space-y-4 w-full transition-colors">
+      <div id="requestsPane"
+        class="hidden lg:col-span-12 flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 space-y-4 w-full transition-colors">
         <div class="border-b pb-3 border-slate-100 dark:border-slate-800 flex items-center justify-between">
-          <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-            <i class="fa-solid fa-envelope-open-text mr-2 text-base"></i> Leave & Attendance Filing Operations Control Center
+          <h3
+            class="text-sm font-black text-slate-900 dark:text-white flex items-center uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+            <i class="fa-solid fa-envelope-open-text mr-2 text-base"></i> Leave & Attendance Filing Operations Control
+            Center
           </h3>
         </div>
-        
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-800/30 space-y-3">
-            <h4 class="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+          <div
+            class="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-800/30 space-y-3">
+            <h4
+              class="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
               <i class="fa-solid fa-hourglass-half text-amber-500 animate-pulse"></i> Pending Applications For Review
             </h4>
             <div id="approverQueueContainer" class="space-y-3 max-h-[450px] overflow-y-auto pr-1 custom-scrollbar">
               <p class="text-xs text-slate-400 italic">Naglo-load ng mga data request...</p>
             </div>
           </div>
-          
-          <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-800/30 space-y-3">
-            <h4 class="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+
+          <div
+            class="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-800/30 space-y-3">
+            <h4
+              class="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
               <i class="fa-solid fa-clock-rotate-left text-blue-500"></i> Processed Action Log History Ledger
             </h4>
-            <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 max-h-[450px] custom-scrollbar">
+            <div
+              class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 max-h-[450px] custom-scrollbar">
               <table class="w-full text-left border-collapse text-xs min-w-[450px]">
                 <thead>
-                  <tr class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-slate-700 uppercase tracking-widest text-[9px] sticky top-0 z-10">
+                  <tr
+                    class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-slate-700 uppercase tracking-widest text-[9px] sticky top-0 z-10">
                     <th class="p-2.5">Employee</th>
                     <th class="p-2.5">Request Profile</th>
                     <th class="p-2.5 text-center">Status Decision</th>
                   </tr>
                 </thead>
-                <tbody id="approverProcessedHistoryBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                  <tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Walang kasaysayan ng aksyon.</td></tr>
+                <tbody id="approverProcessedHistoryBody"
+                  class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                  <tr>
+                    <td colspan="3" class="p-4 text-center text-slate-400 italic">Walang kasaysayan ng aksyon.</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -427,18 +537,22 @@
         </div>
       </div>
 
-      <div id="payrollPane" class="hidden lg:col-span-12 flex-col bg-white dark:bg-slate-900 p-6 space-y-6 w-full transition-colors rounded-2xl shadow-md border border-slate-200 dark:border-slate-800">
-        <div class="border-b pb-3 border-slate-100 dark:bg-slate-900 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div id="payrollPane"
+        class="hidden lg:col-span-12 flex-col bg-white dark:bg-slate-900 p-6 space-y-6 w-full transition-colors rounded-2xl shadow-md border border-slate-200 dark:border-slate-800">
+        <div
+          class="border-b pb-3 border-slate-100 dark:bg-slate-900 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div class="flex items-center space-x-2">
             <i class="fa-solid fa-file-invoice-dollar text-amber-600 dark:text-amber-400 text-xl"></i>
-            <h3 class="text-sm font-black text-slate-900 dark:text-white tracking-wider uppercase">Admin & Payroll Cut-off Summary</h3>
+            <h3 class="text-sm font-black text-slate-900 dark:text-white tracking-wider uppercase">Admin & Payroll
+              Cut-off Summary</h3>
           </div>
           <button type="button" id="btnBulkPostAction" onclick="executeBulkPayrollPostingPipeline()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-1.5 transition duration-150">
             <i class="fa-solid fa-lock"></i> I-Post at I-Lock ang mga Piling Attendance logs
           </button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
           <div>
             <label class="block font-bold text-slate-600 dark:text-slate-400 mb-1">Mula Petsa</label>
             <input type="date" id="payFromDate" class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none">
@@ -463,21 +577,24 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div class="bg-slate-900 dark:bg-slate-955 text-white p-4 rounded-xl flex items-center justify-between shadow-inner">
+          <div
+            class="bg-slate-900 dark:bg-slate-955 text-white p-4 rounded-xl flex items-center justify-between shadow-inner">
             <div>
               <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Total Days Present</span>
               <span id="lblPayTotalDays" class="text-2xl font-black">0</span>
             </div>
             <i class="fa-solid fa-calendar-check text-slate-700 dark:text-slate-800 text-3xl"></i>
           </div>
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm">
+          <div
+            class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm">
             <div>
               <span class="text-[10px] uppercase font-bold text-slate-50 dark:text-slate-400 block tracking-wider">Total Meal Allowance</span>
               <span id="lblPayTotalMeal" class="text-2xl font-black text-slate-900 dark:text-white">₱0.00</span>
             </div>
             <i class="fa-solid fa-bowl-food text-amber-500 text-3xl"></i>
           </div>
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm">
+          <div
+            class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm">
             <div>
               <span class="text-[10px] uppercase font-bold text-slate-50 dark:text-slate-400 block tracking-wider">Total Transpo Allowance</span>
               <span id="lblPayTotalTranspo" class="text-2xl font-black text-slate-900 dark:text-white">₱0.00</span>
@@ -486,11 +603,14 @@
           </div>
         </div>
 
-        <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 max-h-[500px] custom-scrollbar">
+        <div
+          class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 max-h-[500px] custom-scrollbar">
           <table class="w-full text-left border-collapse min-w-[1000px] text-xs">
             <thead>
-              <tr class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-slate-700 sticky top-0 z-20 uppercase tracking-wider text-[10px]">
-                <th class="p-3 text-center w-12"><input type="checkbox" id="paySelectAllRowsBox" onchange="toggleSelectAllPayrollRows(this)" class="w-4 h-4 cursor-pointer"></th>
+              <tr
+                class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-slate-700 sticky top-0 z-20 uppercase tracking-wider text-[10px]">
+                <th class="p-3 text-center w-12"><input type="checkbox" id="paySelectAllRowsBox" onchange="toggleSelectAllPayrollRows(this)" class="w-4 h-4 cursor-pointer">
+                </th>
                 <th class="p-3">ID</th>
                 <th class="p-3">Pangalan</th>
                 <th class="p-3">Departamento</th>
@@ -500,38 +620,55 @@
                 <th class="p-3 text-center">Status</th>
               </tr>
             </thead>
-            <tbody id="payrollReportTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-              <tr><td colspan="8" class="p-8 text-center text-slate-400 italic">Pumili ng cut-off at suriin.</td></tr>
+            <tbody id="payrollReportTableBody"
+              class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+              <tr>
+                <td colspan="8" class="p-8 text-center text-slate-400 italic">Pumili ng cut-off at suriin.</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <div id="adminPane" class="hidden lg:col-span-12 flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 space-y-6 w-full transition-colors">
+      <div id="adminPane"
+        class="hidden lg:col-span-12 flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 space-y-6 w-full transition-colors">
         <div class="border-b pb-3 border-slate-100 dark:border-slate-800 flex items-center space-x-2">
           <i class="fa-solid fa-user-shield text-purple-700 dark:text-purple-400 text-xl"></i>
-          <h3 class="text-sm font-black text-slate-900 dark:text-white tracking-wider uppercase">Admin Control Portal Dashboard</h3>
+          <h3 class="text-sm font-black text-slate-900 dark:text-white tracking-wider uppercase">Admin Control Portal
+            Dashboard</h3>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          <div class="border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 bg-slate-50/50 dark:bg-slate-800/20">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 flex items-center"><i class="fa-solid fa-hourglass-half mr-1.5"></i> Pending Approvals Queue</h4>
+          <div
+            class="border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 bg-slate-50/50 dark:bg-slate-800/20">
+            <h4
+              class="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 flex items-center">
+              <i class="fa-solid fa-hourglass-half mr-1.5"></i> Pending Approvals Queue</h4>
             <div id="adminPendingQueue" class="space-y-3 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar"></div>
           </div>
 
-          <div class="border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 bg-slate-50/50 dark:bg-slate-800/20">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center"><i class="fa-solid fa-clock-rotate-left mr-1.5"></i> Account Processing Log History</h4>
-            <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 max-h-[350px] custom-scrollbar">
+          <div
+            class="border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 bg-slate-50/50 dark:bg-slate-800/20">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center">
+              <i class="fa-solid fa-clock-rotate-left mr-1.5"></i> Account Processing Log History</h4>
+            <div
+              class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 max-h-[350px] custom-scrollbar">
               <table class="w-full text-left border-collapse table-fixed text-xs min-w-[450px]">
                 <thead>
-                  <tr class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10 uppercase tracking-widest text-[9px]">
+                  <tr
+                    class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10 uppercase tracking-widest text-[9px]">
                     <th class="p-2.5 w-24">ID</th>
                     <th class="p-2.5 w-36">Pangalan</th>
+                    <!-- DINAGDAG ANG DATE / TIME HEADER -->
+                    <th class="p-2.5 text-center w-32">Date / Time</th>
                     <th class="p-2.5 text-center w-24">Status</th>
                   </tr>
                 </thead>
-                <tbody id="adminHistoryLogTable" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300 font-mono">
-                  <tr><td colspan="3" class="p-4 text-center italic text-slate-400">Walang kasaysayan ng log.</td></tr>
+                <tbody id="adminHistoryLogTable"
+                  class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300 font-mono">
+                  <tr>
+                    <td colspan="4" class="p-4 text-center italic text-slate-400">Walang kasaysayan ng log.</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -539,10 +676,13 @@
         </div>
       </div>
 
-      <div id="historyPane" class="hidden lg:block lg:col-span-12 bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 space-y-4 w-full transition-colors">
-        <div class="flex flex-col sm:flex-row justify-between border-b pb-4 border-slate-100 dark:border-slate-800 gap-4">
+      <div id="historyPane"
+        class="hidden lg:block lg:col-span-12 bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 space-y-4 w-full transition-colors">
+        <div
+          class="flex flex-col sm:flex-row justify-between border-b pb-4 border-slate-100 dark:border-slate-800 gap-4">
           <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center uppercase tracking-wider">
-            <i class="fa-solid fa-chart-user text-emerald-600 dark:text-emerald-400 mr-2 text-base"></i> Personal Logs History & Allowances
+            <i class="fa-solid fa-chart-user text-emerald-600 dark:text-emerald-400 mr-2 text-base"></i> Personal Logs
+            History & Allowances
           </h3>
           <div class="flex flex-wrap items-center gap-2 text-xs w-full sm:w-auto">
             <div class="flex items-center space-x-1">
@@ -564,16 +704,24 @@
           </div>
         </div>
 
-        <div id="subViewActualLogs" class="block overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+        <div id="subViewActualLogs"
+          class="block overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
           <table class="w-full text-left border-collapse min-w-[1100px]">
             <thead>
-              <tr class="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+              <tr
+                class="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
                 <th class="p-3 w-40">Petsa</th>
-                <th class="p-3 text-center bg-emerald-50/40 dark:bg-emerald-955/20 text-emerald-700 dark:text-emerald-400">IN</th>
-                <th class="p-3 text-center bg-amber-50/40 dark:bg-amber-955/20 text-amber-700 dark:text-amber-400">LB OUT</th>
-                <th class="p-3 text-center bg-amber-50/40 dark:bg-amber-955/20 text-amber-700 dark:text-amber-400">LB IN</th>
-                <th class="p-3 text-center bg-blue-50/40 dark:bg-blue-955/20 text-blue-700 dark:text-blue-400">CB OUT</th>
-                <th class="p-3 text-center bg-blue-50/40 dark:bg-blue-955/20 text-blue-700 dark:text-blue-400">CB IN</th>
+                <th
+                  class="p-3 text-center bg-emerald-50/40 dark:bg-emerald-955/20 text-emerald-700 dark:text-emerald-400">
+                  IN</th>
+                <th class="p-3 text-center bg-amber-50/40 dark:bg-amber-955/20 text-amber-700 dark:text-amber-400">LB
+                  OUT</th>
+                <th class="p-3 text-center bg-amber-50/40 dark:bg-amber-955/20 text-amber-700 dark:text-amber-400">LB IN
+                </th>
+                <th class="p-3 text-center bg-blue-50/40 dark:bg-blue-955/20 text-blue-700 dark:text-blue-400">CB OUT
+                </th>
+                <th class="p-3 text-center bg-blue-50/40 dark:bg-blue-955/20 text-blue-700 dark:text-blue-400">CB IN
+                </th>
                 <th class="p-3 text-center bg-rose-50/40 dark:bg-rose-955/20 text-rose-700 dark:text-rose-400">OUT</th>
                 <th class="p-3 text-center w-28">Status</th>
                 <th class="p-3 text-center w-40">Remarks / Approved Leave</th>
@@ -583,7 +731,9 @@
                 <th class="p-3 w-48">Breakdown/Details</th>
               </tr>
             </thead>
-            <tbody id="summaryTableBody" class="text-xs divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300"></tbody>
+            <tbody id="summaryTableBody"
+              class="text-xs divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+            </tbody>
           </table>
         </div>
 
@@ -594,9 +744,12 @@
         </div>
       </div>
 
-      <div id="leaveFilingPane" class="hidden lg:col-span-12 bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 space-y-6 w-full transition-colors flex flex-col">
-        <div class="flex flex-row justify-between items-center border-b pb-4 border-slate-100 dark:border-slate-800 gap-4">
-          <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+      <div id="leaveFilingPane"
+        class="hidden lg:col-span-12 bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-6 space-y-6 w-full transition-colors flex flex-col">
+        <div
+          class="flex flex-row justify-between items-center border-b pb-4 border-slate-100 dark:border-slate-800 gap-4">
+          <h3
+            class="text-sm font-black text-slate-900 dark:text-white flex items-center uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
             <i class="fa-solid fa-plane-departure mr-2 text-base"></i> Personal Leave Filing Hub Console
           </h3>
         </div>
@@ -1429,7 +1582,7 @@ function executeServerRequest(payload, successCallback, failureCallback) {
       }
     }
 
-    function triggerMyQRCodeModal() {
+ function triggerMyQRCodeModal() {
       if (!currentUser) return;
       var qrGeneratorUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(currentUser.employeeId);
       
@@ -1442,7 +1595,7 @@ function executeServerRequest(payload, successCallback, failureCallback) {
         '  <div class="space-y-0.5">' +
         '    <h4 class="text-base font-black text-slate-900 dark:text-white tracking-tight">' + currentUser.name + '</h4>' +
         '    <p class="text-xs font-black text-red-600 font-mono tracking-wider">ID: ' + currentUser.employeeId + '</p>' +
-        '    <p class="text-[10px] font-bold text-slate-50 dark:text-slate-400 uppercase tracking-wide bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md mt-1">' + (currentUser.position || "KAPWA") + ' | ' + currentUser.department + '</p>' +
+        '    <p class="text-[10px] font-bold text-white uppercase tracking-wide bg-slate-800 px-2 py-0.5 rounded-md mt-1">' + (currentUser.position || "KAPWA") + ' | ' + currentUser.department + '</p>' +
         '  </div>' +
         '  <p class="text-[10px] text-slate-400 dark:text-slate-500 italic font-medium pt-2 border-t dark:border-slate-800 w-full"><i class="fa-solid fa-camera"></i> Pwedeng i-screenshot o i-print para sa mabilis na attendance code scanning.</p>' +
         '</div>';
@@ -2294,7 +2447,7 @@ function closePhotoChoiceModal() {
       }
     }
 
-    function triggerYourLogsFeedFilterPrompt() { 
+function triggerYourLogsFeedFilterPrompt() { 
       if (!currentUser) return;
       var userDeptLower = currentUser.department.toLowerCase().trim();
       var userPosLower = (currentUser.position || "").toLowerCase().trim();
@@ -2319,7 +2472,7 @@ function closePhotoChoiceModal() {
         swalHtml = '<div class="text-left text-xs space-y-3 p-1">' +
                      '<p class="text-slate-400 mb-2"><strong>Universal Access Control (Admin/Payroll/Audit):</strong> May kapangyarihang mag-filter at sumuri sa lahat ng departamento sa system database.</p>' +
                      '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Departamento</label><select id="feedFilterDept" class="' + inputSelectClass + ' cursor-pointer">' + deptOptions + '</select></div>' +
-                     '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Pangalan ng Empleyado</label><select id="feedFilterEmp" class="' + inputSelectClass + ' cursor-pointer"><option value="">-- Lahat ng Empleyado --</option></select></div>' +
+                     '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Pangalan ng Empleyado</label><select id="feedFilterEmp" class="' + inputSelectClass + ' opacity-60 cursor-not-allowed" disabled><option value="">-- Pumili muna ng Departamento --</option></select></div>' +
                      '<div class="grid grid-cols-2 gap-2">' +
                        '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Mula Petsa</label><input type="date" id="feedFilterFrom" class="' + inputSelectClass + '"></div>' +
                        '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Hanggang Petsa</label><input type="date" id="feedFilterTo" class="' + inputSelectClass + '"></div>' +
@@ -2333,7 +2486,7 @@ function closePhotoChoiceModal() {
         swalHtml = '<div class="text-left text-xs space-y-3 p-1">' +
                      '<p class="text-slate-400 mb-2"><strong>Group Operations Desk (FE/GE Mode):</strong> Limitado sa iyong mga nakatalagang sub-departments at empleyado.</p>' +
                      '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Departamento</label><select id="feedFilterDept" class="' + inputSelectClass + ' cursor-pointer">' + deptOptions + '</select></div>' +
-                     '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Pangalan ng Empleyado</label><select id="feedFilterEmp" class="' + inputSelectClass + ' cursor-pointer"><option value="">-- Lahat ng Empleyado sa Ilalim mo --</option></select></div>' +
+                     '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Pangalan ng Empleyado</label><select id="feedFilterEmp" class="' + inputSelectClass + ' opacity-60 cursor-not-allowed" disabled><option value="">-- Pumili muna ng Departamento --</option></select></div>' +
                      '<div class="grid grid-cols-2 gap-2">' +
                        '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Mula Petsa</label><input type="date" id="feedFilterFrom" class="' + inputSelectClass + '"></div>' +
                        '<div><label class="font-bold block mb-1 ' + textLabelClass + '">Hanggang Petsa</label><input type="date" id="feedFilterTo" class="' + inputSelectClass + '"></div>' +
@@ -2364,7 +2517,7 @@ function closePhotoChoiceModal() {
         title: 'Real-time Feed Filter Matrix', 
         html: swalHtml, 
         showCancelButton: true,
-        confirmButtonColor: '#0f172a',
+        confirmButtonColor: '#10b981',
         confirmButtonText: 'I-apply Filter Matrix',
         background: isDarkModeActive ? '#0f172a' : '#ffffff',
         color: isDarkModeActive ? '#ffffff' : '#1e293b',
@@ -2375,9 +2528,25 @@ function closePhotoChoiceModal() {
           if (isPayrollOrAdmin || isAuditUser || isFEorGE) {
             function updateDynamicEmployeeDropdown() {
               var selDept = dSelect.value;
-              eSelect.innerHTML = '<option value="">-- Lahat ng Empleyado --</option>';
+              eSelect.innerHTML = '';
+              
+              // I-disable kung walang napiling departamento
+              if (!selDept) {
+                eSelect.innerHTML = '<option value="">-- Pumili muna ng Departamento --</option>';
+                eSelect.disabled = true;
+                eSelect.classList.add('opacity-60', 'cursor-not-allowed');
+                eSelect.classList.remove('cursor-pointer');
+                return;
+              }
+
+              // I-enable kung may napiling departamento
+              eSelect.disabled = false;
+              eSelect.classList.remove('opacity-60', 'cursor-not-allowed');
+              eSelect.classList.add('cursor-pointer');
+              eSelect.innerHTML = '<option value="">-- Lahat ng Empleyado sa ' + selDept + ' --</option>';
+              
               approvedEmployeesGlobalCache.forEach(function(emp) {
-                if (!selDept || emp.department.toString().trim().toLowerCase() === selDept.toString().trim().toLowerCase()) {
+                if (emp.department.toString().trim().toLowerCase() === selDept.toString().trim().toLowerCase()) {
                   var opt = document.createElement('option');
                   opt.value = emp.employeeId.toString().trim();
                   opt.textContent = emp.name;
@@ -2441,7 +2610,7 @@ function closePhotoChoiceModal() {
         title: 'Palitan ang Password',
         html: htmlForm,
         showCancelButton: true,
-        confirmButtonColor: '#0f172a',
+        confirmButtonColor: '#10b981',
         confirmButtonText: 'I-update Password',
         background: isDarkModeActive ? '#0f172a' : '#ffffff',
         color: isDarkModeActive ? '#ffffff' : '#1e293b',
@@ -2672,13 +2841,41 @@ function closePhotoChoiceModal() {
       }
     }
     
-    function renderPayrollEmployeesDropdown() { 
-      var selectMenu = document.getElementById('payEmployeeIdSelect'); if (!selectMenu) return; 
+function renderPayrollEmployeesDropdown() { 
+      var selectMenu = document.getElementById('payEmployeeIdSelect'); 
+      if (!selectMenu) return; 
       var selectedDept = document.getElementById('payDeptSelect') ? document.getElementById('payDeptSelect').value : "";
-      selectMenu.innerHTML = '<option value="">Lahat ng Empleyado</option>'; 
+      
+      selectMenu.innerHTML = ''; 
+
+      // I-disable kung walang napiling departamento
+      if (!selectedDept) {
+        var opt = document.createElement('option'); 
+        opt.value = ""; 
+        opt.textContent = "-- Pumili muna ng Departamento --"; 
+        selectMenu.appendChild(opt); 
+        selectMenu.disabled = true;
+        selectMenu.classList.add('opacity-60', 'cursor-not-allowed');
+        selectMenu.classList.remove('cursor-pointer');
+        return;
+      }
+
+      // I-enable kung may napili nang departamento
+      selectMenu.disabled = false;
+      selectMenu.classList.remove('opacity-60', 'cursor-not-allowed');
+      selectMenu.classList.add('cursor-pointer');
+      
+      var defaultOpt = document.createElement('option');
+      defaultOpt.value = "";
+      defaultOpt.textContent = "Lahat ng Empleyado sa " + selectedDept;
+      selectMenu.appendChild(defaultOpt); 
+      
       approvedEmployeesGlobalCache.forEach(function(emp) { 
-        if (!selectedDept || emp.department === selectedDept) {
-          var opt = document.createElement('option'); opt.value = emp.employeeId; opt.textContent = emp.name + " (" + emp.employeeId + ")"; selectMenu.appendChild(opt); 
+        if (emp.department === selectedDept) {
+          var opt = document.createElement('option'); 
+          opt.value = emp.employeeId; 
+          opt.textContent = emp.name + " (" + emp.employeeId + ")"; 
+          selectMenu.appendChild(opt); 
         }
       }); 
     }
@@ -2767,7 +2964,8 @@ function closePhotoChoiceModal() {
           data.history.forEach(function(h) { 
             var tr = document.createElement('tr'); tr.className = "border-b border-slate-100 dark:border-slate-800 text-[11px] font-medium text-slate-800 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition"; 
             var badgeStatusClass = h.status === "APPROVED" ? "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-955/50" : "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-955/50";
-            tr.innerHTML = '<td class="p-2.5 truncate font-bold text-left">' + h.employeeId + '</td><td class="p-2.5 truncate text-slate-600 dark:text-slate-400 text-left">' + h.name + '</td><td class="p-2.5 text-center"><span class="px-1.5 py-0.5 rounded font-black text-[9px] uppercase ' + badgeStatusClass + '">' + h.status + '</span></td>'; 
+            var actionDate = h.date || h.timestamp || h.time || "N/A";
+            tr.innerHTML = '<td class="p-2.5 truncate font-bold text-left">' + h.employeeId + '</td><td class="p-2.5 truncate text-slate-600 dark:text-slate-400 text-left">' + h.name + '</td><td class="p-2.5 text-center text-slate-500 font-mono text-[10px]">' + actionDate + '</td><td class="p-2.5 text-center"><span class="px-1.5 py-0.5 rounded font-black text-[9px] uppercase ' + badgeStatusClass + '">' + h.status + '</span></td>'; 
             historyTableBody.appendChild(tr); 
           }); 
         } 
@@ -2780,13 +2978,18 @@ function closePhotoChoiceModal() {
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin mr-1"></i> Loading...';
       }
-      executeServerRequest({ action: "processApproval", adminId: currentUser.employeeId, targetEmpId: empId, statusStatus: statusString }, function() { 
-        loadAdminApprovalQueue(); 
-      }, function() {
+      executeServerRequest({ action: "processApproval", adminId: currentUser.employeeId, targetEmpId: empId, status: statusString }, function(res) { 
+        if(res && res.success === false) {
+           Swal.fire({ icon: 'error', title: 'Error', text: res.message || 'Something went wrong.'});
+        } else {
+           loadAdminApprovalQueue(); 
+        }
+      }, function(err) {
         if (btn) {
           btn.disabled = false;
           btn.innerHTML = statusString === 'APPROVED' ? 'Approve' : 'Deny';
         }
+        Swal.fire({ icon: 'error', title: 'System Error', text: 'Network connection failed.' });
       }); 
     }
         
@@ -2936,4 +3139,5 @@ function closePhotoChoiceModal() {
     }
   </script>
 </body>
+
 </html>
