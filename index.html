@@ -813,7 +813,11 @@
       .then(function(text) {
         try {
           var data = JSON.parse(text);
-          if (isBackgroundRequest && data && data.success === false && data.isGoogleInternalError) return;
+          // BINAGO: Tinanggal ang silent trap, ipapasa na ngayon sa failure handler ang error
+          if (isBackgroundRequest && data && data.success === false && data.isGoogleInternalError) { 
+             if (failureCallback) failureCallback(new Error(data.message));
+             return; 
+          }
           if (successCallback) successCallback(data);
         } catch(jsonErr) {
           clearTimeout(timeoutId);
@@ -2320,6 +2324,8 @@
       executeServerRequest(reqPayload, function(res) { 
         if (!currentUser) return;
         renderFeedCardsIntoContainer(container, res); 
+      }, function(err) {
+        if (container) container.innerHTML = '<div class="text-center py-8 text-rose-500 font-bold text-xs"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ' + (err.message || 'Nabigong makuha ang data feed.') + '</div>';
       }); 
     }
 
@@ -2457,6 +2463,8 @@
             historyBody.appendChild(tr);
           });
         }
+      }, function(err) {
+        if(container) container.innerHTML = '<p class="text-xs text-rose-500 font-bold bg-white dark:bg-slate-900 p-4 rounded-xl shadow-inner border dark:border-slate-800"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ' + err.message + '</p>';
       });
     }
 
@@ -2746,8 +2754,9 @@
         document.getElementById('lblPayTotalDays').textContent = totalDays;
         document.getElementById('lblPayTotalMeal').textContent = "₱" + totalMeal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         document.getElementById('lblPayTotalTranspo').textContent = "₱" + totalTranspo.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      }, function() {
+      }, function(err) {
         if (searchBtnText) searchBtnText.textContent = "Suriin";
+        if (tbody) tbody.innerHTML = '<tr><td colspan="8" class="p-8 text-center text-rose-500 font-bold italic">Error sa pagkuha ng payroll report: ' + err.message + '</td></tr>';
       });
     }
 
