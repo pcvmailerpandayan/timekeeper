@@ -679,7 +679,7 @@
 
   <!-- MAIN JAVASCRIPT CONTROLLER ENGINE -->
   <script>
-    var WEB_APP_API_URL = "https://winter-haze-4d14.pcvmailer-pandayan.workers.dev";
+    var WEB_APP_API_URL = "https://script.google.com/macros/s/AKfycbycXYy_qB1qP-8tB0N2l7nI6tXl-sXn5_fQ_t/exec";
 
     /**
      * LOCAL STORAGE & SESSION MANAGER
@@ -747,6 +747,47 @@
 
     let html5QrcodeScannerInstance = null;
     var activeQRTargetField = 1;
+
+    // --- IDINAGDAG NA FUNCTION UPANG GUMANA ANG BUTTON ---
+    function evaluateCardFilingReadiness(dateStr) {
+      try {
+        var container = document.getElementById('innerFilingPayloadArea-CORRECTION-' + dateStr);
+        var btnSubmit = document.getElementById('btnSubmitFiling-CORRECTION-' + dateStr);
+        if (!container || !btnSubmit) return;
+
+        var timeInputs = container.querySelectorAll('input[type="time"]');
+        var allTimesFilled = true;
+        var requiredLogsCount = timeInputs.length; // Bibilangin kung ilang missing logs
+
+        timeInputs.forEach(function(input) {
+          if (!input.value) allTimesFilled = false;
+        });
+
+        var reasonInput = container.querySelector('#reasonInput-' + dateStr);
+        var hasReason = reasonInput && reasonInput.value.trim() !== "";
+        
+        // Bibilangin kung ilan ang nai-upload na larawan
+        var uploadedImagesCount = (logbookImagesCache[dateStr]) ? Object.keys(logbookImagesCache[dateStr]).length : 0;
+        var hasAllImages = (uploadedImagesCount >= requiredLogsCount);
+
+        if (allTimesFilled && hasAllImages && hasReason) {
+          btnSubmit.disabled = false;
+          btnSubmit.className = "w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1 cursor-pointer";
+          btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Isumite ang Log Correction';
+        } else {
+          btnSubmit.disabled = true;
+          btnSubmit.className = "w-full py-2.5 bg-slate-300 text-slate-500 font-black rounded-xl text-xs cursor-not-allowed flex items-center justify-center gap-1";
+          btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane text-red-500"></i> Isumite ang Log Correction';
+        }
+      } catch (e) {
+        console.error("Error sa evaluateCardFilingReadiness: " + e.toString());
+      }
+    }
+
+    function evaluateModalFilingReadiness(dateStr) {
+      // Stub function para hindi mag-error kapag tinawag ang Gallery fallback
+    }
+    // -----------------------------------------------------
 
     function initClock() { 
       var liveClock = document.getElementById('liveClock'); 
@@ -1877,7 +1918,7 @@
                                       '  <div class="grid grid-cols-2 gap-2 items-center">' +
                                       '    <div>' +
                                       '      <label class="block text-[8px] uppercase font-bold text-slate-400">Target Time</label>' +
-                                      '      <input type="time" id="timeInput-' + cleanTypeKey + '-' + m.date + '" class="w-full p-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none">' +
+                                      '      <input type="time" id="timeInput-' + cleanTypeKey + '-' + m.date + '" class="w-full p-1.5 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none" onchange="evaluateCardFilingReadiness(\'' + m.date + '\')">' +
                                       '    </div>' +
                                       '    <div class="text-center">' +
                                       '      <input type="file" id="camInput-CAM-' + cleanTypeKey + '-' + m.date + '" accept="image/*" capture="environment" class="hidden" onchange="processTypeSpecificFile(this, \'' + m.date + '\', \'' + t + '\', \'card\')">' +
@@ -1889,7 +1930,7 @@
                                       '</div>';
         });
         correctionBodyFieldsHtml += '<div><label class="block text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 mb-0.5">Dahilan (Reason)</label>' +
-                                    '  <input type="text" id="reasonInput-' + m.date + '" placeholder="Dahilan ng pag-update..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none"></div></div>';
+                                    '  <input type="text" id="reasonInput-' + m.date + '" placeholder="Dahilan ng pag-update..." class="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white outline-none" oninput="evaluateCardFilingReadiness(\'' + m.date + '\')"></div></div>';
 
         var mealInputStyle = 'class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none"';
         var transpoInputStyle = 'class="p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition-colors outline-none"';
@@ -2055,10 +2096,11 @@
         payload.missingTypeLabel = missingLabel;
         payload.reason = containerArea.querySelector('#reasonInput-' + dateStr).value.trim() || "Regular log correction";
         payload.manualTimes = manualTimesCollected;
+        
+        // Na-optimize: Hindi na idinodoble ang payload sa loop 
+        payload.action = "saveMissingLogReason";
 
-        var mixedCorrectionPayload = Object.assign({ action: "saveMissingLogReason", payload: payload }, payload);
-
-        executeServerRequest(mixedCorrectionPayload, function(res) {
+        executeServerRequest(payload, function(res) {
           if (res.success) {
             Swal.fire({ icon: 'success', title: 'Naipadala Na!', text: res.message, timer: 2000, showConfirmButton: false });
             if(logbookImagesCache[dateStr]) delete logbookImagesCache[dateStr]; 
@@ -2082,17 +2124,11 @@
           workspaceApplied: "FIELDWORK",
           startDate: dateStr,
           endDate: dateStr,
-          reason: typedRemarks || "Filed from Leave Hub"
+          reason: typedRemarks || "Filed from Leave Hub",
+          action: "submitLeaveApplication"
         };
 
-        var mixedLeavePayload = { 
-          action: "submitLeaveApplication", 
-          payload: leavePayload 
-        };
-
-        var finalMixedLeavePayload = Object.assign(mixedLeavePayload, leavePayload);
-
-        executeServerRequest(finalMixedLeavePayload, function(res) {
+        executeServerRequest(leavePayload, function(res) {
           if (res.success) {
             Swal.fire({ icon: 'success', title: 'Naipadala Na!', text: res.message, timer: 2000, showConfirmButton: false });
             if(logbookImagesCache[dateStr]) delete logbookImagesCache[dateStr]; 
