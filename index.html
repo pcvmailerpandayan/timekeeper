@@ -835,7 +835,8 @@
         return;
       }
 
-      var isBackgroundRequest = payload && (payload.action === "getDepartmentLogs" || payload.action === "getPendingUsers" || payload.action === "getPayrollReport" || payload.action === "getApproverQueue" || payload.action === "getLeavesDataset" || payload.action === "getFilteredFeedLogs" || payload.action === "getEmployeeName");
+      // BACKGROUND IDENTIFICATION LOGIC
+      var isBackgroundRequest = payload && (payload.isBackground === true || payload.isSilent === true || payload.action === "getLeavesDataset" || payload.action === "getApprovedEmployees" || payload.action === "getEmployeeName");
 
       var controller = new AbortController();
       // BINAGO: Mula 25000 naging 60000 para may allowance pa ang backend para hindi ma-trigger ang 'aborted without reason'
@@ -862,7 +863,7 @@
           if (successCallback) successCallback(data);
         } catch(jsonErr) {
           clearTimeout(timeoutId);
-          if (Swal.isVisible()) { Swal.close(); }
+          if (Swal.isVisible() && !isBackgroundRequest) { Swal.close(); }
 
           if (payload && payload.action === "getLeavesDataset") {
             if (successCallback) successCallback([]); return;
@@ -895,7 +896,7 @@
            return;
         }
 
-        if (Swal.isVisible()) { Swal.close(); }
+        if (Swal.isVisible() && !isBackgroundRequest) { Swal.close(); }
         if (isBackgroundRequest) { if (failureCallback) failureCallback(error); return; }
 
         Swal.fire({ icon: 'error', title: 'Network Handshake Error', text: error.message, confirmButtonColor: '#0f172a' });
@@ -1078,8 +1079,8 @@
       backgroundSyncInterval = setInterval(function() { 
         if (currentUser) { 
           loadDepartmentMonitorFeed(false, true); 
-          if (isPayrollOrAdmin) { loadAdminApprovalQueue(); loadPlatinumPayrollReport(); }
-          if (isFEorGE || isCE || isPayrollOrAdmin || currentUser.isApprover) { loadApproversRequestQueue(); }
+          if (isPayrollOrAdmin) { loadAdminApprovalQueue(true); loadPlatinumPayrollReport(true); }
+          if (isFEorGE || isCE || isPayrollOrAdmin || currentUser.isApprover) { loadApproversRequestQueue(true); }
         } 
       }, 30000);
     }
@@ -2337,7 +2338,7 @@
       }
 
       var targetAction = "getDepartmentLogs"; 
-      var reqPayload = { action: targetAction, employeeId: currentUser.employeeId, department: currentUser.department };
+      var reqPayload = { action: targetAction, employeeId: currentUser.employeeId, department: currentUser.department, isBackground: (isSilent === true) };
 
       if (activeFeedFilterData) { 
         targetAction = "getFilteredFeedLogs"; 
@@ -2360,7 +2361,8 @@
           fromDate: activeFeedFilterData.fromDate || "", 
           toDate: activeFeedFilterData.toDate || "",
           year: derivedYear,
-          month: derivedMonth
+          month: derivedMonth,
+          isBackground: (isSilent === true)
         }; 
       }
 
@@ -2368,7 +2370,7 @@
         if (!currentUser) return;
         renderFeedCardsIntoContainer(container, res); 
       }, function(err) {
-        if (container) container.innerHTML = '<div class="text-center py-8 text-rose-500 font-bold text-xs"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ' + (err.message || 'Nabigong makuha ang data feed.') + '</div>';
+        if (!isSilent && container) container.innerHTML = '<div class="text-center py-8 text-rose-500 font-bold text-xs"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ' + (err.message || 'Nabigong makuha ang data feed.') + '</div>';
       }); 
     }
 
@@ -2448,12 +2450,12 @@
       });
     }
 
-    function loadApproversRequestQueue() {
+    function loadApproversRequestQueue(isSilent) {
       if (!currentUser) return;
       var container = document.getElementById('approverQueueContainer'); if (!container) return;
       var historyBody = document.getElementById('approverProcessedHistoryBody');
 
-      executeServerRequest({ action: "getApproverQueue", approverId: currentUser.employeeId }, function(res) {
+      executeServerRequest({ action: "getApproverQueue", approverId: currentUser.employeeId, isBackground: (isSilent === true) }, function(res) {
         if (!currentUser) return;
 
         var pendingList = (res && (res.pending || res.queue || res.data)) ? (res.pending || res.queue || res.data) : [];
@@ -2507,7 +2509,7 @@
           });
         }
       }, function(err) {
-        if(container) container.innerHTML = '<p class="text-xs text-rose-500 font-bold bg-white dark:bg-slate-900 p-4 rounded-xl shadow-inner border dark:border-slate-800"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ' + err.message + '</p>';
+        if(!isSilent && container) container.innerHTML = '<p class="text-xs text-rose-500 font-bold bg-white dark:bg-slate-900 p-4 rounded-xl shadow-inner border dark:border-slate-800"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ' + err.message + '</p>';
       });
     }
 
@@ -2523,7 +2525,7 @@
         if (res && res.success) { 
           var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
           Swal.fire({ icon: 'success', title: 'System Handshake Safe: ' + statusString + '!', timer: 1200, showConfirmButton: false, background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
-          loadApproversRequestQueue(); 
+          loadApproversRequestQueue(false); 
           executeHistoryAndMissingPipeline(); 
         } else {
           var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
@@ -2597,13 +2599,13 @@
       }
     }
 
-    function loadAdminApprovalQueue() {
+    function loadAdminApprovalQueue(isSilent) {
       if (!currentUser) return;
       var queueContainer = document.getElementById('adminPendingQueue');
       var historyLogTable = document.getElementById('adminHistoryLogTable');
       if (!queueContainer) return;
 
-      executeServerRequest({ action: "getPendingUsers", adminId: currentUser.employeeId }, function(res) {
+      executeServerRequest({ action: "getPendingUsers", adminId: currentUser.employeeId, isBackground: (isSilent === true) }, function(res) {
         if (!currentUser) return;
         var pendingList = (res && res.pending) ? res.pending : ((res && Array.isArray(res)) ? res : []);
         var historyList = (res && res.history) ? res.history : [];
@@ -2656,6 +2658,10 @@
             });
           }
         }
+      }, function(err) {
+        if (!isSilent && queueContainer) {
+           queueContainer.innerHTML = '<p class="text-xs text-rose-500 font-bold bg-white dark:bg-slate-900 p-4 rounded-xl shadow-inner italic border"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ' + err.message + '</p>';
+        }
       });
     }
 
@@ -2693,7 +2699,7 @@
             background: isDarkModeActive ? '#0f172a' : '#ffffff',
             color: isDarkModeActive ? '#ffffff' : '#1e293b'
           });
-          loadAdminApprovalQueue();
+          loadAdminApprovalQueue(false);
           loadApprovedEmployeesDropdown();
         } else {
           Swal.fire({
@@ -2717,7 +2723,7 @@
       });
     }
 
-    function loadPlatinumPayrollReport() {
+    function loadPlatinumPayrollReport(isSilent) {
       if (!currentUser) return;
       var fromDate = document.getElementById('payFromDate').value;
       var toDate = document.getElementById('payToDate').value;
@@ -2728,12 +2734,12 @@
       if (!tbody) return;
 
       if (!fromDate || !toDate) {
-        tbody.innerHTML = '<tr><td colspan="8" class="p-8 text-center text-slate-400 italic">Pumili muna ng Mula at Hanggang Petsa.</td></tr>';
+        if (!isSilent) tbody.innerHTML = '<tr><td colspan="8" class="p-8 text-center text-slate-400 italic">Pumili muna ng Mula at Hanggang Petsa.</td></tr>';
         return;
       }
 
       var searchBtnText = document.getElementById('payrollSearchBtnText');
-      if (searchBtnText) searchBtnText.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
+      if (!isSilent && searchBtnText) searchBtnText.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
 
       var payload = {
         action: "getPayrollReport",
@@ -2741,7 +2747,8 @@
         fromDate: fromDate,
         toDate: toDate,
         department: dept,
-        filterEmpId: empId
+        filterEmpId: empId,
+        isBackground: (isSilent === true)
       };
 
       executeServerRequest(payload, function(res) {
@@ -2799,7 +2806,7 @@
         document.getElementById('lblPayTotalTranspo').textContent = "₱" + totalTranspo.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }, function(err) {
         if (searchBtnText) searchBtnText.textContent = "Suriin";
-        if (tbody) tbody.innerHTML = '<tr><td colspan="8" class="p-8 text-center text-rose-500 font-bold italic">Error sa pagkuha ng payroll report: ' + err.message + '</td></tr>';
+        if (!isSilent && tbody) tbody.innerHTML = '<tr><td colspan="8" class="p-8 text-center text-rose-500 font-bold italic">Error sa pagkuha ng payroll report: ' + err.message + '</td></tr>';
       });
     }
 
@@ -2843,7 +2850,7 @@
           }, function(r) {
             if (r && r.success) {
               Swal.fire({ icon: 'success', title: 'Tagumpay!', text: r.message || 'Matagumpay na na-post at na-lock ang mga napiling attendance record.', timer: 2000, showConfirmButton: false });
-              loadPlatinumPayrollReport();
+              loadPlatinumPayrollReport(false);
             } else {
               Swal.fire({ icon: 'error', title: 'Bigo', text: (r && r.message) ? r.message : 'May problema sa pagpapatupad ng batch locking.' });
             }
