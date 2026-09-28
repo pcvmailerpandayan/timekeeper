@@ -122,6 +122,17 @@
       white-space: pre-wrap;
       overflow-y: hidden;
     }
+
+    /* MARQUEE ANIMATION FOR DEVELOPER NAME */
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    .animate-marquee {
+      display: inline-block;
+      white-space: nowrap;
+      animation: marquee 10s linear infinite;
+    }
   </style>
 </head>
 
@@ -282,9 +293,14 @@
     <div id="sidebarMenuOverlay" onclick="toggleSidebarMenuGateway(false)" class="fixed inset-0 bg-slate-900/60 dark:bg-slate-900/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
     <div id="sidebarMenuLayoutWindow" class="fixed top-0 left-0 bottom-0 h-screen w-72 bg-white dark:bg-slate-900 z-40 p-6 shadow-2xl lg:shadow-none transform -translate-x-full transition duration-300 ease-in-out lg:translate-x-0 lg:border-r lg:border-slate-200/80 lg:dark:border-slate-800 flex flex-col justify-between transition-colors">
       <div class="space-y-6">
-        <div class="flex justify-between items-center border-b dark:border-slate-800 pb-4">
-          <span class="font-black text-slate-900 dark:text-white tracking-wider flex items-center text-sm"><i class="fa-solid fa-folder-tree text-red-600 mr-2 text-base"></i>TTP NAVIGATOR</span>
-          <button type="button" onclick="toggleSidebarMenuGateway(false)" class="text-slate-400 hover:text-slate-600 text-xl lg:hidden"><i class="fa-solid fa-xmark"></i></button>
+        <div class="border-b dark:border-slate-800 pb-4 space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="font-black text-slate-900 dark:text-white tracking-wider flex items-center text-sm"><i class="fa-solid fa-folder-tree text-red-600 mr-2 text-base"></i>TTP NAVIGATOR</span>
+            <button type="button" onclick="toggleSidebarMenuGateway(false)" class="text-slate-400 hover:text-slate-600 text-xl lg:hidden"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="overflow-hidden w-full bg-slate-50 dark:bg-slate-800/60 rounded-md py-1.5 border border-slate-100 dark:border-slate-700/50">
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-widest animate-marquee w-full">⭐ Developed By : FE Jemar Jimena</p>
+          </div>
         </div>
 
         <nav class="space-y-1.5">
@@ -315,10 +331,10 @@
           <a href="https://script.google.com/macros/s/AKfycbzh9v1JqkZOUIOgQsamlrUS-7w801bBiNm_i0wnREoGbVdDe5l5sN1jA8rMRkgJ8dsh1A/exec" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-cyan-700 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/30 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition text-left text-xs outline-none">
             <i class="fa-solid fa-hotel w-6 text-center text-sm"></i> <span>Hotel Accomodation Reimbursement</span>
           </a>
+          <a href="https://hris.aub.com.ph/HRIS/ePortal/" class="w-full flex items-center space-x-3 p-3 font-bold rounded-xl text-white bg-[#b2181f] hover:bg-[#8f1218] dark:bg-[#b2181f] dark:hover:bg-[#8f1218] transition text-left text-xs outline-none shadow-sm">
+            <i class="fa-solid fa-building-columns w-6 text-center text-sm text-[#eebd22]"></i> <span>AUB EMPLOYEE PORTAL</span>
+          </a>
         </nav>
-      </div>
-      <div class="border-t pt-4 text-center dark:border-slate-800">
-        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold tracking-widest">⭐ Developed By : FE Jemar Jimena</p>
       </div>
     </div>
 
