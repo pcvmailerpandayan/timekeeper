@@ -1363,22 +1363,34 @@
       executeServerRequest(mixedPayload, function(res) { 
         if (!currentUser) return;
 
-        if (res && (res.success || res.fallbackActive)) { 
+        if (res && (res.success || res.fallbackActive || res.async)) { 
           var ngayon = new Date().toLocaleDateString('en-CA'); 
           localStorage.setItem("ttp_huling_log_type_" + currentUser.employeeId, selectedLogType);
           localStorage.setItem("ttp_huling_log_petsa_" + currentUser.employeeId, ngayon);
 
           Swal.close(); 
-          if(res.success) {
-            Swal.fire({ icon: 'success', title: 'Naitala Na!', text: res.message || 'Matagumpay na naipadala ang iyong attendance log.', timer: 2000, showConfirmButton: false, background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' }); 
-          } else {
-             Swal.fire({ icon: 'info', title: 'Pinoproseso sa Background', text: res.message, confirmButtonColor: '#0f172a', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' });
-          }
+          Swal.fire({ 
+            icon: 'success', 
+            title: 'Naitala Na!', 
+            text: res.message || 'Matagumpay na natanggap ang iyong attendance log.', 
+            timer: 1600, 
+            showConfirmButton: false, 
+            background: isDarkModeActive ? '#0f172a' : '#ffffff', 
+            color: isDarkModeActive ? '#ffffff' : '#1e293b' 
+          }); 
 
           clearPunchConsoleInputs(); 
           toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log'); 
-          loadDepartmentMonitorFeed(false, false); 
-          executeHistoryAndMissingPipeline(); 
+          
+          // OPTIMISTIC: Soft refresh feed after short delay (background processing)
+          setTimeout(function() {
+            loadDepartmentMonitorFeed(false, true); // silent refresh
+          }, 2500);
+          
+          // History can wait a bit longer
+          setTimeout(function() {
+            executeHistoryAndMissingPipeline();
+          }, 4000);
         } else {
           toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log'); 
           Swal.fire({ icon: 'error', title: 'Bigo sa Pagpapadala', text: (res && res.message) ? res.message : 'May hindi inaasahang problema sa TTP server base. Subukan ulit.', confirmButtonColor: '#0f172a', background: isDarkModeActive ? '#0f172a' : '#ffffff', color: isDarkModeActive ? '#ffffff' : '#1e293b' });
@@ -1387,18 +1399,22 @@
         if (!currentUser) return;
         toggleButtonState('btnSubmitAttendance', false, '<i class="fa-solid fa-cloud-arrow-up mr-2"></i> Ipadala ang Attendance Log');
 
-        clearPunchConsoleInputs(); 
-
+        // HUWAG i-clear ang inputs – baka successful pa rin ang background processing
         var isDarkModeActive = (document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
         Swal.fire({
-          icon: 'warning',
-          title: 'Interrupted and Koneksyon',
-          text: 'Natagalan ang tugon ng server (Timeout) dahil sa pag-upload ng larawan. Subukang i-check ang iyong "Personal Logs History" bago umulit kung pumasok na ang iyong log upang maiwasan ang multiple entries.',
+          icon: 'info',
+          title: 'Pinoproseso sa Background',
+          text: 'Natagalan ang tugon ng server. Ang log mo ay maaaring naiproseso na sa background. Tingnan ang Real-time Feed o Personal Logs bago mag-submit ulit.',
           confirmButtonColor: '#0f172a',
-          confirmButtonText: 'Sige, titingnan ko',
+          confirmButtonText: 'OK, titingnan ko',
           background: isDarkModeActive ? '#0f172a' : '#ffffff',
           color: isDarkModeActive ? '#ffffff' : '#1e293b'
         });
+        
+        // Soft refresh after a few seconds
+        setTimeout(function() {
+          loadDepartmentMonitorFeed(false, true);
+        }, 3000);
       }); 
     }
 
@@ -3098,3 +3114,4 @@
   </script>
 </body>
 </html>
+
