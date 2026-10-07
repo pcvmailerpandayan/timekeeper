@@ -123,15 +123,37 @@
       overflow-y: hidden;
     }
 
-    /* MARQUEE ANIMATION FOR DEVELOPER NAME */
-    @keyframes marquee {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
-    .animate-marquee {
-      display: inline-block;
+    /* TYPEWRITER EFFECT FOR DEVELOPER NAME */
+    .typewriter-track {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'Courier New', Courier, monospace;
       white-space: nowrap;
-      animation: marquee 10s linear infinite;
+      overflow: hidden;
+    }
+    .typewriter-text {
+      display: inline-block;
+      min-height: 1em;
+    }
+    .typewriter-cursor {
+      display: inline-block;
+      width: 1.5px;
+      height: 11px;
+      background-color: #f59e0b;
+      margin-left: 1px;
+      vertical-align: middle;
+      animation: tw-blink 0.7s step-end infinite;
+      flex-shrink: 0;
+    }
+    @media (prefers-color-scheme: dark) {
+      .typewriter-cursor {
+        background-color: #fbbf24;
+      }
+    }
+    @keyframes tw-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
     }
   </style>
 </head>
@@ -298,8 +320,12 @@
             <span class="font-black text-slate-900 dark:text-white tracking-wider flex items-center text-sm"><i class="fa-solid fa-folder-tree text-red-600 mr-2 text-base"></i>TTP NAVIGATOR</span>
             <button type="button" onclick="toggleSidebarMenuGateway(false)" class="text-slate-400 hover:text-slate-600 text-xl lg:hidden"><i class="fa-solid fa-xmark"></i></button>
           </div>
-          <div class="overflow-hidden w-full bg-slate-50 dark:bg-slate-800/60 rounded-md py-1.5 border border-slate-100 dark:border-slate-700/50">
-            <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-widest animate-marquee w-full">⭐ Developed By : FE Jemar Jimena</p>
+          <div class="overflow-hidden w-full bg-slate-50 dark:bg-slate-800/60 rounded-md py-1.5 px-2 border border-slate-100 dark:border-slate-700/50">
+            <div class="typewriter-track text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-widest">
+              <span>⭐</span>
+              <span class="typewriter-text" id="devTypewriterText"></span>
+              <span class="typewriter-cursor" id="devTypewriterCursor"></span>
+            </div>
           </div>
         </div>
 
@@ -926,9 +952,44 @@
       });
     }
 
+    function initDeveloperTypewriter() {
+      var el = document.getElementById('devTypewriterText');
+      if (!el) return;
+      var FULL_TEXT = "DEVELOPED BY: FE JEMAR JIMENA";
+      var typeSpeed = 55;
+      var deleteSpeed = 30;
+      var holdTime = 2200;
+      var emptyTime = 600;
+      var i = 0;
+      var isDeleting = false;
+
+      function tick() {
+        if (!isDeleting) {
+          el.textContent = FULL_TEXT.substring(0, i + 1);
+          i++;
+          if (i === FULL_TEXT.length) {
+            setTimeout(function() { isDeleting = true; tick(); }, holdTime);
+            return;
+          }
+          setTimeout(tick, typeSpeed);
+        } else {
+          el.textContent = FULL_TEXT.substring(0, i - 1);
+          i--;
+          if (i === 0) {
+            isDeleting = false;
+            setTimeout(tick, emptyTime);
+            return;
+          }
+          setTimeout(tick, deleteSpeed);
+        }
+      }
+      tick();
+    }
+
     function documentReadyHandler() {
       initClock(); setupGlobalKeyBindings(); setDefaultFilterDates(); loadSystemDepartmentsList(); 
       setupPageVisibilityIntegrityMonitor();
+      initDeveloperTypewriter();
 
       currentUser = TTP_Storage.getSession();
       if (currentUser) {
@@ -3114,4 +3175,3 @@
   </script>
 </body>
 </html>
-
